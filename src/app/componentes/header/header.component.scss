@@ -1,0 +1,28 @@
+.contaioner-header {
+    position: fixed;
+    width: 100%;
+    height: 2rem;
+    padding: 2rem 6rem;
+    display: flex;          /* necessário para justify-content funcionar */
+    justify-content:space-between; /* alinha horizontalmente à esquerda */
+    align-items: center;    /* alinha verticalmente ao centro */
+    background-color: #4F7942;
+    color: #fff;
+    z-index: 1 !important;
+}
+
+.avatar-fixed {
+  position: fixed;
+  z-index: 9;
+  width: 30rem;
+}
+
+.user-avatar{
+  margin-right: 0.3rem;
+}
+
+
+.search-section input{
+  min-width: 20rem;
+}
+

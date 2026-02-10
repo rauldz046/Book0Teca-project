@@ -1,0 +1,46 @@
+<section class="container-nav" [ngClass]="{ collapsed: collapsed }">
+  <div class="menu-scroll">
+    <div class="mb-5 w-50">
+      <button
+        pButton
+        type="button"
+        [icon]="collapsed ? 'pi pi-arrow-right' : 'pi pi-bars'"
+        (click)="toggleSidebar()"
+        class="toggle-btn"
+        [label]="collapsed ? '' : 'Ocultar'"
+      ></button>
+    </div>
+
+    <div>
+      <p-panelMenu
+        [model]="items"
+        [styleClass]="collapsed ? 'collapsed' : ''"
+      ></p-panelMenu>
+    </div>
+  </div>
+
+  <!-- Mova a user-section para fora da menu-scroll -->
+  <div class="user-section">
+    <div style="display: flex; gap: 6px">
+      <div class="user-avatar">
+        <p-avatar
+          image="https://img.freepik.com/vetores-premium/icone-de-perfil-de-usuario-em-circulo_1256048-12499.jpg?semt=ais_hybrid&w=740&q=80"
+          shape="circle"
+          size="large"
+        ></p-avatar>
+      </div>
+
+      <div>
+        <p-dropdown
+          [options]="filteredDropdown"
+          [(ngModel)]="OptionSelected"
+          optionLabel="name"
+          placeholder="{{ userNome }}"
+          (onChange)="navigateOut($event.value)"
+          styleClass="px-2"
+        ></p-dropdown
+        >
+      </div>
+    </div>
+  </div>
+</section>

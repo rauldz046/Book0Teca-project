@@ -1,0 +1,34 @@
+<div class="hover">
+  <div class="login-wrapper">
+    <p-card header="Login" subheader="Bem-vindo de volta" styleClass="login-card">
+      <form class="login-form" >
+        <div class="p-field">
+
+          <input 
+          id="email" 
+          type="text" 
+          pInputText
+          [formControl]="Email"
+          placeholder="Email"/>
+        </div>
+
+        <div class="p-field">
+          <input 
+          id="password" 
+          type="password"
+          [formControl]="Senha"
+          placeholder="Senha" 
+          pInputText />
+        </div>
+
+        <button
+          pButton
+          type="button"
+          label="Entrar"
+          class="p-button-rounded p-button-primary"
+          (click)="Submit()"
+        ></button>
+      </form>
+    </p-card>
+  </div>
+</div>

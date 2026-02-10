@@ -1,0 +1,15 @@
+:host ::ng-deep .p-card-content {
+  height: 0rem;
+  padding: 0;
+  overflow: hidden;
+}
+
+:host ::ng-deep .p-card {
+  background-color: rgb(216, 216, 216);
+}
+
+.main-title {
+  max-width: 100rem;
+  min-width: 30rem;
+  margin-bottom: 1rem;
+}

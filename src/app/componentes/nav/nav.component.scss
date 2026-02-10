@@ -1,0 +1,134 @@
+.container-nav {
+  position: fixed;
+  top: 4rem;
+  left: 0;
+  width: 16rem;
+  height: 95vh;
+  background-color: #544e83;
+  color: #fff;
+  padding: 1rem;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* empurra menu para cima e user-section para baixo */
+
+  z-index: 1;
+  overflow: hidden;
+  transition:
+    width 0.3s ease,
+    padding 0.3s ease;
+}
+
+.container-nav.collapsed {
+  width: 6rem;
+  padding: 0.5rem;
+  height: 100vh;
+}
+
+.menu-scroll {
+  margin-left: -0.5rem;
+  overflow-y: auto;
+  flex-grow: 1; /* ocupa todo o espaço disponível entre topo e usuário */
+}
+
+.container-nav.collapsed .menu-scroll {
+  opacity: 0.95;
+}
+
+p-scrollPanel,
+p-panelMenu {
+  transition: opacity 0.3s ease;
+}
+
+.container-nav.collapsed p-panelMenu {
+  opacity: 0.7;
+}
+
+::ng-deep .p-menuitem-text {
+  white-space: nowrap;
+  transition:
+    opacity 0.2s ease,
+    width 0.2s ease;
+}
+
+.container-nav.collapsed ::ng-deep .p-menuitem-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+::ng-deep .p-menuitem-icon {
+  transition: margin 0.3s ease;
+}
+
+.container-nav.collapsed ::ng-deep .p-menuitem-icon {
+  margin-right: 0;
+}
+
+.toggle-btn {
+  width: 10rem;
+  margin: 6px 0;
+  padding: 0.5rem;
+  transition:
+    width 0.3s ease,
+    padding 0.3s ease,
+    margin 0.3s ease;
+}
+
+.container-nav.collapsed .toggle-btn {
+  width: 3rem;
+  margin: 2px;
+  padding: 0.25rem;
+}
+
+.toggle-btn .pi {
+  transition:
+    transform 0.3s ease,
+    font-size 0.3s ease;
+}
+
+.menu-scroll {
+  overflow-y: auto;
+  flex-grow: 1; /* faz o menu ocupar o espaço disponível */
+}
+
+.user-section {
+  padding: 2rem;
+  border-radius: 20px;
+  background-color: #5564a7;
+
+  display: flex; /* apenas para alinhar o conteúdo interno do user-section */
+  flex-direction: column;
+  align-items: center; /* centraliza os itens do user-section horizontalmente */
+  justify-content: center; /* centraliza verticalmente os itens internos do user-section */
+
+  margin: 0; /* sem margin desnecessária */
+  transition: all 0.3s ease;
+  margin-left: -3rem;
+  margin-right: -1.5rem;
+}
+
+.user-section .user-avatar {
+  margin-right: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+::ng-deep .p-dropdown {
+  width: 100%; /* se ajusta à largura do container */
+  transition: all 0.3s ease;
+}
+
+/* Nav colapsada */
+.container-nav.collapsed .user-section {
+  padding: 0.5rem;
+}
+
+.container-nav.collapsed .user-section .user-avatar {
+  width: 2rem;
+  height: 2rem;
+}
+
+.container-nav.collapsed ::ng-deep .p-dropdown {
+  width: 100%; /* ajusta ao container colapsado */
+}

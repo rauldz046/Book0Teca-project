@@ -1,0 +1,35 @@
+.hover {
+  position: fixed;
+  inset: 0; /* cobre 100% da tela */
+  background-color: #fff; /* branco total */
+  z-index: 999999; /* acima de tudo */
+}
+
+.login-form {
+  width: 20rem;
+}
+
+.login-wrapper {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f4f6f8;
+}
+
+.login-card {
+  width: 50rem;
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+::ng-deep .p-card input {
+  width: 95%;
+}
