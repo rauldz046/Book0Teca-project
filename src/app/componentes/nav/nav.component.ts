@@ -13,7 +13,6 @@ export class NavComponent implements OnInit {
   userNome: string = 'raul.7lmg';
   OptionSelected!: string;
   private readonly router = inject(Router);
-  
 
   usersDropdown = [
     { name: 'Perfil', code: '/config/perfil' },
@@ -29,7 +28,7 @@ export class NavComponent implements OnInit {
     return this.usersDropdown.filter((user) => user.name !== this.userNome);
   }
 
-    navigateOut(route: any): void {
+  navigateOut(route: any): void {
     this.router.navigate([route.code]).then(() => {
       if (this.OptionSelected) {
         this.OptionSelected = this.userNome;
@@ -139,6 +138,23 @@ export class NavComponent implements OnInit {
           },
         ],
       },
+      { label: 'Inventario@', icon: PrimeIcons.BOX, items: [
+        {
+          label:'Estoque@',
+          icon:PrimeIcons.WALLET,
+          routerLink:'/inventario/Estoque'
+        },
+        {
+          label:'Licitações@',
+          icon:PrimeIcons.PAPERCLIP,
+          routerLink:'/inventario/Estoque'
+        },
+        {
+          label:'Tesouraria@',
+          icon:PrimeIcons.DOLLAR,
+          routerLink:'/inventario/Estoque'
+        },
+      ] },
       {
         label: 'Sistema@',
         icon: PrimeIcons.SERVER,
@@ -147,6 +163,11 @@ export class NavComponent implements OnInit {
             label: 'Logs@',
             icon: PrimeIcons.FILE,
             routerLink: '/sistema/logs',
+          },
+          {
+            label: 'Permissões@',
+            icon: PrimeIcons.LOCK,
+            routerLink: '/sistema/permissoes',
           },
         ],
       },
@@ -160,8 +181,8 @@ export class NavComponent implements OnInit {
             routerLink: '/config/perfil',
           },
           {
-            label: 'Permissões@',
-            icon: PrimeIcons.LOCK,
+            label: 'Alertas',
+            icon: PrimeIcons.BELL,
             routerLink: '/config/permissoes',
           },
           {

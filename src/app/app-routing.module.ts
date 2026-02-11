@@ -93,7 +93,7 @@ const routes: Routes = [
     data: { titulo: 'Perfil de ', userNome: 'raul.7lmg' },
   },
   {
-    path: 'config/permissoes',
+    path: 'sistema/permissoes',
     component: GerenciarPermissoesComponent,
     data: { titulo: 'Permissoes' },
   },
