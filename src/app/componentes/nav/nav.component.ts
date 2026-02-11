@@ -1,7 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { Router, RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-nav',
@@ -11,13 +10,13 @@ import { HttpClient } from '@angular/common/http';
 export class NavComponent implements OnInit {
   items: MenuItem[] = [];
   collapsed = false;
-  userNome: string = 'Usuário';
+  userNome: string = 'raul.7lmg';
   OptionSelected!: string;
   private readonly router = inject(Router);
   
 
   usersDropdown = [
-    { name: 'Perfil', code: '/clientes' },
+    { name: 'Perfil', code: '/config/perfil' },
     { name: 'Configurações', code: '/' },
     { name: 'Logout', code: '/' },
     { name: this.userNome, code: '' },
@@ -68,12 +67,12 @@ export class NavComponent implements OnInit {
           {
             label: 'Autores',
             icon: PrimeIcons.PENCIL,
-            routerLink: '/acervo/autores',
+            // routerLink: '/acervo/autores',
           },
           {
             label: 'Editoras',
             icon: PrimeIcons.BUILDING,
-            routerLink: '/acervo/editoras',
+            // routerLink: '/acervo/editoras',
           },
         ],
       },
@@ -110,7 +109,7 @@ export class NavComponent implements OnInit {
           {
             label: 'Boletos',
             icon: PrimeIcons.CREDIT_CARD,
-            routerLink: '/multas/pagamentos',
+            // routerLink: '/multas/pagamentos',
           },
           {
             label: 'Atividade',

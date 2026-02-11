@@ -90,7 +90,7 @@ const routes: Routes = [
   {
     path: 'config/perfil',
     component: UserPerfilComponent,
-    data: { titulo: 'Perfil de ' },
+    data: { titulo: 'Perfil de ', userNome: 'raul.7lmg' },
   },
   {
     path: 'config/permissoes',

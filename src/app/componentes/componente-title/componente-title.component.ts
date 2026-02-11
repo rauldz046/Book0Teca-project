@@ -1,3 +1,4 @@
+import { ThisReceiver } from '@angular/compiler';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -5,23 +6,33 @@ import { filter } from 'rxjs/operators';
 @Component({
   selector: 'app-componente-title',
   templateUrl: './componente-title.component.html',
-  styleUrls: ['./componente-title.component.scss']
+  styleUrls: ['./componente-title.component.scss'],
 })
 export class ComponenteTitleComponent implements OnInit {
   titulo = '';
 
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  userNome: string = 'ra';
+  urlAtiva: string = '';
 
   ngOnInit(): void {
-    // Atualiza o título no carregamento da página
-    this.atualizarTitulo();
+  // Atualiza na inicialização
+  this.atualizarTitulo();
+  this.urlAtiva = this.router.url;
 
-    // Atualiza o título a cada mudança de rota
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => this.atualizarTitulo());
-  }
+  // Atualiza sempre que a rota muda
+  this.router.events
+    .pipe(
+      filter(
+        (event): event is NavigationEnd => event instanceof NavigationEnd
+      )
+    )
+    .subscribe((event) => {
+      this.urlAtiva = event.urlAfterRedirects;
+      this.atualizarTitulo();
+    });
+}
 
   private atualizarTitulo() {
     let rotaAtiva = this.route;
@@ -30,5 +41,6 @@ export class ComponenteTitleComponent implements OnInit {
     }
 
     this.titulo = rotaAtiva.snapshot.data['titulo'] || '';
+     this.userNome = rotaAtiva.snapshot.data['userNome'] || '';
   }
 }
