@@ -1,7 +1,7 @@
-export interface Usuarios {
-  id: number;
-  cpfCnpj: string;
-  nome: string;
-  tipo: 'Cliente' | 'Fornecedor';
-  ativo: boolean;
+export interface UsuariosLogados {
+  idUsuario: number;
+  Nome: string;
+  Email: string;
+  CPF: string;
+  Senha: string;
 }
