@@ -68,11 +68,6 @@ export class NavComponent implements OnInit {
             icon: PrimeIcons.PENCIL,
             // routerLink: '/acervo/autores',
           },
-          {
-            label: 'Editoras',
-            icon: PrimeIcons.BUILDING,
-            // routerLink: '/acervo/editoras',
-          },
         ],
       },
       {
@@ -88,11 +83,6 @@ export class NavComponent implements OnInit {
             label: 'Devoluções',
             icon: PrimeIcons.REFRESH,
             routerLink: '/emprestimos/devolucoes',
-          },
-          {
-            label: 'Reservas',
-            icon: PrimeIcons.BOOKMARK,
-            routerLink: '/emprestimos/reservas',
           },
         ],
       },

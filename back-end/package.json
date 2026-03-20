@@ -1,0 +1,19 @@
+{
+  "name": "book0teca",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "nodemon": "node app.js",                
+    "dev": "nodemon app.js",                
+    "nodemon:debug": "nodemon --inspect-brk --inspect app.js"   
+
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sequelize": "^6.32.0",
+    "mysql2": "^3.3.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

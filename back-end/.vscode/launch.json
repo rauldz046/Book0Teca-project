@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Book0Teca",
+      "program": "${workspaceFolder}/book0Teca/back-end/app.js",
+      "console": "integratedTerminal",
+      "restart": true,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  ]
+}
