@@ -5,7 +5,7 @@
   "scripts": {
     "nodemon": "node app.js",
     "dev": "nodemon app.js",
-    "nodemon:debug": "nodemon --inspect-brk --inspect app.js"
+    "nodemon:debug": "nodemon --inspect=9229 app.js"
   },
   "dependencies": {
     "cors": "^2.8.6",
