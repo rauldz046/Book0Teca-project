@@ -1,0 +1,113 @@
+<div class="register-container">
+  <div class="register-card">
+    
+    <div class="header-logo">
+       <i class="pi pi-book logo-icon"></i>
+       <span class="brand-name">Book<span>Oteca</span></span>
+    </div>
+
+    <p-steps [model]="items" [(activeIndex)]="activeIndex" [readonly]="true" styleClass="custom-steps"></p-steps>
+
+    <div class="form-viewport">
+      <form [formGroup]="registerForm" class="p-fluid">
+        
+        <!-- PARTE 1: UsuariosSistema -->
+        <div class="step-content" *ngIf="activeIndex === 0" @stepAnimation>
+          <h3 class="section-title">Informações Pessoais</h3>
+          <div class="p-grid">
+            <div class="p-col-12 field">
+              <label>Nome Completo</label>
+              <input pInputText formControlName="nome" placeholder="Digite seu nome"/>
+            </div>
+            <div class="p-col-12 md:p-col-6 field">
+              <label>E-mail</label>
+              <input pInputText formControlName="email" placeholder="email@exemplo.com"/>
+            </div>
+            <div class="p-col-12 md:p-col-6 field">
+              <label>CPF</label>
+              <p-inputMask mask="999.999.999-99" formControlName="cpf" placeholder="000.000.000-00"></p-inputMask>
+            </div>
+            <div class="p-col-12 md:p-col-6 field">
+              <label>Telefone</label>
+              <p-inputMask mask="(99) 99999-9999" formControlName="telefone" placeholder="(00) 00000-0000"></p-inputMask>
+            </div>
+            <div class="p-col-12 md:p-col-6 field">
+              <label>Senha de Acesso</label>
+              <p-password formControlName="senha" [toggleMask]="true" [feedback]="false"></p-password>
+            </div>
+          </div>
+        </div>
+
+        <!-- PARTE 2: InfoEndereco -->
+        <div class="step-content" *ngIf="activeIndex === 1" @stepAnimation>
+          <h3 class="section-title">Endereço de Entrega</h3>
+          <div class="p-grid">
+            <div class="p-col-12 md:p-col-4 field">
+              <label>CEP</label>
+              <p-inputMask mask="99999-999" formControlName="cep"></p-inputMask>
+            </div>
+            <div class="p-col-12 md:p-col-8 field">
+              <label>Logradouro</label>
+              <input pInputText formControlName="logradouro" />
+            </div>
+            <div class="p-col-12 md:p-col-3 field">
+              <label>Número</label>
+              <input pInputText formControlName="numero" />
+            </div>
+            <div class="p-col-12 md:p-col-9 field">
+              <label>Bairro</label>
+              <input pInputText formControlName="bairro" />
+            </div>
+            <div class="p-col-12 md:p-col-6 field">
+              <label>Cidade</label>
+              <input pInputText formControlName="cidade" />
+            </div>
+            <div class="p-col-12 md:p-col-6 field">
+              <label>Estado (UF)</label>
+              <input pInputText formControlName="estado" maxlength="2" />
+            </div>
+          </div>
+        </div>
+
+        <!-- PARTE 3: InfoBancario -->
+        <div class="step-content" *ngIf="activeIndex === 2" @stepAnimation>
+          <h3 class="section-title">Dados para Recebimento</h3>
+          <div class="p-grid">
+            <div class="p-col-12 md:p-col-8 field">
+              <label>Banco</label>
+              <input pInputText formControlName="nomeBanco" placeholder="Ex: Nubank, Itaú..." />
+            </div>
+            <div class="p-col-12 md:p-col-4 field">
+              <label>Tipo de Conta</label>
+              <input pInputText formControlName="tipoConta" placeholder="Corrente" />
+            </div>
+            <div class="p-col-12 md:p-col-4 field">
+              <label>Agência</label>
+              <input pInputText formControlName="numeroAgencia" />
+            </div>
+            <div class="p-col-12 md:p-col-8 field">
+              <label>Número da Conta</label>
+              <input pInputText formControlName="numeroConta" />
+            </div>
+            <div class="p-col-12 field">
+              <label>Chave PIX Principal</label>
+              <input pInputText formControlName="codigoPix" placeholder="E-mail, CPF ou Chave Aleatória" />
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="actions-footer">
+      <button pButton label="Voltar" icon="pi pi-arrow-left" 
+              class="p-button-text p-button-secondary" 
+              (click)="prevStep()" [disabled]="activeIndex === 0"></button>
+      
+      <button pButton [label]="activeIndex === 2 ? 'Finalizar' : 'Próximo'" 
+              [icon]="activeIndex === 2 ? 'pi pi-check' : 'pi pi-arrow-right'" 
+              iconPos="right" class="btn-primary"
+              (click)="activeIndex === 2 ? submit() : nextStep()"></button>
+    </div>
+  </div>
+</div>

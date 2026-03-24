@@ -1,34 +1,101 @@
-<div class="hover">
-  <div class="login-wrapper">
-    <p-card header="Login" subheader="Bem-vindo de volta" styleClass="login-card">
-      <form class="login-form" [formGroup]="form">
-        <div class="p-field">
-
-          <input 
-          id="email" 
-          type="text" 
-          pInputText
-          formControlName="email"
-          placeholder="Email"/>
+<div class="login-container">
+  <div class="login-box">
+    <!-- Lado Esquerdo: Estético (Opcional para Desktop) -->
+    <div class="brand-section">
+      <div class="overlay"></div>
+      <div class="brand-content">
+        <div>
+          <h1>BookOteca</h1>
+          <p>Sua biblioteca digital particular.</p>
         </div>
+      </div>
+    </div>
 
-        <div class="p-field">
-          <input 
-          id="password" 
-          type="password"
-          formControlName="senha"
-          placeholder="Senha" 
-          pInputText />
-        </div>
+    <!-- Lado Direito: Formulário -->
+    <div class="form-section">
+      <p-card styleClass="p-card-flat">
+        <ng-template pTemplate="header">
+          <div class="form-header">
+            <h2>{{ isLogin ? "Bem-vindo de volta" : "Crie sua conta" }}</h2>
+            <p>
+              {{
+                isLogin
+                  ? "Acesse sua coleção de livros"
+                  : "Comece sua jornada literária hoje"
+              }}
+            </p>
+          </div>
+        </ng-template>
 
-        <button
-          pButton
-          type="button"
-          label="Entrar"
-          class="p-button-rounded p-button-primary"
-          (click)="submit()"
-        ></button>
-      </form>
-    </p-card>
+        <form [formGroup]="form" class="p-fluid">
+          <!-- Campo Nome (Só aparece no cadastro) -->
+          <div class="field" *ngIf="!isLogin">
+            <span class="p-input-icon-left">
+              <i class="pi pi-user"></i>
+              <input
+                type="text"
+                pInputText
+                placeholder="Nome Completo"
+                formControlName="nome"
+              />
+            </span>
+          </div>
+
+          <div class="field">
+            <span class="p-input-icon-left">
+              <i class="pi pi-envelope"></i>
+              <input
+                type="email"
+                pInputText
+                placeholder="E-mail"
+                formControlName="email"
+              />
+            </span>
+          </div>
+
+          <div class="field">
+            <span class="p-input-icon-left">
+              <i class="pi pi-lock"></i>
+              <p-password
+                formControlName="senha"
+                [feedback]="false"
+                [toggleMask]="true"
+                placeholder="Senha"
+              >
+              </p-password>
+            </span>
+          </div>
+
+          <div class="forgot-password" *ngIf="isLogin">
+            <a href="#">Esqueceu a senha?</a>
+          </div>
+
+          <button
+            pButton
+            type="button"
+            [label]="isLogin ? 'Entrar' : 'Cadastrar'"
+            class="p-button-raised btn-primary"
+            (click)="submit()"
+          ></button>
+
+          <div class="divider">
+            <span>ou</span>
+          </div>
+
+          <div class="toggle-mode">
+            {{ isLogin ? "Não tem uma conta?" : "Já possui uma conta?" }}
+
+            <button
+              type="button"
+              pButton
+              class="p-button-link"
+              (click)="goToSignIn()"
+            >
+              {{ isLogin ? "Criar conta" : "Fazer Login" }}
+            </button>
+          </div>
+        </form>
+      </p-card>
+    </div>
   </div>
 </div>

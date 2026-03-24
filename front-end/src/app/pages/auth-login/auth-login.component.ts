@@ -13,6 +13,7 @@ export class AuthLoginComponent implements OnInit {
   private router = inject(Router);
   private ClienteService = inject(ClientesService);
   sessaoUser!: UsuariosLogados;
+  isLogin = true
 
   form: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required]),
@@ -20,6 +21,10 @@ export class AuthLoginComponent implements OnInit {
   });
 
   ngOnInit(): void {}
+
+  goToSignIn() {
+  this.router.navigate(['auth/sign-in']);
+}
 
   async submit() {
     const infoUser = this.form.getRawValue();

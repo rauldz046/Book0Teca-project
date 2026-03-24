@@ -9,6 +9,7 @@ import { filter } from 'rxjs';
 })
 export class AppComponent {
   mostrarLogin = false;
+  mostrarSignIn = false;
   title = 'BookOTeca.com.br';
   private router = inject(Router);
   private route = inject(ActivatedRoute);

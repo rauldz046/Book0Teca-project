@@ -14,6 +14,8 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
 import { CardModule } from 'primeng/card';
+import { PasswordModule } from 'primeng/password';
+import { StepsModule } from 'primeng/steps';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { PanelMenuModule } from 'primeng/panelmenu';
@@ -50,6 +52,12 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { SignInFormUserComponent } from './pages/auth-login/sign-in-form-user/sign-in-form-user.component';
+import { InputMaskModule } from 'primeng/inputmask';
+
+
+
+
 
 @NgModule({
   declarations: [
@@ -77,6 +85,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     PreferenciasComponent,
     AuthLoginComponent,
     ModalEditClienteComponent,
+    SignInFormUserComponent,
   ],
   imports: [
     HttpClientModule,
@@ -106,6 +115,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatButtonModule,
     MatProgressBarModule,
     MatSnackBarModule,
+    PasswordModule,
+    StepsModule,
+    InputMaskModule
   ],
   providers: [],
   bootstrap: [AppComponent],

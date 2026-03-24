@@ -1,7 +1,8 @@
+<app-sign-in-form-user *ngIf="mostrarSignIn"></app-sign-in-form-user>
 <app-auth-login *ngIf="mostrarLogin"></app-auth-login>
-<app-header></app-header>
-<app-nav></app-nav>
-<app-display></app-display>
+<app-header *ngIf="mostrarSignIn"></app-header>
+<app-nav *ngIf="!mostrarLogin && mostrarSignIn"></app-nav>
+<app-display *ngIf="mostrarSignIn"></app-display>
 <router-outlet></router-outlet>
 
 

@@ -17,6 +17,7 @@ import { GerenciarPermissoesComponent } from './pages/gerenciar-permissoes/geren
 import { UserPrivacidadeComponent } from './pages/user-privacidade/user-privacidade.component';
 import { PreferenciasComponent } from './pages/preferencias/preferencias.component';
 import { AuthLoginComponent } from './pages/auth-login/auth-login.component';
+import { SignInFormUserComponent } from './pages/auth-login/sign-in-form-user/sign-in-form-user.component';
 const routes: Routes = [
   {
     path: '',
@@ -27,6 +28,11 @@ const routes: Routes = [
     path: 'auth/log-in',
     component: AuthLoginComponent,
     data: { mostrarLogin: true },
+  },
+  {
+    path: 'auth/sign-in',
+    component: SignInFormUserComponent,
+    data: { mostrarSignIn: true },
   },
   {
     path: 'home',
