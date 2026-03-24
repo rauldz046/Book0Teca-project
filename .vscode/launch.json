@@ -7,7 +7,7 @@
       "request": "launch",
       "runtimeExecutable": "node",
       "runtimeArgs": [
-        "--inspect=9229",
+        "--inspect=0.0.0.0:9229",
         "${workspaceFolder}/node_modules/nodemon/bin/nodemon.js"
       ],
       "program": "${workspaceFolder}/app.js",

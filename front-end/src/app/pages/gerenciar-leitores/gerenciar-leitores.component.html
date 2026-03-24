@@ -13,7 +13,6 @@
         <h2>Leitores Ativos</h2>
         <button onclick="abrirModal()">+ Novo Usuário</button>
       </div>
-
       <table>
         <thead>
           <tr>
@@ -26,92 +25,20 @@
         </thead>
 
         <tbody>
-          <tr>
-            <td>{{usuariosLogados.idUsuario}}</td>
-            <td>{{usuariosLogados.Nome}}</td>
-            <td>{{usuariosLogados.Email}}</td>
-            <td>{{usuariosLogados.CPF}}</td>
+          <tr *ngFor="let usuariosLogados of usuariosLogados">
+            <td>{{ usuariosLogados.idUsuario }}</td>
+            <td>{{ usuariosLogados.Nome }}</td>
+            <td>{{ usuariosLogados.Email }}</td>
+            <td>{{ usuariosLogados.CPF }}</td>
             <td class="actions">
-              <button>Editar</button>
-              <button class="delete">Excluir</button>
+              <button (click)="editUser(usuariosLogados)">Editar</button>
+              <button (click)="deleteUser(usuariosLogados)" class="delete">
+                Excluir
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-
-    <!-- MODAL -->
-
-    <div class="modal" id="modalUsuario">
-      <div class="modal-content">
-        <h3>Cadastrar Usuário</h3>
-
-        <div class="form-group">
-          <label>Nome</label>
-          <input type="text" name="Nome" />
-        </div>
-
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" name="Email" />
-        </div>
-
-        <div class="form-group">
-          <label>CPF</label>
-          <input type="text" name="CPF" />
-        </div>
-
-        <div class="form-group">
-          <label>Telefone</label>
-          <input type="text" name="Telefone" />
-        </div>
-
-        <div class="form-group">
-          <label>Senha</label>
-          <input type="password" name="Senha" />
-        </div>
-
-        <div class="form-group">
-          <label>Senha Inicial</label>
-          <select name="SenhaInicial">
-            <option value="1">Sim</option>
-            <option value="0">Não</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Status</label>
-          <select name="Status">
-            <option value="1">Ativo</option>
-            <option value="0">Inativo</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>ID Endereço</label>
-          <input type="number" name="InfoEndereco" />
-        </div>
-
-        <div class="form-group">
-          <label>ID Bancário</label>
-          <input type="number" name="InfoBancario" />
-        </div>
-
-        <br />
-
-        <button>Salvar</button>
-        <button onclick="fecharModal()">Cancelar</button>
-      </div>
-    </div>
-
-    <script>
-      function abrirModal() {
-        document.getElementById("modalUsuario").style.display = "block";
-      }
-
-      function fecharModal() {
-        document.getElementById("modalUsuario").style.display = "none";
-      }
-    </script>
   </body>
 </html>

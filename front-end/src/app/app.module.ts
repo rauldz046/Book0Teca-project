@@ -40,8 +40,15 @@ import { UserPrivacidadeComponent } from './pages/user-privacidade/user-privacid
 import { PreferenciasComponent } from './pages/preferencias/preferencias.component';
 import { AuthLoginComponent } from './pages/auth-login/auth-login.component';
 import { ReactiveFormsModule } from '@angular/forms';
-
-
+import { MatDialogModule } from '@angular/material/dialog';
+import { ModalEditClienteComponent } from './pages/gerenciar-leitores/modal-edit-cliente/modal-edit-cliente.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -68,6 +75,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     UserPrivacidadeComponent,
     PreferenciasComponent,
     AuthLoginComponent,
+    ModalEditClienteComponent,
   ],
   imports: [
     HttpClientModule,
@@ -88,6 +96,14 @@ import { ReactiveFormsModule } from '@angular/forms';
     CarouselModule,
     TagModule,
     ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatProgressBarModule
   ],
   providers: [],
   bootstrap: [AppComponent],

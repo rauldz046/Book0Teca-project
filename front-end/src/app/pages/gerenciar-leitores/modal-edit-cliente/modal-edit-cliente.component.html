@@ -1,0 +1,77 @@
+<div class="dialog-header">
+  <h2 mat-dialog-title>
+    {{ form.get('nomeCompleto')?.value || "Novo Usuário" }}
+    <small class="d-block text-muted">
+      ID: {{ userinfo.idUsuario }} | Criado em: {{ userinfo.created_at | date: "dd/MM/yyyy" }}
+    </small>
+  </h2>
+</div>
+
+<mat-dialog-content class="custom-content">
+  <form [formGroup]="form" class="container-fluid">
+    <div class="row">
+      <div class="col-md-3">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="nomeCompleto" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-3">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-3">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Telefone</mat-label>
+          <input matInput formControlName="telefone" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-3">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>CPF</mat-label>
+          <input matInput formControlName="cpf" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-3">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Senha</mat-label>
+          <input matInput formControlName="senha" />
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-3">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option [value]="1">Ativo</mat-option>
+            <mat-option [value]="0">Inativo</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-md-3 d-flex align-items-center">
+        <mat-checkbox formControlName="senhaInicial">
+          Exigir troca de senha?
+        </mat-checkbox>
+      </div>
+    </div>
+
+    <div class="reference-section mt-4" *ngIf="userinfo">
+      <div class="ref-badge">Ref. Endereço: {{ userinfo.InfoEndereco }}</div>
+      <div class="ref-badge">Ref. Bancário: {{ userinfo.InfoBancario }}</div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-raised-button color="primary" (click)="salvar()" [disabled]="form.invalid">
+    Salvar Alterações
+  </button>
+</mat-dialog-actions>

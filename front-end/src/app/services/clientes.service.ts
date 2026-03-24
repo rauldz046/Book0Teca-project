@@ -10,7 +10,7 @@ export class ClientesService {
   url: string = 'http://localhost:4000/';
 
   BuscarUsuarios() {
-    const url = this.url + 'usuarios';
+    const url = this.url + 'usuarios/findAll';
     return this.http.get<UsuariosLogados[]>(url);
   }
 

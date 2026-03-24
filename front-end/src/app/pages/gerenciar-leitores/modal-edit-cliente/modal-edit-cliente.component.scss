@@ -1,0 +1,35 @@
+.full-width {
+  width: 100%;
+}
+
+.custom-content {
+  padding-top: 20px !important;
+  min-width: 750px; /* Evita que o modal fique espremido */
+  max-height: 70vh;
+}
+
+.dialog-header {
+  margin-bottom: 10px;
+  h2 {
+    font-weight: 600;
+    margin: 0;
+  }
+  small {
+    font-size: 0.8rem;
+    font-weight: 400;
+  }
+}
+
+.reference-section {
+  display: flex;
+  gap: 15px;
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px dashed #ddd;
+}
+
+.ref-badge {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
