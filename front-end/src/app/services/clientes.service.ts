@@ -23,4 +23,9 @@ export class ClientesService {
     const url = this.url + 'clientes?tipo=Fornecedor';
     return this.http.get<UsuariosLogados>(url);
   }
+
+  UpdateUsuario(data: any) {
+    const url = this.url + 'usuarios/updateUser';
+    return this.http.post<UsuariosLogados>(url, data);
+  }
 }

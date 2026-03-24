@@ -2,21 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Backend",
+      "name": "Attach Backend",
       "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "node",
-      "runtimeArgs": [
-        "--inspect=0.0.0.0:9229",
-        "${workspaceFolder}/node_modules/nodemon/bin/nodemon.js"
-      ],
-      "program": "${workspaceFolder}/app.js",
+      "request": "attach",
+      "port": 9229,
       "restart": true,
-      "console": "integratedTerminal",
-      "skipFiles": ["<node_internals>/**"],
-      "env": {
-        "NODE_ENV": "development"
-      }
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }

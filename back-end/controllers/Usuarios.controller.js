@@ -56,9 +56,10 @@ controller.getUserById = async (req, res) => {
 };
 
 controller.updateUser = async (req, res) => {
+  const data = req.body;
   try {
-    await Usuario.update(req.body, {
-      where: { idUsuario: req.params.id },
+    await Usuario.update(data, {
+      where: { idUsuario: data.idUsuario },
     });
     return res.json({ message: "Atualizado" });
   } catch (err) {

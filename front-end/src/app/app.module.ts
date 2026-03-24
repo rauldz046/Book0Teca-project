@@ -49,6 +49,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -103,7 +104,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatSelectModule,
     MatCheckboxModule,
     MatButtonModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
