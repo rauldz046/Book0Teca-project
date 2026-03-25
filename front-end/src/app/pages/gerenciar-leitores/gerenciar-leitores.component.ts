@@ -34,10 +34,27 @@ export class GerenciarLeitoresComponent implements OnInit {
 
   }
 
-  deleteUser(event: any) {
-    console.log(event);
+  
+  addNewUser() {
+    // Aqui você pode abrir o mesmo modal, mas sem passar dados (data: null)
+    this.dialogService.open(ModalEditClienteComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      panelClass: 'custom-dialog-container',
+      hasBackdrop: true,
+      data: null, // indica que é um novo cadastro
+      position: { top: '50px' },
+    });
   }
 
+  deleteUser(user: UsuariosLogados) {
+    // Exemplo de confirmação simples (você pode usar o p-confirmDialog do PrimeNG depois)
+    const confirmacao = confirm(`Tem certeza que deseja excluir o leitor ${user.Nome}?`);
+    if (confirmacao) {
+      console.log('Deletando usuário:', user.idUsuario);
+      // Chame seu serviço de deleção aqui
+    }
+  }
 
 
 

@@ -8,8 +8,9 @@ import { filter } from 'rxjs';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  mostrarLogin = false;
-  mostrarSignIn = false;
+  userlogado = true;
+  isLogin = true
+  isSignin = true
   title = 'BookOTeca.com.br';
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -20,7 +21,9 @@ export class AppComponent {
     .pipe(filter(event => event instanceof NavigationEnd))
     .subscribe(() => {
       const rota = this.route.firstChild;
-      this.mostrarLogin = rota?.snapshot.data['mostrarLogin'] ?? false;
+      this.userlogado = rota?.snapshot.data['userlogado'] ?? true;
+      this.isLogin = rota?.snapshot.data['isLogin'] ?? false;
+      this.isSignin = rota?.snapshot.data['isSignin'] ?? false;
     });
   }
 }

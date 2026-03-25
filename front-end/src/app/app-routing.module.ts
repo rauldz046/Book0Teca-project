@@ -27,12 +27,12 @@ const routes: Routes = [
   {
     path: 'auth/log-in',
     component: AuthLoginComponent,
-    data: { mostrarLogin: true },
+    data: { userlogado: false , isLogin: true},
   },
   {
     path: 'auth/sign-in',
     component: SignInFormUserComponent,
-    data: { mostrarSignIn: true },
+    data: { userlogado: false, isSignin: true },
   },
   {
     path: 'home',

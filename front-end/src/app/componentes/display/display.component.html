@@ -1,8 +1,10 @@
-<section class="content-display">
-<router-outlet>
-<app-componente-title *ngIf="router.url !== '/home'"
-
-></app-componente-title>
-    
-</router-outlet>
+<!-- O pipe 'async' se encarrega de se inscrever e desinscrever automaticamente -->
+<section class="content-display" [ngClass]="{ 'side-collapsed': (SidebarService.collapsed$ | async) }">
+  
+  <app-componente-title *ngIf="router.url !== '/home'"></app-componente-title>
+  
+  <div class="router-content">
+    <router-outlet></router-outlet>
+  </div>
+  
 </section>

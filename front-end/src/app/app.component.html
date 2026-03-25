@@ -1,8 +1,12 @@
-<app-sign-in-form-user *ngIf="mostrarSignIn"></app-sign-in-form-user>
-<app-auth-login *ngIf="mostrarLogin"></app-auth-login>
-<app-header *ngIf="mostrarSignIn"></app-header>
-<app-nav *ngIf="!mostrarLogin && mostrarSignIn"></app-nav>
-<app-display *ngIf="mostrarSignIn"></app-display>
+
+
+<ng-container *ngIf="userlogado">
+  <app-header *ngIf="userlogado"></app-header>
+  <app-nav *ngIf="userlogado"></app-nav>
+  <app-display *ngIf="userlogado"></app-display>
+</ng-container>
+
+<app-sign-in-form-user *ngIf="isSignin"></app-sign-in-form-user>
+<app-auth-login *ngIf="isLogin"></app-auth-login>
+
 <router-outlet></router-outlet>
-
-

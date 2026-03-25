@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { Router, RouterModule } from '@angular/router';
+import { SidebarService } from '../responsive-sidebar.service';
 
 @Component({
   selector: 'app-nav',
@@ -13,6 +14,7 @@ export class NavComponent implements OnInit {
   userNome: string = 'raul.7lmg';
   OptionSelected!: string;
   private readonly router = inject(Router);
+  sidebarService = inject(SidebarService);
 
   usersDropdown = [
     { name: 'Perfil', code: '/config/perfil' },
@@ -21,8 +23,8 @@ export class NavComponent implements OnInit {
     { name: this.userNome, code: '' },
   ];
 
-  toggleSidebar() {
-    this.collapsed = !this.collapsed;
+ toggleSidebar() {
+    this.sidebarService.toggle();
   }
   get filteredDropdown() {
     return this.usersDropdown.filter((user) => user.name !== this.userNome);

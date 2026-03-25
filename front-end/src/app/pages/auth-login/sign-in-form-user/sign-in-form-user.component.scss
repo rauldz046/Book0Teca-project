@@ -1,111 +1,172 @@
 $primary-blue: #1b365d;
 $secondary-green: #5a8d2d;
 $accent-gold: #e8a838;
+$bg-light: #f4f7f9;
+$text-gray: #94a3b8;
 
 .register-container {
-    min-height: 100vh;
+    height: 100vh;
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #f0f2f5;
-    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    // Fundo com Mesh Gradient Animado
+    background: linear-gradient(45deg, #f0f2f5 0%, #ffffff 100%);
+    
+    &::before, &::after {
+        content: '';
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        filter: blur(80px);
+        z-index: 0;
+        opacity: 0.15;
+        animation: float 20s infinite alternate;
+    }
+    &::before { background: $primary-blue; top: -200px; left: -100px; }
+    &::after { background: $secondary-green; bottom: -200px; right: -100px; animation-delay: -5s; }
 }
 
 .register-card {
-    background: #ffffff;
-    width: 100%;
-    max-width: 750px;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
-    overflow: hidden; // Previne scrollbars durante animação
-}
-
-.form-viewport {
     position: relative;
-    min-height: 420px; // Evita o "pulo" vertical do card
-    margin-top: 20px;
-    overflow: hidden;
-}
-
-.step-wrapper {
-    width: 100%;
-    backface-visibility: hidden; // Melhora performance da animação
-    will-change: transform, opacity;
-}
-
-// Reset de Espaçamentos PrimeNG que causam saltos
-::ng-deep {
-    .p-steps {
-        height: 80px; // Reserva espaço fixo para a barra de passos
-        .p-steps-item:before { margin-top: 0 !important; top: 50% !important; }
-    }
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     
-    .p-fluid .p-inputtext, .p-fluid .p-password {
-        height: 45px; // Altura fixa para inputs não "pularem" ao carregar máscaras
-    }
-
-    .p-password input { width: 100%; }
+    // TAMANHO FIXO
+    width: 850px;
+    height: 650px; 
+    
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: cardScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.step-title {
-    color: $primary-blue;
+.header-logo {
+    padding: 30px 40px 10px;
+    text-align: center;
+    .brand-name {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: $primary-blue;
+        span { color: $secondary-green; }
+    }
+}
+
+/* Área de Conteúdo Fixa com Scroll Suave se necessário */
+.form-viewport {
+    flex: 1;
+    position: relative;
+    padding: 0 40px;
+    overflow-x: hidden; // Impede scroll horizontal durante a animação
+    overflow-y: auto;
+}
+
+/* Animação de Entrada das Seções (Slide + Fade) */
+.step-content {
+    animation: slideIn 0.5s ease-out forwards;
+    display: flex;
+    flex-direction: column;
+}
+
+.section-title {
     font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 25px;
+    color: $primary-blue;
+    margin: 20px 0;
     display: flex;
     align-items: center;
-
-    &:before {
+    gap: 10px;
+    &::after {
         content: '';
-        width: 4px;
-        height: 24px;
-        background: $accent-gold;
-        margin-right: 12px;
-        border-radius: 2px;
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(to right, #e2e8f0, transparent);
     }
 }
 
-.field {
-    margin-bottom: 15px;
-    label {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #666;
-        margin-bottom: 5px;
-        display: block;
-    }
-}
-
-.footer-actions {
+/* Footer Fixo na Base do Card */
+.actions-footer {
+    padding: 25px 40px;
+    background: rgba(248, 250, 252, 0.5);
+    border-top: 1px solid #edf2f7;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #f0f0f0;
+}
 
-    .btn-next {
-        background: $secondary-green;
-        border: none;
-        padding: 12px 35px;
-        border-radius: 10px;
-        font-weight: 600;
-        transition: all 0.2s;
-        
-        &:hover {
-            background: darken($secondary-green, 5%);
+/* KEYFRAMES */
+@keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(100px, 50px) rotate(15deg); }
+}
+
+@keyframes cardScale {
+    from { opacity: 0; transform: scale(0.9) translateY(30px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Efeito nos Inputs */
+::ng-deep {
+    .p-inputtext {
+        transition: all 0.3s ease !important;
+        &:focus {
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba($primary-blue, 0.1) !important;
         }
+    }
+
+
+    /* Banner de Aviso Sutil */
+.optional-info-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba($accent-gold, 0.1);
+    border-left: 4px solid $accent-gold;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    
+    i { color: darken($accent-gold, 15%); font-size: 1.2rem; }
+    
+    p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: darken($accent-gold, 25%);
+        line-height: 1.4;
     }
 }
 
-// Animação de entrada suave do Card inteiro
-@keyframes cardEntry {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Ajuste no Footer para acomodar o botão "Pular" */
+.actions-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 40px;
+    background: rgba(248, 250, 252, 0.5);
+    border-top: 1px solid #edf2f7;
+
+    .left-actions { display: flex; gap: 10px; }
+    .right-actions { display: flex; gap: 10px; align-items: center; }
 }
 
-.register-card {
-    animation: cardEntry 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+.btn-skip {
+    color: #94a3b8 !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    text-decoration: underline;
+    &:hover { color: $text-gray !important; }
+}
 }

@@ -1,46 +1,50 @@
-<section class="container-nav" [ngClass]="{ collapsed: collapsed }">
-  <div class="menu-scroll">
-    <div class="mb-5 w-50">
-      <button
-        pButton
-        type="button"
-        [icon]="collapsed ? 'pi pi-arrow-right' : 'pi pi-bars'"
-        (click)="toggleSidebar()"
-        class="toggle-btn"
-        [label]="collapsed ? '' : 'Ocultar'"
-      ></button>
-    </div>
-
-    <div>
-      <p-panelMenu
-        [model]="items"
-        [styleClass]="collapsed ? 'collapsed' : ''"
-      ></p-panelMenu>
-    </div>
+<section class="container-nav" [ngClass]="{ collapsed: (sidebarService.collapsed$ | async) }">
+  
+  <!-- Logo -->
+  <div class="brand-section">
+    <i class="pi pi-book-open"></i>
+    <span *ngIf="!collapsed">Book<span>Oteca</span></span>
   </div>
 
-  <!-- Mova a user-section para fora da menu-scroll -->
-  <div class="user-section">
-    <div style="display: flex; gap: 6px">
-      <div class="user-avatar">
-        <p-avatar
-          image="https://avatars.githubusercontent.com/u/192734655?v=4"
-          shape="circle"
-          size="large"
-        ></p-avatar>
-      </div>
+  <!-- Botão Toggle -->
+  <div class="toggle-container">
+    <button
+      pButton
+      type="button"
+      [icon]="collapsed ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"
+      (click)="toggleSidebar()"
+      class="toggle-btn"
+    ></button>
+  </div>
 
-      <div>
-        <p-dropdown
-          [options]="filteredDropdown"
-          [(ngModel)]="OptionSelected"
-          optionLabel="name"
-          placeholder="{{ userNome }}"
-          (onChange)="navigateOut($event.value)"
-          styleClass="px-2"
-        ></p-dropdown
-        >
-      </div>
+  <!-- Menu Central -->
+  <div class="menu-scroll">
+    <p-panelMenu
+      [model]="items"
+      [styleClass]="collapsed ? 'collapsed' : 'expanded'"
+    ></p-panelMenu>
+  </div>
+
+  <!-- Sessão Usuário -->
+  <div class="user-section">
+    <div class="user-avatar">
+      <p-avatar
+        image="https://avatars.githubusercontent.com/u/192734655?v=4"
+        shape="circle"
+        size="large">
+      </p-avatar>
+    </div>
+
+    <div class="user-info-container" *ngIf="!collapsed">
+      <span class="user-name">{{ userNome }}</span>
+      <p-dropdown
+        [options]="filteredDropdown"
+        [(ngModel)]="OptionSelected"
+        optionLabel="name"
+        placeholder="Minha Conta"
+        (onChange)="navigateOut($event.value)"
+        appendTo="body"> <!-- IMPORTANTE: Faz o menu flutuar fora da sidebar -->
+      </p-dropdown>
     </div>
   </div>
 </section>

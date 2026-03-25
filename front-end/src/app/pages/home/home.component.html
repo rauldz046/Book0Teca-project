@@ -1,263 +1,77 @@
 <div class="main-container">
-  <div class="flex-card">
-    <div class="card flex justify-content-start">
-      <p-card
-        header="Bem-vindo a Bookteca"
-        subheader="Literatura a disposição a ser consumida"
-        [style]="{
-          width: '30rem',
-          boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-        }"
-      >
-        <ng-template pTemplate="header"> </ng-template>
-      </p-card>
-    </div>
-    <div class="card flex justify-content-start">
-      <p-card
-        header="Lembretes"
-        [styleClass]="'card-scroll'"
-        [style]="{
-          width: '30rem',
-          height: '10rem',
-          overflow: 'auto',
-          boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-        }"      
-        >
-        <div class="scroll-container">
-          <div
-            class="card-lembrete"
-            style="background-color: rgba(255, 51, 0, 0.596); color: white"
-          >
-            Livro 'placeholder' passou do prazo de devolução
-          </div>
-          <div
-            class="card-lembrete"
-            style="background-color: rgba(0, 183, 255, 0.596); color: white"
-          >
-            Livro 'placeholder' passou do prazo de devolução
-          </div>
-          <div
-            class="card-lembrete"
-            style="background-color: rgba(173, 173, 173, 0.596); color: white"
-          >
-            Livro 'placeholder' passou do prazo de devolução
-          </div>
-          <div
-            class="card-lembrete"
-            style="background-color: rgba(228, 213, 1, 0.829); color: white"
-          >
-            Livro 'placeholder' passou do prazo de devolução
-          </div>
-          <div
-            class="card-lembrete"
-            style="background-color: rgba(44, 170, 65, 0.596); color: white"
-          >
-            Livro 'placeholder' passou do prazo de devolução
-          </div>
+  
+  <!-- GRID SUPERIOR -->
+  <div class="top-grid">
+    
+    <!-- Boas-vindas -->
+    <p-card header="Bem-vindo à BookOteca" subheader="Sua literatura favorita está à sua disposição.">
+      <div class="flex align-items-center gap-3">
+         <i class="pi pi-sparkles" style="font-size: 2rem; color: #e8a838"></i>
+         <p style="color: #64748b">Explore novos mundos, organize suas leituras e mantenha seu acervo sempre em dia.</p>
+      </div>
+    </p-card>
+
+    <!-- Lembretes com cores sutis -->
+    <p-card header="Lembretes">
+      <div class="scroll-container">
+        <div class="card-lembrete status-atrasado">
+          <i class="pi pi-exclamation-circle mr-2"></i>
+          Livro 'Dom Casmurro' passou do prazo de devolução
         </div>
-      </p-card>
-    </div>
-  </div>
-  <div>
-    <div class="card flex justify-content-start">
-      <p-card
-        header="Leia Novamente"
-        subheader="Vistos Recentemente por você"
-        [style]="{
-          height: '25rem',
-          minwidth: '100rem',
-          boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-        }"
-      >
-        <ng-template pTemplate="body">
-          <div class="card">
-            <p-carousel
-              [value]="products"
-              [numVisible]="3"
-              [numScroll]="3"
-              [circular]="true"
-              [responsiveOptions]="responsiveOptions"
-              [autoplayInterval]="8000"
-            >
-              <ng-template let-product pTemplate="item">
-                <div class="border-1 surface-border border-round m-2 p-3">
-                  <div class="mb-3">
-                    <div class="relative mx-auto">
-                      <img
-                        [src]="product.image"
-                        [alt]="product.name"
-                        class="w-full border-round"
-                      />
-                      <p-tag
-                        [value]="product.inventoryStatus"
-                        [severity]="getSeverity(product.inventoryStatus)"
-                        class="absolute"
-                        [ngStyle]="{ 'left.px': 5, 'top.px': 5 }"
-                      />
-                    </div>
-                  </div>
-                  <div class="mb-3 font-medium">
-                    {{ product.name }}
-                  </div>
-                  <div class="flex justify-content-between align-items-center">
-                    <div class="mt-0 font-semibold text-xl">
-                      {{ "$" + product.price }}
-                    </div>
-                    <span>
-                      <button
-                        pButton
-                        icon="pi pi-heart"
-                        class="p-button-danger"
-                      ></button>
-                      &nbsp;
+        <div class="card-lembrete status-info">
+          <i class="pi pi-info-circle mr-2"></i>
+          Novo lançamento de Suspense disponível
+        </div>
+        <div class="card-lembrete status-aviso">
+          <i class="pi pi-clock mr-2"></i>
+          Sua reserva expira em 24 horas
+        </div>
+        <div class="card-lembrete status-sucesso">
+          <i class="pi pi-check-circle mr-2"></i>
+          Empréstimo renovado com sucesso!
+        </div>
+      </div>
+    </p-card>
 
-                      <button
-                        pButton 
-                        icon="pi pi-shopping-cart"
-                        class="p-button-secondary"
-                      ></button>
-                    </span>
-                  </div>
-                </div>
-              </ng-template>
-            </p-carousel>
+  </div>
+
+  <!-- SEÇÕES DE CARROSSEL -->
+  <section class="carousel-section">
+    <p-card header="Leia Novamente" subheader="Vistos recentemente por você">
+      <p-carousel [value]="products" [numVisible]="4" [numScroll]="1" [circular]="true" [responsiveOptions]="responsiveOptions" [autoplayInterval]="5000">
+        <ng-template let-product pTemplate="item">
+          <div class="book-item">
+            <div class="relative inline-block">
+              <img [src]="product.image" [alt]="product.name">
+              <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product.inventoryStatus)" class="absolute" [style]="{'left': '5px', 'top': '5px'}"></p-tag>
+            </div>
+            <span class="book-title">{{ product.name }}</span>
+            <div class="flex align-items-center justify-content-between mt-3">
+              <span class="book-price">{{ product.price | currency:'BRL' }}</span>
+              <div class="flex gap-2">
+                <button pButton icon="pi pi-heart" class="p-button-rounded p-button-text p-button-danger"></button>
+                <button pButton icon="pi pi-shopping-cart" class="p-button-rounded p-button-success"></button>
+              </div>
+            </div>
           </div>
         </ng-template>
-      </p-card>
-    </div>
-  </div>
-  <div>
-    <div class="card flex justify-content-start">
-      <p-card
-        header="Recomendados para você"
-        subheader="Alguns altores do seu genero preferido"
-        [style]="{
-          height: '25rem',
-          minwidth: '100rem',
-          boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-        }"
-      >
-        <ng-template pTemplate="body">
-          <div class="card">
-            <p-carousel
-              [value]="products"
-              [numVisible]="3"
-              [numScroll]="3"
-              [circular]="true"
-              [responsiveOptions]="responsiveOptions"
-            >
-              <ng-template let-product pTemplate="item">
-                <div class="border-1 surface-border border-round m-2 p-3">
-                  <div class="mb-3">
-                    <div class="relative mx-auto">
-                      <img
-                        [src]="product.image"
-                        [alt]="product.name"
-                        class="w-full border-round"
-                      />
-                      <p-tag
-                        [value]="product.inventoryStatus"
-                        [severity]="getSeverity(product.inventoryStatus)"
-                        class="absolute"
-                        [ngStyle]="{ 'left.px': 5, 'top.px': 5 }"
-                      />
-                    </div>
-                  </div>
-                  <div class="mb-3 font-medium">
-                    {{ product.name }}
-                  </div>
-                  <div class="flex justify-content-between align-items-center">
-                    <div class="mt-0 font-semibold text-xl">
-                      {{ "$" + product.price }}
-                    </div>
-                    <span>
-                      <button
-                        pButton
-                        icon="pi pi-heart"
-                        class="p-button-danger"
-                      ></button>
-                      &nbsp;
+      </p-carousel>
+    </p-card>
+  </section>
 
-                      <button
-                        pButton 
-                        icon="pi pi-shopping-cart"
-                        class="p-button-secondary"
-                      ></button>
-                    </span>
-                  </div>
-                </div>
-              </ng-template>
-            </p-carousel>
-          </div>
-        </ng-template>
-      </p-card>
-    </div>
-  </div>
-  <div>
-    <div class="card flex justify-content-start">
-      <p-card
-        header="Lançamentos"
-        subheader="Conteudo Novo fresquinho para você"
-        [style]="{
-          height: '25rem',
-          minwidth: '100rem',
-          boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-        }"
-      >
-        <ng-template pTemplate="body">
-          <div class="card">
-            <p-carousel
-              [value]="products"
-              [numVisible]="3"
-              [numScroll]="3"
-              [circular]="true"
-              [responsiveOptions]="responsiveOptions"
-            >
-              <ng-template let-product pTemplate="item">
-                <div class="border-1 surface-border border-round m-2 p-3">
-                  <div class="mb-3">
-                    <div class="relative mx-auto">
-                      <img
-                        [src]="product.image"
-                        [alt]="product.name"
-                        class="w-full border-round"
-                      />
-                      <p-tag
-                        [value]="product.inventoryStatus"
-                        [severity]="getSeverity(product.inventoryStatus)"
-                        class="absolute"
-                        [ngStyle]="{ 'left.px': 5, 'top.px': 5 }"
-                      />
-                    </div>
-                  </div>
-                  <div class="mb-3 font-medium">
-                    {{ product.name }}
-                  </div>
-                  <div class="flex justify-content-between align-items-center">
-                    <div class="mt-0 font-semibold text-xl">
-                      {{ "$" + product.price }}
-                    </div>
-                    <span>
-                      <button
-                        pButton
-                        icon="pi pi-heart"
-                        class="p-button-danger"
-                      ></button>
-                      &nbsp;
+  <section class="carousel-section">
+    <p-card header="Recomendados para você" subheader="Baseado nos seus gêneros preferidos">
+       <!-- Repetir a estrutura do carrossel aqui -->
+       <p-carousel [value]="products" [numVisible]="4" [numScroll]="1" [circular]="true" [responsiveOptions]="responsiveOptions">
+          <ng-template let-product pTemplate="item">
+            <div class="book-item">
+               <img [src]="product.image" [alt]="product.name">
+               <span class="book-title">{{ product.name }}</span>
+               <span class="book-price">{{ product.price | currency:'BRL' }}</span>
+            </div>
+          </ng-template>
+       </p-carousel>
+    </p-card>
+  </section>
 
-                      <button
-                        pButton 
-                        icon="pi pi-shopping-cart"
-                        class="p-button-secondary"
-                      ></button>
-                    </span>
-                  </div>
-                </div>
-              </ng-template>
-            </p-carousel>
-          </div>
-        </ng-template>
-      </p-card>
-    </div>
-  </div>
 </div>

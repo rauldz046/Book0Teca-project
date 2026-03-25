@@ -1,25 +1,26 @@
-<a routerLink="/home">
-  <div class="avatar-fixed">
-    <p-avatar
-      image="assets/imgs/logo.png"
-      shape="square"
-      size="xlarge"
-    >
-    </p-avatar>
-  </div>
-</a>
-<div class="contaioner-header">
-  <div>
-    <a routerLink="/home">
-      <img src="../../../assets/imgs/bookteca-logo.PNG" style="width: 20rem;">
+<header class="header-container">
+  
+  <!-- Lado Esquerdo: Logo -->
+  <div class="logo-section">
+    <a routerLink="/home" class="flex align-items-center">
+      <!-- Logo Principal -->
+      <img src="assets/imgs/bookteca-logo.PNG" alt="BookOteca" class="logo-img">
     </a>
   </div>
 
+  <!-- Centro: Busca -->
   <div class="search-section">
+    <i class="pi pi-search search-icon"></i>
     <input
-    pInputText
-    class="mb-2"
-    placeholder="Buscar"
-  />
+      pInputText
+      type="text"
+      placeholder="Pesquisar livros, autores ou registros..."
+    />
   </div>
-</div>
+
+  <!-- Lado Direito: Ações (Notificações, etc - opcional) -->
+  <div class="header-actions">
+     <button pButton icon="pi pi-bell" class="p-button-rounded p-button-text p-button-plain text-white" style="color: white !important;"></button>
+  </div>
+
+</header>
