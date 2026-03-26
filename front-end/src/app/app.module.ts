@@ -38,7 +38,6 @@ import { EmprestimosAtivosComponent } from './pages/emprestimos-ativos/emprestim
 import { GerenciamentoFinanceiroComponent } from './pages/gerenciamento-financeiro/gerenciamento-financeiro.component';
 import { UserPerfilComponent } from './pages/user-perfil/user-perfil.component';
 import { GerenciarPermissoesComponent } from './pages/gerenciar-permissoes/gerenciar-permissoes.component';
-import { UserPrivacidadeComponent } from './pages/user-privacidade/user-privacidade.component';
 import { PreferenciasComponent } from './pages/preferencias/preferencias.component';
 import { AuthLoginComponent } from './pages/auth-login/auth-login.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -89,7 +88,6 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     GerenciamentoFinanceiroComponent,
     UserPerfilComponent,
     GerenciarPermissoesComponent,
-    UserPrivacidadeComponent,
     PreferenciasComponent,
     AuthLoginComponent,
     ModalEditClienteComponent,

@@ -1,0 +1,205 @@
+$primary: #10b981;
+$bg-body: #f1f5f9;
+$text-main: #1e293b;
+$text-muted: #64748b;
+$white: #ffffff;
+$border: #e2e8f0;
+
+.profile-page {
+  background-color: $bg-body;
+  min-height: 100vh;
+}
+
+.profile-header {
+  background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
+  padding: 4rem 2rem;
+  color: white;
+
+  .header-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+
+    .avatar-wrapper {
+      position: relative;
+      img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid rgba(white, 0.2);
+        object-fit: cover;
+      }
+      .btn-edit-photo {
+        position: absolute;
+        bottom: 5px; right: 5px;
+        background: white;
+        border: none;
+        width: 35px; height: 35px;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        color: $primary;
+      }
+    }
+
+    h1 { margin: 0; font-size: 2rem; }
+    .badges {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 0.5rem;
+      
+      .badge-role {
+        padding: 4px 12px;
+        border-radius: 6px;
+        background: rgba(white, 0.2);
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        
+        &.administrador { background: #fef3c7; color: #92400e; }
+        &.leitor { background: #dcfce7; color: #166534; }
+      }
+      .member-since { font-size: 0.9rem; opacity: 0.8; }
+    }
+  }
+}
+
+.container {
+  max-width: 1100px;
+  margin: -2rem auto 2rem;
+  padding: 0 1rem;
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Sidebar Navegação
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  button {
+    background: transparent;
+    border: none;
+    padding: 1rem;
+    text-align: left;
+    border-radius: 8px;
+    cursor: pointer;
+    color: $text-muted;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &:hover { background: #e2e8f0; color: $text-main; }
+    &.active {
+      background: white;
+      color: $primary;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+  }
+}
+
+// Conteúdo Principal
+.settings-content {
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+      
+      .label { color: $text-muted; font-size: 0.8rem; }
+      .value { font-size: 1.5rem; font-weight: bold; color: $text-main; }
+      
+      &.danger .value { color: #ef4444; }
+    }
+  }
+
+  .card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+
+    h3 { margin-top: 0; margin-bottom: 1.5rem; color: $text-main; }
+  }
+}
+
+// Formulários
+.profile-form {
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    label { font-size: 0.9rem; font-weight: 500; }
+    input {
+      padding: 0.75rem;
+      border: 1px solid $border;
+      border-radius: 8px;
+      font-size: 1rem;
+      &:focus { outline: none; border-color: $primary; }
+    }
+  }
+}
+
+.btn-save {
+  background: $primary;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover { background: darken($primary, 5%); }
+}
+
+// Configurações de Switch
+.settings-list {
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid $border;
+    
+    .info {
+      strong { display: block; color: $text-main; }
+      p { margin: 0; font-size: 0.85rem; color: $text-muted; }
+    }
+
+    input[type="checkbox"] {
+      width: 40px;
+      height: 20px;
+      accent-color: $primary;
+      cursor: pointer;
+    }
+  }
+}

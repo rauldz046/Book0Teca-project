@@ -1,1 +1,123 @@
-<p>user-perfil works!</p>
+<div class="profile-page">
+  <!-- Header do Perfil -->
+  <header class="profile-header">
+    <div class="header-content">
+      <div class="avatar-wrapper">
+        <img [src]="user.avatar" alt="Avatar">
+        <button class="btn-edit-photo"><i class="pi pi-camera"></i></button>
+      </div>
+      <div class="user-info">
+        <h1>{{ user.nome }}</h1>
+        <div class="badges">
+          <span class="badge-role" [ngClass]="user.role.toLowerCase()">{{ user.role }}</span>
+          <span class="member-since">Membro desde {{ user.membroDesde }}</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="grid-layout">
+      
+      <!-- Sidebar de Navegação Lateral (Tabs) -->
+      <aside class="settings-nav">
+        <button [class.active]="activeTab === 'dados'" (click)="changeTab('dados')">
+          <i class="pi pi-user"></i> Dados Pessoais
+        </button>
+        <button [class.active]="activeTab === 'seguranca'" (click)="changeTab('seguranca')">
+          <i class="pi pi-lock"></i> Segurança
+        </button>
+        <button [class.active]="activeTab === 'preferencias'" (click)="changeTab('preferencias')">
+          <i class="pi pi-cog"></i> Preferências
+        </button>
+        <button [class.active]="activeTab === 'atividade'" (click)="changeTab('atividade')">
+          <i class="pi pi-history"></i> {{ isStaff() ? 'Minhas Atividades' : 'Meus Empréstimos' }}
+        </button>
+      </aside>
+
+      <!-- Conteúdo Principal -->
+      <main class="settings-content">
+        
+        <!-- Cards de Resumo (Visíveis para Leitor) -->
+        <section class="stats-grid" *ngIf="activeTab === 'dados'">
+          <div class="stat-card">
+            <span class="label">Livros Lidos</span>
+            <span class="value">{{ user.estatisticas.livrosEmprestados }}</span>
+          </div>
+          <div class="stat-card">
+            <span class="label">Compras</span>
+            <span class="value">{{ user.estatisticas.comprasRealizadas }}</span>
+          </div>
+          <div class="stat-card" [class.danger]="user.estatisticas.multasPendentes > 0">
+            <span class="label">Multas</span>
+            <span class="value">R$ {{ user.estatisticas.multasPendentes }},00</span>
+          </div>
+        </section>
+
+        <!-- Formulário de Dados Pessoais -->
+        <div class="card" *ngIf="activeTab === 'dados'">
+          <h3>Informações da Conta</h3>
+          <form class="profile-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nome Completo</label>
+                <input type="text" [(ngModel)]="user.nome" name="nome">
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" [(ngModel)]="user.email" name="email">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Telefone</label>
+                <input type="text" [(ngModel)]="user.telefone" name="tel">
+              </div>
+              <div class="form-group">
+                <label>CPF (Privado)</label>
+                <input type="text" [value]="user.cpf" disabled>
+              </div>
+            </div>
+            <button class="btn-save" (click)="saveProfile()">Salvar Alterações</button>
+          </form>
+        </div>
+
+        <!-- Preferências do Site -->
+        <div class="card" *ngIf="activeTab === 'preferencias'">
+          <h3>Configurações de Experiência</h3>
+          <div class="settings-list">
+            <div class="setting-item">
+              <div class="info">
+                <strong>Notificações por Email</strong>
+                <p>Receber avisos de vencimento de livros e promoções.</p>
+              </div>
+              <input type="checkbox" [(ngModel)]="user.preferencias.notificacoesEmail">
+            </div>
+            <div class="setting-item">
+              <div class="info">
+                <strong>WhatsApp</strong>
+                <p>Receber comprovantes de empréstimo via Zap.</p>
+              </div>
+              <input type="checkbox" [(ngModel)]="user.preferencias.notificacoesWpp">
+            </div>
+            <div class="setting-item">
+              <div class="info">
+                <strong>Modo Escuro</strong>
+                <p>Alterar a aparência do sistema.</p>
+              </div>
+              <input type="checkbox" [(ngModel)]="user.preferencias.temaEscuro">
+            </div>
+          </div>
+        </div>
+
+        <!-- Conteúdo Condicional para Staff -->
+        <div class="card" *ngIf="activeTab === 'atividade' && isStaff()">
+          <h3>Logs de Operação</h3>
+          <p>Como <strong>{{user.role}}</strong>, você realizou 142 ações no sistema este mês.</p>
+          <button class="btn-save">Exportar meu Relatório</button>
+        </div>
+
+      </main>
+    </div>
+  </div>
+</div>

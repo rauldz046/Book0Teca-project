@@ -1,421 +1,53 @@
-<!doctype html>
-<html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Livros Disponiveis</title>
-
-    <style>
-      body {
-        font-family: Arial;
-        background: #f4f6f9;
-        margin: 0;
-      }
-
-      header {
-        background: #4b7c3a;
-        color: white;
-        padding: 5px;
-        display: flex;
-        justify-content: space-between;
-        max-width: 83rem;
-      }
-
-      header input {
-        margin-top: 1rem;
-        padding: 8px;
-        height: 3rem;
-        width: 30rem;
-      }
-
-      .container {
-        padding: 40px;
-        max-width: 80rem;
-        margin: 0 auto;
-      }
-
-      .catalogo {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 15px;
-        padding-bottom: 10px;
-        scroll-snap-type: x mandatory;
-      }
-
-      .catalogo::-webkit-scrollbar {
-        height: 7px;
-      }
-      .catalogo::-webkit-scrollbar-thumb {
-        background: #aaa;
-        border-radius: 999px;
-      }
-
-      .card {
-        background: white;
-        border-radius: 8px;
-        padding: 15px;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        flex: 0 0 220px;
-        scroll-snap-align: start;
-      }
-
-      .card img {
-        width: 100%;
-        height: 260px;
-        object-fit: cover;
-      }
-
-      .titulo {
-        font-weight: bold;
-        margin-top: 10px;
-      }
-
-      .autor {
-        color: #777;
-        font-size: 14px;
-      }
-
-      .preco {
-        color: #2c7a2c;
-        font-size: 18px;
-        margin: 8px 0;
-      }
-
-      .btn {
-        padding: 8px 12px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-
-      .btn-detalhes {
-        background: #3498db;
-        color: white;
-      }
-
-      .btn-download {
-        background: #4b7c3a;
-        color: white;
-      }
-
-      .status {
-        margin-top: 8px;
-        font-size: 12px;
-      }
-    </style>
-  </head>
-
-  <body>
-    <header>
-      <h2>📚 Livros Disponíveis</h2>
-      <input type="text" placeholder="Buscar livro..." />
-    </header>
-
-    <div class="container">
-      <section class="secao">
-        <h3>Seção 1</h3>
-        <div class="catalogo">
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">Dom Casmurro</div>
-            <div class="autor">Machado de Assis</div>
-            <div class="preco">R$ 39,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 5 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">Memórias Póstumas</div>
-            <div class="autor">Machado de Assis</div>
-            <div class="preco">R$ 29,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 3 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">O Cortiço</div>
-            <div class="autor">Aluísio Azevedo</div>
-            <div class="preco">R$ 24,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 8 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">Grande Sertão</div>
-            <div class="autor">Guimarães Rosa</div>
-            <div class="preco">R$ 49,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 2 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">A Hora da Estrela</div>
-            <div class="autor">Clarice Lispector</div>
-            <div class="preco">R$ 34,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 6 disponíveis</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="secao">
-        <h3>Seção 2</h3>
-        <div class="catalogo">
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">O Alienista</div>
-            <div class="autor">Machado de Assis</div>
-            <div class="preco">R$ 22,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 7 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">Capitães de Areia</div>
-            <div class="autor">Jorge Amado</div>
-            <div class="preco">R$ 32,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 4 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">A Menina que Roubava Livros</div>
-            <div class="autor">Markus Zusak</div>
-            <div class="preco">R$ 27,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 9 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">A Metamorfose</div>
-            <div class="autor">Franz Kafka</div>
-            <div class="preco">R$ 18,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 11 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">O Pequeno Príncipe</div>
-            <div class="autor">Antoine de Saint-Exupéry</div>
-            <div class="preco">R$ 24,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 12 disponíveis</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="secao">
-        <h3>Seção 3</h3>
-        <div class="catalogo">
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">1984</div>
-            <div class="autor">George Orwell</div>
-            <div class="preco">R$ 44,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 5 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">O Hobbit</div>
-            <div class="autor">J.R.R. Tolkien</div>
-            <div class="preco">R$ 39,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 7 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">A Revolução dos Bichos</div>
-            <div class="autor">George Orwell</div>
-            <div class="preco">R$ 21,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 13 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">Crime e Castigo</div>
-            <div class="autor">Fiódor Dostoiévski</div>
-            <div class="preco">R$ 49,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 3 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">O Morro dos Ventos Uivantes</div>
-            <div class="autor">Emily Brontë</div>
-            <div class="preco">R$ 37,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 6 disponíveis</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="secao">
-        <h3>Seção 4</h3>
-        <div class="catalogo">
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">Os Miseráveis</div>
-            <div class="autor">Victor Hugo</div>
-            <div class="preco">R$ 59,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 4 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">O Alquimista</div>
-            <div class="autor">Paulo Coelho</div>
-            <div class="preco">R$ 32,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 9 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">A Culpa é das Estrelas</div>
-            <div class="autor">John Green</div>
-            <div class="preco">R$ 28,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 10 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">O Pequeno Príncipe</div>
-            <div class="autor">Antoine de Saint-Exupéry</div>
-            <div class="preco">R$ 24,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 15 disponíveis</div>
-          </div>
-          <div class="card">
-            <img
-              src="https://stephenblandino.com/wp-content/uploads/2015/07/book-placeholder.jpg"
-            />
-            <div class="titulo">Harry Potter</div>
-            <div class="autor">J.K. Rowling</div>
-            <div class="preco">R$ 45,90</div>
-            <button class="btn btn-detalhes">Detalhes</button>&nbsp;<button
-              class="btn btn-download"
-            >
-              Download
-            </button>
-            <div class="status">📦 7 disponíveis</div>
-          </div>
-        </div>
-      </section>
+<div class="catalog-container">
+  
+  <!-- Toolbar Superior -->
+  <div class="catalog-header">
+    <div class="search-bar">
+      <i class="pi pi-search"></i>
+      <input type="text" placeholder="Buscar por título, autor ou ISBN..." (input)="onSearch($any($event.target).value)">
     </div>
-  </body>
-</html>
+    
+    <div class="actions">
+      <button class="btn-add" >
+        <i class="pi pi-plus"></i> Novo Livro
+      </button>
+      <select class="sort-select">
+        <option>Mais Recentes</option>
+        <option>Preço: Menor para Maior</option>
+        <option>A-Z</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="catalog-layout">
+    <!-- Filtros Laterais -->
+    <aside class="filters-sidebar">
+      <h3>Filtros</h3>
+      <div class="filter-group">
+        <h4>Categorias</h4>
+        <label><input type="checkbox"> Fantasia</label>
+        <label><input type="checkbox"> Terror</label>
+        <label><input type="checkbox"> Romance</label>
+      </div>
+      <div class="filter-group">
+        <h4>Disponibilidade</h4>
+        <label><input type="radio" name="disp"> Disponíveis</label>
+        <label><input type="radio" name="disp"> Ver Todos</label>
+      </div>
+    </aside>
+
+    <!-- Grid de Livros -->
+    <main class="books-grid">
+      <app-catalogo 
+        *ngFor="let item of filteredBooks" 
+        [book]="item">
+      </app-catalogo>
+      
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="filteredBooks.length === 0">
+        <i class="pi pi-search-minus"></i>
+        <p>Nenhum livro encontrado para sua busca.</p>
+      </div>
+    </main>
+  </div>
+</div>

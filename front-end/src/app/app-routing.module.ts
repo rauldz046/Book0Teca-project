@@ -14,7 +14,6 @@ import { EmprestimosAtivosComponent } from './pages/emprestimos-ativos/emprestim
 import { GerenciamentoFinanceiroComponent } from './pages/gerenciamento-financeiro/gerenciamento-financeiro.component';
 import { UserPerfilComponent } from './pages/user-perfil/user-perfil.component';
 import { GerenciarPermissoesComponent } from './pages/gerenciar-permissoes/gerenciar-permissoes.component';
-import { UserPrivacidadeComponent } from './pages/user-privacidade/user-privacidade.component';
 import { PreferenciasComponent } from './pages/preferencias/preferencias.component';
 import { AuthLoginComponent } from './pages/auth-login/auth-login.component';
 import { SignInFormUserComponent } from './pages/auth-login/sign-in-form-user/sign-in-form-user.component';
@@ -102,11 +101,6 @@ const routes: Routes = [
     path: 'sistema/permissoes',
     component: GerenciarPermissoesComponent,
     data: { titulo: 'Permissoes' },
-  },
-  {
-    path: 'config/privacidade',
-    component: UserPrivacidadeComponent,
-    data: { titulo: 'Privacidade' },
   },
   {
     path: 'config/preferencias',
