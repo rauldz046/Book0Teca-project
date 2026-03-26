@@ -3,6 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UsuariosLogados } from 'src/app/models/clientes.model';
+import { ToastService } from 'src/app/utils/toast-alert-service.service';
 
 @Component({
   selector: 'app-auth-login',
@@ -11,32 +12,46 @@ import { UsuariosLogados } from 'src/app/models/clientes.model';
 })
 export class AuthLoginComponent implements OnInit {
   private router = inject(Router);
-  private ClienteService = inject(ClientesService);
+  private clienteService = inject(ClientesService); // Corrigido para camelCase (padrão TS)
+  private alert = inject(ToastService);
+
   sessaoUser!: UsuariosLogados;
-  isLogin = true
+  isLoading = false; // Adicionado para controle de loading no botão
+  isLogin = true;
 
   form: FormGroup = new FormGroup({
-    email: new FormControl('', [Validators.required]),
-    senha: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required, Validators.email]), // Adicionado validador de e-mail
+    senha: new FormControl('', [Validators.required, Validators.minLength(4)]),
   });
 
   ngOnInit(): void {}
 
   goToSignIn() {
-  this.router.navigate(['auth/sign-in']);
-}
+    this.router.navigate(['auth/sign-in']);
+  }
 
-  async submit() {
+  submit() {
+    this.isLoading = true;
     const infoUser = this.form.getRawValue();
 
-    this.ClienteService.LoginValidation(infoUser).subscribe((res) => {
-      if (!res) {
-        alert('Usuário ou Senha Incorretos');
-        return;
-      }
-
-      this.sessaoUser = res;
-      this.router.navigate(['/home']);
+    // 2. Correção na sintaxe do subscribe
+    this.clienteService.LoginValidation(infoUser).subscribe({
+      next: (res: UsuariosLogados) => {
+        if (res !== null) {
+          this.router.navigate(['/home']);
+        } else {
+          this.isLoading = false;
+          const msg = 'E-mail ou senha incorretos.';
+          this.alert.toastDanger(msg);
+        }
+      },
+      error: (err: any) => {
+        this.isLoading = false;
+        this.alert.dialogErro('Falha no Login', err.message).subscribe();
+      },
+      complete: () => {
+        this.isLoading = false;
+      },
     });
   }
 }

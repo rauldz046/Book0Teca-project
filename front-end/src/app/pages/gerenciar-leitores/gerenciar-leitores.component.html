@@ -1,36 +1,36 @@
 <div class="page-container">
-  
   <div class="table-card">
-    
     <!-- Top Bar -->
     <div class="table-header">
       <h2>Leitores Ativos</h2>
-      <button 
-        pButton 
-        label="Novo Usuário" 
-        icon="pi pi-plus" 
+      <button
+        pButton
+        label="Novo Usuário"
+        icon="pi pi-plus"
         class="btn-new"
-        (click)="addNewUser()">
-      </button>
+        (click)="addNewUser()"
+      ></button>
     </div>
 
     <!-- Tabela PrimeNG -->
-    <p-table 
-      [value]="usuariosLogados" 
-      [paginator]="true" 
-      [rows]="10" 
+    <p-table
+      [value]="usuariosLogados"
+      [paginator]="true"
+      [rows]="10"
       [responsive]="true"
       styleClass="p-datatable-sm"
       [showCurrentPageReport]="true"
-      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} leitores">
-      
+      currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} leitores"
+    >
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 10%">ID</th>
-          <th pSortableColumn="Nome">Nome <p-sortIcon field="Nome"></p-sortIcon></th>
+          <th pSortableColumn="Nome">
+            Nome <p-sortIcon field="Nome"></p-sortIcon>
+          </th>
           <th>Email</th>
           <th>CPF</th>
-          <th style="width: 15%; text-align: center;">Ações</th>
+          <th style="width: 15%; text-align: center">Ações</th>
         </tr>
       </ng-template>
 
@@ -38,7 +38,9 @@
         <tr>
           <td>
             <span class="p-column-title">ID</span>
-            <span style="font-weight: 600; color: #94a3b8;">#{{ user.idUsuario }}</span>
+            <span style="font-weight: 600; color: #94a3b8"
+              >#{{ user.idUsuario }}</span
+            >
           </td>
           <td>
             <span class="p-column-title">Nome</span>
@@ -54,17 +56,29 @@
           </td>
           <td class="text-center">
             <div class="actions-cell">
-              <button 
-                class="btn-action edit" 
+              <button
+                class="btn-action edit"
                 title="Editar Usuário"
-                (click)="editUser(user)">
+                (click)="editUser(user)"
+              >
                 <i class="pi pi-pencil"></i>
               </button>
-              <button 
-                class="btn-action delete" 
+              <button
+                class="btn-action delete"
                 title="Excluir Usuário"
-                (click)="deleteUser(user)">
+                (click)="deleteUser(user)"
+              >
                 <i class="pi pi-trash"></i>
+              </button>
+              <button
+                class="btn-action toggle"
+                [ngClass]="user.Ativo ? 'deactivate' : 'activate'"
+                [title]="user.Ativo ? 'Desativar Usuário' : 'Ativar Usuário'"
+                (click)="toggleUserStatus(user)"
+              >
+                <i
+                  [class]="user.Ativo ? 'pi pi-user-minus' : 'pi pi-user-plus'"
+                ></i>
               </button>
             </div>
           </td>
@@ -74,12 +88,9 @@
       <!-- Mensagem para tabela vazia -->
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="5" class="text-center p-4">
-            Nenhum leitor encontrado.
-          </td>
+          <td colspan="5" class="text-center p-4">Nenhum leitor encontrado.</td>
         </tr>
       </ng-template>
     </p-table>
-
   </div>
 </div>

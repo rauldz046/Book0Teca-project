@@ -28,19 +28,6 @@
         </ng-template>
 
         <form [formGroup]="form" class="p-fluid">
-          <!-- Campo Nome (Só aparece no cadastro) -->
-          <div class="field" *ngIf="!isLogin">
-            <span class="p-input-icon-left">
-              <i class="pi pi-user"></i>
-              <input
-                type="text"
-                pInputText
-                placeholder="Nome Completo"
-                formControlName="nome"
-              />
-            </span>
-          </div>
-
           <div class="field">
             <span class="p-input-icon-left">
               <i class="pi pi-envelope"></i>
@@ -73,10 +60,12 @@
           <button
             pButton
             type="button"
-            [label]="isLogin ? 'Entrar' : 'Cadastrar'"
-            class="p-button-raised btn-primary"
+            class="p-button-raised btn-primary "
+            [label]="!isLoading ? 'Entrar': ''"
             (click)="submit()"
-          ></button>
+          >
+            {{ isLoading ? "Carregando..." : "" }}
+          </button>
 
           <div class="divider">
             <span>ou</span>

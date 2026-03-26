@@ -33,6 +33,28 @@ export class GerenciarLeitoresComponent implements OnInit {
     });
 
   }
+  toggleUserStatus(user:any) {
+  const acao = user.Ativo ? 'desativar' : 'ativar';
+  const confirmacao = confirm(`Tem certeza que deseja ${acao} o leitor ${user.Nome}?`);
+
+  if (confirmacao) {
+    // Inverte o status localmente para refletir na UI imediatamente após o sucesso
+    const novoStatus = !user.Ativo;
+
+    // Chamada ao seu serviço (Exemplo)
+    // Supondo que seu serviço tenha um método para atualizar apenas o status
+    // this.ClienteService.AtualizarStatusUsuario(user.idUsuario, novoStatus).subscribe({
+    //   next: () => {
+    //     user.Ativo = novoStatus; // Atualiza a variável na lista para mudar o botão
+    //     console.log(`Usuário ${user.Nome} atualizado com sucesso.`);
+    //   },
+    //   error: (err) => {
+    //     console.error('Erro ao atualizar status', err);
+    //     alert('Erro ao tentar mudar o status do usuário.');
+    //   }
+    // });
+  }
+}
 
   
   addNewUser() {
