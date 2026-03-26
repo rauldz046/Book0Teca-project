@@ -1,77 +1,118 @@
-<div class="dialog-header">
-  <h2 mat-dialog-title>
-    {{ form.get('nomeCompleto')?.value || "Novo Usuário" }}
-    <small class="d-block text-muted">
-      ID: {{ userinfo.idUsuario }} | Criado em: {{ userinfo.created_at | date: "dd/MM/yyyy" }}
-    </small>
-  </h2>
-</div>
+<p-dialog
+  [visible]="true"
+  [modal]="true"
+  [style]="{ width: '900px' }"
+  [closable]="false"
+>
+  <div class="dialog-container">
+    <div class="custom-modal-header">
+      <div class="title-group">
+        <div class="avatar-preview" *ngIf="isEdit">
+          <img
+            [src]="
+              form.get('fotoperfil')?.value || 'assets/img/default-avatar.png'
+            "
+          />
+        </div>
 
-<mat-dialog-content class="custom-content">
-  <form [formGroup]="form" class="container-fluid">
-    <div class="row">
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nome</mat-label>
-          <input matInput formControlName="nomeCompleto" />
-        </mat-form-field>
+        <i class="pi pi-user-plus" *ngIf="!isEdit"></i>
+
+        <div>
+          <h2>
+            {{
+              isEdit
+                ? form.get("nomeCompleto")?.value || "Editar Usuário"
+                : "Novo Usuário"
+            }}
+          </h2>
+        </div>
       </div>
 
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Telefone</mat-label>
-          <input matInput formControlName="telefone" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>CPF</mat-label>
-          <input matInput formControlName="cpf" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Senha</mat-label>
-          <input matInput formControlName="senha" />
-        </mat-form-field>
-      </div>
-
-      <div class="col-md-3">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Status</mat-label>
-          <mat-select formControlName="status">
-            <mat-option [value]="1">Ativo</mat-option>
-            <mat-option [value]="0">Inativo</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <div class="col-md-3 d-flex align-items-center">
-        <mat-checkbox formControlName="senhaInicial">
-          Exigir troca de senha?
-        </mat-checkbox>
-      </div>
+      <button
+        pButton
+        icon="pi pi-times"
+        class="p-button-text"
+        (click)="fechar()"
+      ></button>
     </div>
 
-    <div class="reference-section mt-4" *ngIf="userinfo">
-      <div class="ref-badge">Ref. Endereço: {{ userinfo.InfoEndereco }}</div>
-      <div class="ref-badge">Ref. Bancário: {{ userinfo.InfoBancario }}</div>
-    </div>
-  </form>
-</mat-dialog-content>
+    <form [formGroup]="form">
+      <div class="grid">
+        <div class="col-8">
+          <span class="p-float-label">
+            <input pInputText formControlName="nomeCompleto" />
+            <label>Nome Completo</label>
+          </span>
+        </div>
 
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Cancelar</button>
-  <button mat-raised-button color="primary" (click)="salvar()" [disabled]="form.invalid">
-    Salvar Alterações
-  </button>
-</mat-dialog-actions>
+        <div class="col-4">
+          <p-dropdown
+            [options]="statusOptions"
+            formControlName="status"
+            optionLabel="label"
+            optionValue="value"
+          >
+          </p-dropdown>
+        </div>
+
+        <!-- Email -->
+        <div class="col-6">
+          <span class="p-float-label">
+            <input pInputText formControlName="email" class="w-full" />
+            <label>Email</label>
+          </span>
+        </div>
+
+        <!-- Telefone -->
+        <div class="col-4">
+          <span class="p-float-label">
+            <input pInputText formControlName="telefone" class="w-full" />
+            <label>Telefone</label>
+          </span>
+        </div>
+
+        <!-- CPF -->
+        <div class="col-4">
+          <span class="p-float-label">
+            <input pInputText formControlName="cpf" class="w-full" />
+            <label>CPF</label>
+          </span>
+        </div>
+
+        <!-- Senha -->
+        <div class="col-4">
+          <span class="p-float-label">
+            <input pPassword formControlName="senha" class="w-full" />
+            <label>Senha</label>
+          </span>
+        </div>
+
+        <!-- Checkbox -->
+        <div class="col-12">
+          <p-checkbox
+            formControlName="senhaInicial"
+            [binary]="true"
+            label="Forçar troca de senha no primeiro login"
+          ></p-checkbox>
+        </div>
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        label="Cancelar"
+        class="p-button-text"
+        (click)="fechar()"
+      ></button>
+
+      <button
+        pButton
+        label="Salvar"
+        icon="pi pi-save"
+        (click)="salvar()"
+        [loading]="loading"
+      ></button>
+    </ng-template>
+  </div>
+</p-dialog>

@@ -1,83 +1,118 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ClientesService } from 'src/app/services/clientes.service';
 import { UsuariosLogados } from '../../models/clientes.model';
-import { inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalEditClienteComponent } from './modal-edit-cliente/modal-edit-cliente.component';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ToastService } from 'src/app/utils/toast-alert-service.service';
 
 @Component({
   selector: 'app-gerenciar-leitores',
   templateUrl: './gerenciar-leitores.component.html',
   styleUrls: ['./gerenciar-leitores.component.scss'],
+  providers: [ConfirmationService, MessageService], // Providers locais para serviços do PrimeNG
 })
 export class GerenciarLeitoresComponent implements OnInit {
-  ClienteService = inject(ClientesService);
-  dialogService = inject(MatDialog);
-  usuariosLogados!:UsuariosLogados[];
+  private clienteService = inject(ClientesService);
+  private dialog = inject(MatDialog);
+  alert = inject(ToastService);
+  private confirmationService = inject(ConfirmationService);
+
+  usuariosLogados: UsuariosLogados[] = [];
+  loading: boolean = true;
 
   ngOnInit(): void {
-    this.ClienteService.BuscarUsuarios().subscribe((res)=>{
-      this.usuariosLogados = res; ;
+    this.carregarUsuarios();
+  }
+
+  carregarUsuarios(): void {
+    this.loading = true;
+    this.clienteService.BuscarUsuarios().subscribe({
+      next: (res) => {
+        this.usuariosLogados = res;
+        this.loading = false;
+        console.log(this.usuariosLogados);
+      },
+      error: () => {
+        this.alert.dialogErro('Erro', 'Falha ao carregar usuários');
+        this.loading = false;
+      },
     });
   }
 
-  editUser(event: any) {
-    const ctx = event;
-    this.dialogService.open(ModalEditClienteComponent, {
-      width: '800px',
-      maxWidth: '90vw',
-      panelClass: 'custom-dialog-container', 
-      hasBackdrop: true,
-      data: ctx,
-      position: { top: '50px' },
-    });
-
-  }
-  toggleUserStatus(user:any) {
-  const acao = user.Ativo ? 'desativar' : 'ativar';
-  const confirmacao = confirm(`Tem certeza que deseja ${acao} o leitor ${user.Nome}?`);
-
-  if (confirmacao) {
-    // Inverte o status localmente para refletir na UI imediatamente após o sucesso
-    const novoStatus = !user.Ativo;
-
-    // Chamada ao seu serviço (Exemplo)
-    // Supondo que seu serviço tenha um método para atualizar apenas o status
-    // this.ClienteService.AtualizarStatusUsuario(user.idUsuario, novoStatus).subscribe({
-    //   next: () => {
-    //     user.Ativo = novoStatus; // Atualiza a variável na lista para mudar o botão
-    //     console.log(`Usuário ${user.Nome} atualizado com sucesso.`);
-    //   },
-    //   error: (err) => {
-    //     console.error('Erro ao atualizar status', err);
-    //     alert('Erro ao tentar mudar o status do usuário.');
-    //   }
-    // });
-  }
-}
-
-  
-  addNewUser() {
-    // Aqui você pode abrir o mesmo modal, mas sem passar dados (data: null)
-    this.dialogService.open(ModalEditClienteComponent, {
+  openModal(user?: UsuariosLogados): void {
+    const dialogRef = this.dialog.open(ModalEditClienteComponent, {
       width: '800px',
       maxWidth: '90vw',
       panelClass: 'custom-dialog-container',
-      hasBackdrop: true,
-      data: null, // indica que é um novo cadastro
+      data: user || null,
       position: { top: '50px' },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.carregarUsuarios(); // Recarrega a lista se houver alteração
     });
   }
 
-  deleteUser(user: UsuariosLogados) {
-    // Exemplo de confirmação simples (você pode usar o p-confirmDialog do PrimeNG depois)
-    const confirmacao = confirm(`Tem certeza que deseja excluir o leitor ${user.Nome}?`);
-    if (confirmacao) {
-      console.log('Deletando usuário:', user.idUsuario);
-      // Chame seu serviço de deleção aqui
-    }
+  toggleUserStatus(user: any): void {
+    const isAtivo = user.Status === 1;
+    const acao = isAtivo ? 'desativar' : 'ativar';
+
+    this.confirmationService.confirm({
+      message: `Tem certeza que deseja <b>${acao}</b> o leitor <b>${user.Nome}</b>?`,
+      header: 'Alterar Status',
+      icon: 'pi pi-exclamation-alt',
+      acceptLabel: 'Confirmar',
+      rejectLabel: 'Cancelar',
+      accept: () => {
+        // Lógica para refletir a mudança no Front antes/durante a chamada de API
+        const novoStatus = isAtivo ? 0 : 1;
+        const novaDescricao = isAtivo ? 'Inativo' : 'Ativo';
+        const payload = { idUsuario: user.idUsuario, Status: novoStatus };
+
+        this.clienteService.UpdateStatusUsuario(novaDescricao).subscribe({
+          next: (res) => {
+            if (res) {
+              if (res.mensagem === 'success') {
+                this.alert.dialogSuccess(
+                  'Atualizado',
+                  `O usuário agora está ${novaDescricao}`,
+                );
+              }
+            }
+          },
+          error: () => {
+            this.alert.dialogErro(
+              'Erro',
+              'Falha ao atualizar status do usuário',
+            );
+          },
+        });
+
+        this.alert.dialogSuccess(
+          'Atualizado',
+          `O usuário agora está ${novaDescricao}`,
+        );
+      },
+    });
   }
 
-
-
+  deleteUser(user: any): void {
+    this.confirmationService.confirm({
+      message: `Você está prestes a excluir <b>${user.Nome}</b>. Esta ação é irreversível. Deseja continuar?`,
+      header: 'Confirmar Exclusão Crítica',
+      icon: 'pi pi-trash',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        // Chama serviço de delete
+        this.usuariosLogados = this.usuariosLogados.filter(
+          (u) => u.idUsuario !== user.idUsuario,
+        );
+        this.alert.dialogSuccess(
+          'Excluído',
+          'Usuário removido da base de dados',
+        );
+      },
+    });
+  }
 }

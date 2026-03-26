@@ -53,7 +53,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SignInFormUserComponent } from './pages/auth-login/sign-in-form-user/sign-in-form-user.component';
-import { InputMaskModule } from 'primeng/inputmask';
+import { InputMaskModule } from 'primeng/inputmask'
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DialogModule } from 'primeng/dialog';
+import { CheckboxModule } from 'primeng/checkbox';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+
 
 
 
@@ -117,7 +125,15 @@ import { InputMaskModule } from 'primeng/inputmask';
     MatSnackBarModule,
     PasswordModule,
     StepsModule,
-    InputMaskModule
+    InputMaskModule,
+    ConfirmDialogModule,
+    ToastModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatCheckboxModule,
+    DialogModule,
+    CheckboxModule,
+    ProgressSpinnerModule,    
   ],
   providers: [],
   bootstrap: [AppComponent],

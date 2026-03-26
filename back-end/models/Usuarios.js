@@ -1,6 +1,9 @@
-// models/Usuario.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+
+const Status = require("./StatusAtividadeGeral");
+const InfoEndereco = require("./InfoEndereco");
+const InfoBancario = require("./InfoBancario");
 
 const Usuario = sequelize.define(
   "Usuario",
@@ -10,63 +13,49 @@ const Usuario = sequelize.define(
       autoIncrement: true,
       primaryKey: true,
     },
+    Nome: DataTypes.STRING(150),
+    CPF: DataTypes.STRING(45),
+    Telefone: DataTypes.STRING(45),
+    Senha: DataTypes.STRING(300),
+    Email: DataTypes.STRING(200),
+    SenhaInicial: DataTypes.TINYINT,
+    Status: DataTypes.INTEGER,
+    InfoEndereco: DataTypes.INTEGER,
+    InfoBancario: DataTypes.INTEGER,
+    fotoperfil: DataTypes.STRING(20),
 
-    Nome: {
-      type: DataTypes.STRING(150),
-    },
-
-    CPF: {
-      type: DataTypes.STRING(45),
-    },
-
-    Telefone: {
-      type: DataTypes.STRING(45),
-    },
-
-    Senha: {
-      type: DataTypes.STRING(300),
-    },
-
-    Email: {
-      type: DataTypes.STRING(200),
-    },
-
-    SenhaInicial: {
-      type: DataTypes.TINYINT,
-    },
-
-    Status: {
-      type: DataTypes.INTEGER,
-    },
-
-    InfoEndereco: {
-      type: DataTypes.INTEGER,
-    },
-
-    InfoBancario: {
-      type: DataTypes.INTEGER,
-    },
-
-    created_at: {
-      type: DataTypes.DATEONLY,
-    },
-
-    updated_at: {
-      type: DataTypes.DATEONLY,
-    },
-
-    deleted_at: {
-      type: DataTypes.DATEONLY,
-    },
+    created_at: DataTypes.DATEONLY,
+    updated_at: DataTypes.DATEONLY,
+    deleted_at: DataTypes.DATEONLY,
   },
   {
-    tableName: "UsuariosSistema",
+    tableName: "usuariossistema",
     timestamps: true,
     paranoid: true,
     createdAt: "created_at",
     updatedAt: "updated_at",
     deletedAt: "deleted_at",
-  },
+  }
 );
+
+/* RELAÇÕES */
+
+Usuario.belongsTo(Status, {
+  foreignKey: "Status",
+  targetKey: "idStatus",
+  as: "statusInfo"
+});
+
+Usuario.belongsTo(InfoEndereco, {
+  foreignKey: "InfoEndereco",
+  targetKey: "idInfoEnd",
+  as: "endereco"
+});
+
+Usuario.belongsTo(InfoBancario, {
+  foreignKey: "InfoBancario",
+  targetKey: "IdInfoBancario",
+  as: "banco"
+});
 
 module.exports = Usuario;

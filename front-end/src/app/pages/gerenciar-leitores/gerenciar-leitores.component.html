@@ -1,94 +1,100 @@
 <div class="page-container">
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
   <div class="table-card">
-    <!-- Top Bar -->
     <div class="table-header">
-      <h2>Leitores Ativos</h2>
+      <div class="header-title">
+        <h2>Gerenciamento de Leitores</h2>
+        <span class="p-input-icon-left search-container">
+          <i class="pi pi-search"></i>
+          <input 
+            pInputText 
+            type="text" 
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')" 
+            placeholder="Pesquisar por nome, CPF ou email..." 
+            class="p-inputtext-sm"
+          />
+        </span>
+      </div>
+      
       <button
         pButton
         label="Novo Usuário"
         icon="pi pi-plus"
-        class="btn-new"
-        (click)="addNewUser()"
+        class="p-button-raised btn-new"
+        (click)="openModal()"
       ></button>
     </div>
 
-    <!-- Tabela PrimeNG -->
     <p-table
+      #dt
       [value]="usuariosLogados"
       [paginator]="true"
       [rows]="10"
-      [responsive]="true"
-      styleClass="p-datatable-sm"
+      [loading]="loading"
+      [globalFilterFields]="['Nome', 'Email', 'CPF', 'Telefone']"
+      responsiveLayout="stack"
+      breakpoint="960px"
+      styleClass="p-datatable-gridlines p-datatable-sm"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} leitores"
     >
       <ng-template pTemplate="header">
         <tr>
-          <th style="width: 10%">ID</th>
-          <th pSortableColumn="Nome">
-            Nome <p-sortIcon field="Nome"></p-sortIcon>
-          </th>
+          <th style="width: 7%">ID</th>
+          <th pSortableColumn="Nome">Nome <p-sortIcon field="Nome"></p-sortIcon></th>
           <th>Email</th>
+          <th>Telefone</th>
           <th>CPF</th>
+          <th style="width: 10%; text-align: center">Status</th>
           <th style="width: 15%; text-align: center">Ações</th>
         </tr>
       </ng-template>
 
       <ng-template pTemplate="body" let-user>
-        <tr>
+        <!-- A linha fica levemente opaca se o status não for 'Ativo' -->
+        <tr [ngClass]="{'row-inactive': user.statusInfo?.Descricao !== 'Ativo'}">
           <td>
             <span class="p-column-title">ID</span>
-            <span style="font-weight: 600; color: #94a3b8"
-              >#{{ user.idUsuario }}</span
-            >
+            <span class="user-id">#{{ user.idUsuario }}</span>
           </td>
           <td>
             <span class="p-column-title">Nome</span>
-            {{ user.Nome }}
+            <div class="user-name-cell">
+               <span class="font-bold">{{ user.Nome }}</span>
+               <small class="text-gray-500" style="display: block;">Cadastrado em: {{ user.created_at | date:'dd/MM/yyyy' }}</small>
+            </div>
           </td>
-          <td>
-            <span class="p-column-title">Email</span>
-            {{ user.Email }}
-          </td>
-          <td>
-            <span class="p-column-title">CPF</span>
-            {{ user.CPF }}
+          <td><span class="p-column-title">Email</span>{{ user.Email }}</td>
+          <td><span class="p-column-title">Telefone</span>{{ user.Telefone }}</td>
+          <td><span class="p-column-title">CPF</span>{{ user.CPF }}</td>
+          <td class="text-center">
+             <span [class]="'status-badge ' + (user.Status === 1 ? 'status-active' : 'status-inactive')">
+                {{ user.statusInfo?.Descricao || 'Indefinido' }}
+             </span>
           </td>
           <td class="text-center">
             <div class="actions-cell">
-              <button
-                class="btn-action edit"
-                title="Editar Usuário"
-                (click)="editUser(user)"
-              >
-                <i class="pi pi-pencil"></i>
-              </button>
-              <button
-                class="btn-action delete"
-                title="Excluir Usuário"
-                (click)="deleteUser(user)"
-              >
-                <i class="pi pi-trash"></i>
-              </button>
-              <button
-                class="btn-action toggle"
-                [ngClass]="user.Ativo ? 'deactivate' : 'activate'"
-                [title]="user.Ativo ? 'Desativar Usuário' : 'Ativar Usuário'"
+              <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text edit" (click)="openModal(user)" title="Editar"></button>
+              
+              <button 
+                pButton 
+                [icon]="user.Status === 1 ? 'pi pi-user-minus' : 'pi pi-user-plus'" 
+                [class]="user.Status === 1 ? 'p-button-rounded p-button-text p-button-warning' : 'p-button-rounded p-button-text p-button-success'"
                 (click)="toggleUserStatus(user)"
-              >
-                <i
-                  [class]="user.Ativo ? 'pi pi-user-minus' : 'pi pi-user-plus'"
-                ></i>
+                [title]="user.Status === 1 ? 'Desativar' : 'Ativar'">
               </button>
+
+              <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger" (click)="deleteUser(user)" title="Excluir"></button>
             </div>
           </td>
         </tr>
       </ng-template>
 
-      <!-- Mensagem para tabela vazia -->
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="5" class="text-center p-4">Nenhum leitor encontrado.</td>
+          <td colspan="7" class="text-center p-4">Nenhum leitor encontrado.</td>
         </tr>
       </ng-template>
     </p-table>

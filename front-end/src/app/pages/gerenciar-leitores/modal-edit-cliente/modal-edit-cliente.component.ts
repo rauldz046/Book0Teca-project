@@ -1,12 +1,8 @@
-import { ClientesService } from './../../../services/clientes.service';
-import { Component, inject, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogRef,
-} from '@angular/material/dialog';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog'; // Troca aqui
 import { UsuariosLogados } from 'src/app/models/clientes.model';
+import { ClientesService } from './../../../services/clientes.service';
 import { ToastService } from 'src/app/utils/toast-alert-service.service';
 
 @Component({
@@ -15,11 +11,24 @@ import { ToastService } from 'src/app/utils/toast-alert-service.service';
   styleUrls: ['./modal-edit-cliente.component.scss'],
 })
 export class ModalEditClienteComponent implements OnInit {
-  ref = inject(MatDialogRef<ModalEditClienteComponent>);
-  data = inject(MAT_DIALOG_DATA);
+  // Injeções do PrimeNG
+  ref = inject(DynamicDialogRef);
+  config = inject(DynamicDialogConfig);
+  
   alert = inject(ToastService);
   ClienteService = inject(ClientesService);
+  
   userinfo!: UsuariosLogados;
+  data: any;
+  isEdit = false;
+  loading = false;
+
+  // Opções para o Select do PrimeNG
+  statusOptions = [
+    { label: 'Ativo', value: 1, icon: 'pi pi-check-circle', color: '#4caf50' },
+    { label: 'Inativo', value: 0, icon: 'pi pi-times-circle', color: '#f44336' }
+  ];
+
   form = new FormGroup({
     idUsuario: new FormControl(),
     nomeCompleto: new FormControl('', [Validators.required]),
@@ -27,46 +36,47 @@ export class ModalEditClienteComponent implements OnInit {
     telefone: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required]),
     status: new FormControl('', [Validators.required]),
+    fotoperfil: new FormControl(''), // Adicionado conforme o HTML anterior
     senha: new FormControl('', [Validators.required]),
     senhaInicial: new FormControl(false),
   });
 
   ngOnInit(): void {
-    this.userinfo = this.data;
-    console.log('Dados recebidos no modal:', this.userinfo);
-    this.form.patchValue({
-      idUsuario: this.userinfo.idUsuario,
-      nomeCompleto: this.userinfo.Nome,
-      cpf: this.userinfo.CPF,
-      telefone: this.userinfo.Telefone,
-      email: this.userinfo.Email,
-      status: this.userinfo.Status,
-      senha: this.userinfo.Senha,
-      senhaInicial: this.userinfo.SenhaInicial,
-    });
+    // No PrimeNG DynamicDialog, os dados vêm em config.data
+    this.userinfo = this.config.data;
+    this.data = this.config.data;
+    this.isEdit = !!this.userinfo?.idUsuario;
+
+    if (this.userinfo) {
+      this.form.patchValue({
+        idUsuario: this.userinfo.idUsuario,
+        nomeCompleto: this.userinfo.Nome,
+        cpf: this.userinfo.CPF,
+        telefone: this.userinfo.Telefone,
+        email: this.userinfo.Email,
+        status: this.userinfo.Status,
+        senha: this.userinfo.Senha,
+        senhaInicial: this.userinfo.SenhaInicial,
+        fotoperfil: (this.userinfo as any).fotoperfil // Ajuste se necessário
+      });
+    }
   }
 
-  async salvar() {
-    this.alert
-      .confirm(
-        'info',
-        'Alterar Dados',
-        'Deseja realmente alterar os dados do leitor?',
-      )
+  salvar() {
+    this.alert.confirm('info', 'Alterar Dados', 'Deseja realmente salvar os dados?')
       .subscribe((res) => {
-        const formbody = this.form.getRawValue();
-
-        this.ClienteService.UpdateUsuario(formbody).subscribe((res) => ({
-          next: (res: any) => {
-            this.alert
-              .dialogSuccess('success', 'Dados alterados com sucesso')
-              .subscribe((res) => {
-                if (res) {
-                  this.ref.close();
-                }
-              });
-          },
-        }));
+        if (res) {
+          this.loading = true;
+          const formbody = this.form.getRawValue();
+          this.ClienteService.UpdateUsuario(formbody).subscribe({
+            next: (res: any) => {
+              this.loading = false;
+              this.alert.dialogSuccess('success', 'Dados alterados com sucesso')
+                .subscribe(() => this.ref.close(true));
+            },
+            error: () => this.loading = false
+          });
+        }
       });
   }
 
