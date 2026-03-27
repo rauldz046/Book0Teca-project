@@ -88,7 +88,7 @@ export class NavComponent implements OnInit {
             label: 'Catalogo',
             icon: PrimeIcons.BOOK,
             routerLink: '/acervo/livros',
-            visible: this.hasPermission(['LEITOR', 'BIBLIOTECARIO', 'ESTOQUE']),
+            visible: true,
           },
           {
             label: 'Autores',
@@ -224,5 +224,4 @@ export class NavComponent implements OnInit {
         return item;
       });
   }
-
 }

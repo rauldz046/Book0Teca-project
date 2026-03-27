@@ -22,7 +22,7 @@ const Usuario = sequelize.define(
     Status: DataTypes.INTEGER,
     InfoEndereco: DataTypes.INTEGER,
     InfoBancario: DataTypes.INTEGER,
-    fotoperfil: DataTypes.STRING(20),
+    fotoperfil: DataTypes.STRING(2000),
 
     created_at: DataTypes.DATEONLY,
     updated_at: DataTypes.DATEONLY,

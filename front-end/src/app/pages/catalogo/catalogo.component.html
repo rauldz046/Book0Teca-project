@@ -1,53 +1,95 @@
 <div class="catalog-container">
-  
-  <!-- Toolbar Superior -->
-  <div class="catalog-header">
-    <div class="search-bar">
+  <!-- Barra Superior -->
+  <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center mb-5 gap-3 bg-white p-3 border-round shadow-1">
+    <span class="p-input-icon-left w-full md:w-30rem">
       <i class="pi pi-search"></i>
-      <input type="text" placeholder="Buscar por título, autor ou ISBN..." (input)="onSearch($any($event.target).value)">
-    </div>
-    
-    <div class="actions">
-      <button class="btn-add" >
-        <i class="pi pi-plus"></i> Novo Livro
-      </button>
-      <select class="sort-select">
-        <option>Mais Recentes</option>
-        <option>Preço: Menor para Maior</option>
-        <option>A-Z</option>
-      </select>
+      <input type="text" pInputText class="w-full border-round-pill" 
+             placeholder="Pesquisar por título ou autor..." 
+             [(ngModel)]="filtroTexto" (input)="filtrar()">
+    </span>
+
+    <div class="flex gap-2">
+      <button pButton label="Limpar Filtros" icon="pi pi-filter-slash" 
+              class="p-button-text p-button-sm" (click)="limparFiltros()"></button>
+      <button pButton icon="pi pi-shopping-cart" class="p-button-rounded p-button-outlined" 
+              pBadge value="2" severity="danger"></button>
     </div>
   </div>
 
-  <div class="catalog-layout">
-    <!-- Filtros Laterais -->
-    <aside class="filters-sidebar">
-      <h3>Filtros</h3>
-      <div class="filter-group">
-        <h4>Categorias</h4>
-        <label><input type="checkbox"> Fantasia</label>
-        <label><input type="checkbox"> Terror</label>
-        <label><input type="checkbox"> Romance</label>
-      </div>
-      <div class="filter-group">
-        <h4>Disponibilidade</h4>
-        <label><input type="radio" name="disp"> Disponíveis</label>
-        <label><input type="radio" name="disp"> Ver Todos</label>
+  <div class="grid">
+    <!-- Sidebar de Filtros -->
+    <aside class="col-12 md:col-3">
+      <div class="card p-3 bg-white border-round shadow-1">
+        <h4 class="mt-0 mb-3"><i class="pi pi-filter mr-2"></i>Filtrar Catálogo</h4>
+        
+        <div class="flex flex-column gap-3">
+          <div>
+            <span class="font-bold block mb-3 text-700">Categorias</span>
+            <div class="flex flex-column gap-2 scroll-categorias">
+              <div *ngFor="let cat of categorias" class="field-checkbox m-0">
+                <p-checkbox [name]="cat" [value]="cat" [(ngModel)]="categoriasSelecionadas" 
+                            (onChange)="filtrar()" [label]="cat"></p-checkbox>
+              </div>
+            </div>
+          </div>
+
+          <hr class="w-full border-top-1 border-100" />
+
+          <p-checkbox [binary]="true" label="Mostrar apenas disponíveis" 
+                      [(ngModel)]="apenasDisponiveis" (onChange)="filtrar()"></p-checkbox>
+        </div>
       </div>
     </aside>
 
     <!-- Grid de Livros -->
-    <main class="books-grid">
-      <app-catalogo 
-        *ngFor="let item of filteredBooks" 
-        [book]="item">
-      </app-catalogo>
-      
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="filteredBooks.length === 0">
-        <i class="pi pi-search-minus"></i>
-        <p>Nenhum livro encontrado para sua busca.</p>
-      </div>
+    <main class="col-12 md:col-9">
+      <p-dataView [value]="livrosFiltrados" [paginator]="true" [rows]="12" layout="grid">
+        <ng-template let-livro pTemplate="gridItem">
+          <div class="col-12 sm:col-6 lg:col-4 p-2">
+            <div class="book-card">
+              <!-- Capa e Badge -->
+              <div class="book-image-container">
+                <p-tag [value]="formatarStatus(livro.status)" [severity]="getSeverity(livro.status)" class="book-badge"></p-tag>
+                <img [src]="livro.capa" [alt]="livro.titulo" class="book-image" />
+                
+                <!-- Botão Favoritar sobre a imagem -->
+                <button pButton [icon]="livro.favorito ? 'pi pi-heart-fill' : 'pi pi-heart'" 
+                        (click)="toggleFavorito(livro)"
+                        [class]="'p-button-rounded p-button-text favorite-btn ' + (livro.favorito ? 'p-button-danger' : 'text-white')">
+                </button>
+              </div>
+
+              <!-- Detalhes -->
+              <div class="book-details">
+                <small class="category-tag">{{ livro.categoria }}</small>
+                <h3 class="book-title" [title]="livro.titulo">{{ livro.titulo }}</h3>
+                <span class="book-author">de {{ livro.autor }}</span>
+                
+                <div class="book-footer">
+                  <span class="book-year">{{ livro.ano }}</span>
+                  
+                  <div class="flex gap-2">
+                    <!-- Carrinho -->
+                    <button pButton [icon]="livro.noCarrinho ? 'pi pi-shopping-cart' : 'pi pi-cart-plus'" 
+                            [class]="livro.noCarrinho ? 'p-button-success' : 'p-button-outlined'"
+                            class="p-button-sm p-button-rounded"
+                            (click)="adicionarCarrinho(livro)"
+                            pTooltip="Adicionar ao carrinho">
+                    </button>
+
+                    <!-- Empréstimo -->
+                    <button pButton label="Reservar" icon="pi pi-calendar-plus" 
+                            class="p-button-sm p-button-primary"
+                            [disabled]="livro.status !== 'DISPONIVEL'"
+                            (click)="solicitarEmprestimo(livro)">
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
     </main>
   </div>
 </div>

@@ -60,6 +60,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DialogModule } from 'primeng/dialog';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { DataViewModule } from 'primeng/dataview';
+import { DividerModule } from 'primeng/divider';
+import { RadioButtonModule } from 'primeng/radiobutton';
+
+// Adicione-os no array 'imports' do seu @NgModule
 
 
 
@@ -131,7 +136,10 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     MatCheckboxModule,
     DialogModule,
     CheckboxModule,
-    ProgressSpinnerModule,    
+    ProgressSpinnerModule,
+    DataViewModule,
+    DividerModule,
+    RadioButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent],
