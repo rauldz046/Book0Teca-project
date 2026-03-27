@@ -1,9 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog'; // Troca aqui
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { UsuariosLogados } from 'src/app/models/clientes.model';
-import { ClientesService } from './../../../services/clientes.service';
-import { ToastService } from 'src/app/utils/toast-alert-service.service';
+import { ClientesService } from '../../../services/Clientes.service';
+import { AlertService } from 'src/app/utils/toast-alert-service.service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-modal-edit-cliente',
@@ -12,21 +13,25 @@ import { ToastService } from 'src/app/utils/toast-alert-service.service';
 })
 export class ModalEditClienteComponent implements OnInit {
   // Injeções do PrimeNG
-  ref = inject(DynamicDialogRef);
-  config = inject(DynamicDialogConfig);
-  
-  alert = inject(ToastService);
+  ref = inject(MatDialogRef<ModalEditClienteComponent>, { optional: true });
+  data = inject(MAT_DIALOG_DATA, { optional: true });
+
+  alert = inject(AlertService);
   ClienteService = inject(ClientesService);
-  
+
   userinfo!: UsuariosLogados;
-  data: any;
   isEdit = false;
   loading = false;
 
   // Opções para o Select do PrimeNG
   statusOptions = [
     { label: 'Ativo', value: 1, icon: 'pi pi-check-circle', color: '#4caf50' },
-    { label: 'Inativo', value: 0, icon: 'pi pi-times-circle', color: '#f44336' }
+    {
+      label: 'Inativo',
+      value: 0,
+      icon: 'pi pi-times-circle',
+      color: '#f44336',
+    },
   ];
 
   form = new FormGroup({
@@ -42,9 +47,7 @@ export class ModalEditClienteComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    // No PrimeNG DynamicDialog, os dados vêm em config.data
-    this.userinfo = this.config.data;
-    this.data = this.config.data;
+    this.userinfo = this.data;
     this.isEdit = !!this.userinfo?.idUsuario;
 
     if (this.userinfo) {
@@ -57,30 +60,32 @@ export class ModalEditClienteComponent implements OnInit {
         status: this.userinfo.Status,
         senha: this.userinfo.Senha,
         senhaInicial: this.userinfo.SenhaInicial,
-        fotoperfil: (this.userinfo as any).fotoperfil // Ajuste se necessário
+        fotoperfil: (this.userinfo as any).fotoperfil, // Ajuste se necessário
       });
     }
   }
 
-  salvar() {
-    this.alert.confirm('info', 'Alterar Dados', 'Deseja realmente salvar os dados?')
-      .subscribe((res) => {
-        if (res) {
-          this.loading = true;
-          const formbody = this.form.getRawValue();
-          this.ClienteService.UpdateUsuario(formbody).subscribe({
-            next: (res: any) => {
-              this.loading = false;
-              this.alert.dialogSuccess('success', 'Dados alterados com sucesso')
-                .subscribe(() => this.ref.close(true));
-            },
-            error: () => this.loading = false
-          });
-        }
-      });
+  async salvar() {
+    const confir = await this.alert.confirm(
+      'Alterar Dados',
+      'Deseja realmente salvar os dados?',
+    );
+    if (!confir) {
+      return;
+    }
+    this.loading = true;
+    const formbody = this.form.getRawValue();
+    this.ClienteService.UpdateUsuario(formbody).subscribe({
+      next: () => {
+        this.loading = false;
+        this.alert.success('success', 'Dados alterados com sucesso');
+        this.ref?.close();
+      },
+      error: () => (this.loading = false),
+    });
   }
 
   fechar() {
-    this.ref.close();
+    this.ref?.close();
   }
 }

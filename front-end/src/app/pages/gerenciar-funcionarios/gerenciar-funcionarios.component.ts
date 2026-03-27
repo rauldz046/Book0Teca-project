@@ -1,22 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-
-interface Funcionario {
-  id?: number;
-  matricula: string;
-  nome: string;
-  email: string;
-  cpf: string;
-  regiao: string;
-  ativo: boolean;
-  perfil: string;
-}
-
+import { Component, inject, OnInit } from '@angular/core';
+import { FuncionariosLogados } from 'src/app/models/funcionarios.model';
+import { FuncionariosService } from 'src/app/services/Funcionarios.service';
 @Component({
   selector: 'app-gerenciar-funcionarios',
   templateUrl: './gerenciar-funcionarios.component.html',
   styleUrls: ['./gerenciar-funcionarios.component.scss'],
 })
 export class GerenciarFuncionariosComponent implements OnInit {
+  FuncionarioService = inject(FuncionariosService);
   isModalOpen = false;
   isEditMode = false;
   filtroTexto = '';
@@ -24,64 +15,68 @@ export class GerenciarFuncionariosComponent implements OnInit {
   // Objeto para o formulário
   funcionarioSelecionado: any = {};
 
-  funcionarios: Funcionario[] = [
+  funcionarios: FuncionariosLogados[] = [
     {
       id: 1,
-      matricula: 'FUNC001',
-      nome: 'Maria Souza',
-      email: 'maria@email.com',
-      cpf: '000.000.000-00',
-      regiao: 'MG',
-      ativo: true,
-      perfil: 'Administrador',
+      MatriculaFunc: 'FUNC001',
+      NomeFunc: 'Maria Souza',
+      EmailFunc: 'maria@email.com',
+      CPFFunc: '000.000.000-00',
+      RegiaoFunc: 'MG',
+      Status: 1,
+      idPerfilFuncionarios: 'Administrador',
     },
     {
       id: 2,
-      matricula: 'FUNC002',
-      nome: 'João Silva',
-      email: 'joao@email.com',
-      cpf: '111.111.111-11',
-      regiao: 'SP',
-      ativo: false,
-      perfil: 'Bibliotecário',
+      MatriculaFunc: 'FUNC002',
+      NomeFunc: 'João Silva',
+      EmailFunc: 'joao@email.com',
+      CPFFunc: '111.111.111-11',
+      RegiaoFunc: 'SP',
+      Status: 1,
+      idPerfilFuncionarios: 'Bibliotecário',
     },
     {
       id: 3,
-      matricula: 'FUNC003',
-      nome: 'Ana Costa',
-      email: 'ana.costa@email.com',
-      cpf: '222.222.222-22',
-      regiao: 'RJ',
-      ativo: true,
-      perfil: 'Atendente',
+      MatriculaFunc: 'FUNC003',
+      NomeFunc: 'Ana Costa',
+      EmailFunc: 'ana.costa@email.com',
+      CPFFunc: '222.222.222-22',
+      RegiaoFunc: 'RJ',
+      Status: 1,
+      idPerfilFuncionarios: 'Atendente',
     },
     {
       id: 4,
-      matricula: 'FUNC004',
-      nome: 'Carlos Oliveira',
-      email: 'carlos.o@email.com',
-      cpf: '333.333.333-33',
-      regiao: 'RS',
-      ativo: true,
-      perfil: 'Bibliotecário',
+      MatriculaFunc: 'FUNC004',
+      NomeFunc: 'Carlos Oliveira',
+      EmailFunc: 'carlos.o@email.com',
+      CPFFunc: '333.333.333-33',
+      RegiaoFunc: 'RS',
+      Status: 1,
+      idPerfilFuncionarios: 'Bibliotecário',
     },
   ];
 
-  funcionariosFiltrados: Funcionario[] = [];
+  funcionariosFiltrados: FuncionariosLogados[] = [];
 
   ngOnInit() {
-    this.funcionariosFiltrados = this.funcionarios;
+    this.FuncionarioService.BuscarFuncionarios().subscribe((res) => {
+      if (res !== null) {
+        this.funcionarios = res;
+        this.aplicarFiltro();
+      }
+    });
   }
-
   aplicarFiltro() {
     this.funcionariosFiltrados = this.funcionarios.filter(
       (f) =>
-        f.nome.toLowerCase().includes(this.filtroTexto.toLowerCase()) ||
-        f.matricula.toLowerCase().includes(this.filtroTexto.toLowerCase()),
+        f.NomeFunc.toLowerCase().includes(this.filtroTexto.toLowerCase()) ||
+        f.MatriculaFunc.toLowerCase().includes(this.filtroTexto.toLowerCase()),
     );
   }
 
-  abrirModal(funcionario?: Funcionario) {
+  abrirModal(funcionario?: FuncionariosLogados) {
     this.isEditMode = !!funcionario;
     this.funcionarioSelecionado = funcionario
       ? { ...funcionario }
@@ -95,8 +90,6 @@ export class GerenciarFuncionariosComponent implements OnInit {
   }
 
   salvar() {
-    // Lógica para salvar ou atualizar
-    console.log('Salvando...', this.funcionarioSelecionado);
     this.fecharModal();
   }
 

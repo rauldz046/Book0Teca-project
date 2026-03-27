@@ -1,17 +1,19 @@
 <p-dialog
   [visible]="true"
   [modal]="true"
-  [style]="{ width: '900px' }"
   [closable]="false"
+  [resizable]="false"
+  [style]="{ width: '880px' }"
+  [baseZIndex]="10000"
 >
   <div class="dialog-container">
+
+    <!-- HEADER -->
     <div class="custom-modal-header">
       <div class="title-group">
         <div class="avatar-preview" *ngIf="isEdit">
           <img
-            [src]="
-              form.get('fotoperfil')?.value || 'assets/img/default-avatar.png'
-            "
+            [src]="form.get('fotoperfil')?.value || 'assets/img/default-avatar.png'"
           />
         </div>
 
@@ -25,19 +27,26 @@
                 : "Novo Usuário"
             }}
           </h2>
+          <small>Gerencie as informações do usuário</small>
         </div>
       </div>
 
       <button
         pButton
         icon="pi pi-times"
-        class="p-button-text"
+        class="p-button-rounded p-button-text"
         (click)="fechar()"
       ></button>
     </div>
 
-    <form [formGroup]="form">
-      <div class="grid">
+    <!-- FORM -->
+    <form [formGroup]="form" class="form-container">
+
+      <!-- SEÇÃO: DADOS PESSOAIS -->
+      <div class="section-title">Dados Pessoais</div>
+
+      <div class="grid form-grid">
+
         <div class="col-8">
           <span class="p-float-label">
             <input pInputText formControlName="nomeCompleto" />
@@ -46,58 +55,65 @@
         </div>
 
         <div class="col-4">
-          <p-dropdown
-            [options]="statusOptions"
-            formControlName="status"
-            optionLabel="label"
-            optionValue="value"
-          >
-          </p-dropdown>
+          <span class="p-float-label">
+            <p-dropdown
+              [options]="statusOptions"
+              formControlName="status"
+              optionLabel="label"
+              optionValue="value"
+            ></p-dropdown>
+            <label>Status</label>
+          </span>
         </div>
 
-        <!-- Email -->
         <div class="col-6">
           <span class="p-float-label">
-            <input pInputText formControlName="email" class="w-full" />
+            <input pInputText formControlName="email" />
             <label>Email</label>
           </span>
         </div>
 
-        <!-- Telefone -->
-        <div class="col-4">
+        <div class="col-3">
           <span class="p-float-label">
-            <input pInputText formControlName="telefone" class="w-full" />
+            <input pInputText formControlName="telefone" />
             <label>Telefone</label>
           </span>
         </div>
 
-        <!-- CPF -->
-        <div class="col-4">
+        <div class="col-3">
           <span class="p-float-label">
-            <input pInputText formControlName="cpf" class="w-full" />
+            <input pInputText formControlName="cpf" />
             <label>CPF</label>
           </span>
         </div>
 
-        <!-- Senha -->
-        <div class="col-4">
+      </div>
+
+      <!-- SEÇÃO: SEGURANÇA -->
+      <div class="section-title">Segurança</div>
+
+      <div class="grid form-grid">
+
+        <div class="col-6">
           <span class="p-float-label">
-            <input pPassword formControlName="senha" class="w-full" />
+            <input pPassword formControlName="senha" toggleMask="true" />
             <label>Senha</label>
           </span>
         </div>
 
-        <!-- Checkbox -->
-        <div class="col-12">
+        <div class="col-6 checkbox-box">
           <p-checkbox
             formControlName="senhaInicial"
             [binary]="true"
-            label="Forçar troca de senha no primeiro login"
+            label="Forçar troca no primeiro login"
           ></p-checkbox>
         </div>
+
       </div>
+
     </form>
 
+    <!-- FOOTER -->
     <ng-template pTemplate="footer">
       <button
         pButton
@@ -114,5 +130,6 @@
         [loading]="loading"
       ></button>
     </ng-template>
+
   </div>
 </p-dialog>

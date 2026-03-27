@@ -1,28 +1,125 @@
-/* ... (mantenha seus estilos anteriores e adicione estes) ... */
+:host ::ng-deep .p-dialog .p-dialog-content {
+  padding: 0;
+}
 
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-group h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.title-group small {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+/* FORM */
+.form-container {
+  padding: 20px;
+}
+
+/* SEÇÕES */
+.section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin: 10px 0 15px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+/* GRID FIX */
+.form-grid {
+  margin-bottom: 18px;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -8px;
+  margin-right: -8px;
+}
+
+.grid > [class*="col-"] {
+  padding: 8px;
+}
+
+/* COLS */
+.col-12 { width: 100%; }
+.col-8 { width: 66.6667%; }
+.col-6 { width: 50%; }
+.col-4 { width: 33.3333%; }
+.col-3 { width: 25%; }
+
+/* INPUTS */
+.p-float-label {
+  width: 100%;
+}
+
+.p-float-label input,
+.p-dropdown,
+.p-password {
+  width: 100%;
+}
+
+/* CHECKBOX */
+.checkbox-box {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* AVATAR */
 .avatar-preview {
   width: 45px;
   height: 45px;
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid #e2e8f0;
-  
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
 }
 
-.checkbox-container {
-  padding: 12px 15px;
-  background: #f1f5f9;
-  border-radius: 8px;
+.avatar-preview img {
   width: 100%;
-  display: flex;
-  align-items: center;
+  height: 100%;
+  object-fit: cover;
 }
 
-.custom-content {
-  min-width: 850px; /* Aumentado levemente para acomodar melhor os campos */
+/* FOOTER */
+:host ::ng-deep .p-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+  .col-8,
+  .col-6,
+  .col-4,
+  .col-3 {
+    width: 100%;
+  }
 }

@@ -1,158 +1,120 @@
-import { Component, inject, Inject, Injectable } from '@angular/core';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import {
-  MatDialog,
-  MAT_DIALOG_DATA,
-  MatDialogRef,
-  MatDialogModule,
-} from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-
-// --- INTERFACE DE DADOS ---
-export interface ToastData {
-  type: 'success' | 'danger' | 'info';
-  title: string;
-  message: string;
-}
-
-// --- COMPONENTE INTERNO (Mini-Dialog) ---
-// ... (mantenha os imports anteriores)
-
-@Component({
-  selector: 'app-toast-dialog',
-  standalone: true,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule],
-  template: `
-    <div class="mini-dialog" [ngClass]="data.type">
-      <div class="header">
-        <mat-icon
-          ><i [className]="getIcon()" style="font-size: 2rem"></i
-        ></mat-icon>
-        <span>{{ data.title }}</span>
-      </div>
-      <div mat-dialog-content>
-        <p>{{ data.message }}</p>
-      </div>
-      <div mat-dialog-actions align="end">
-        <button mat-button (click)="ref.close(false)">CANCELAR</button>
-        <button mat-raised-button color="primary" (click)="ref.close(true)">
-          CONFIRMAR
-        </button>
-      </div>
-    </div>
-  `,
-  styles: [
-    `
-      .mini-dialog {
-        padding: 8px;
-      }
-      .header {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-weight: bold;
-        font-size: 1.1rem;
-        margin-bottom: 12px;
-      }
-      .success {
-        color: #2e7d32;
-      }
-      .danger {
-        color: #d32f2f;
-      }
-      .info {
-        color: #0288d1;
-      }
-      p {
-        color: #444;
-        margin-bottom: 20px;
-      }
-      button {
-        font-weight: bold;
-      }
-    `,
-  ],
-})
-class ToastDialogComponent {
-  constructor(
-    public ref: MatDialogRef<ToastDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ToastData,
-  ) {}
-
-  getIcon() {
-    switch (this.data.type) {
-      case 'success':
-        return 'pi pi-check-circle';
-      case 'danger':
-        return 'pi pi-exclamation-triangle';
-      case 'info':
-        return 'pi pi-info-circle';
-      default:
-        return 'pi pi-bell';
-    }
-  }
-}
+import { Injectable } from '@angular/core';
+import Swal, { SweetAlertIcon, SweetAlertResult } from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ToastService {
-  private snackBar = inject(MatSnackBar);
-  private dialog = inject(MatDialog);
+export class AlertService {
+  
+  // Configuração padrão para Toasts
+  private toastConfig = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer);
+      toast.addEventListener('mouseleave', Swal.resumeTimer);
+    }
+  });
 
-  // Método mestre que todos os outros vão usar
-  private openDialog(type: 'success' | 'danger' | 'info', title: string, message: string) {
-    const dialogRef = this.dialog.open(ToastDialogComponent, {
-      width: '380px',
-      data: { type, title, message },
-      disableClose: true,
+  constructor() {}
+
+  // --- 1. DIÁLOGOS DE CONFIRMAÇÃO DUPLA (Async) ---
+  // Retorna Promise<boolean>
+  async confirm(
+    title: string, 
+    text: string, 
+    type: 'success' | 'error' | 'warning' | 'info' = 'warning',
+    confirmButtonText: string = 'Confirmar',
+    cancelButtonText: string = 'Cancelar'
+  ): Promise<boolean> {
+    
+    const result = await Swal.fire({
+      title: title,
+      text: text,
+      icon: type as SweetAlertIcon,
+      showCancelButton: true,
+      confirmButtonText: confirmButtonText,
+      cancelButtonText: cancelButtonText,
+      confirmButtonColor: this.getColor(type),
+      cancelButtonColor: '#6e7881',
+      reverseButtons: true, // Botão de confirmar à direita
+      allowOutsideClick: () => !Swal.isLoading() // Bloqueia fechar se estiver carregando
     });
-    return dialogRef.afterClosed(); // <--- Isso retorna o Observable (true ou false)
+
+    return result.isConfirmed;
   }
 
-  // Agora suas funções retornam o resultado do diálogo
-  confirm(type: 'success' | 'danger' | 'info', title: string, message: string) {
-    return this.openDialog(type, title, message);
+  // --- CONFIRMAÇÃO COM VALIDAÇÃO ASYNC (Ex: Deletar via API) ---
+  async confirmAsync(
+    title: string,
+    text: string,
+    callback: () => Promise<any>,
+    type: 'success' | 'error' | 'warning' = 'warning'
+  ) {
+    return Swal.fire({
+      title: title,
+      text: text,
+      icon: type as SweetAlertIcon,
+      showCancelButton: true,
+      confirmButtonText: 'Sim, prosseguir',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: this.getColor(type),
+      showLoaderOnConfirm: true,
+      preConfirm: async () => {
+        try {
+          return await callback(); // Executa sua função de API aqui
+        } catch (error: any) {
+          Swal.showValidationMessage(`Erro: ${error.message || 'Falha na operação'}`);
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    });
   }
 
-  dialogErro(title: string, message: string) {
-    return this.openDialog('danger', title, message);
+  // --- 2. DIÁLOGOS DE INFORMAÇÃO (Somente OK) ---
+  dialog(title: string, message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info') {
+    return Swal.fire({
+      title: title,
+      text: message,
+      icon: type as SweetAlertIcon,
+      confirmButtonColor: this.getColor(type),
+      confirmButtonText: 'OK'
+    });
   }
 
-  dialogInfo(title: string, message: string) {
-    return this.openDialog('info', title, message);
-  }
+  // Atalhos rápidos para diálogos
+  success(title: string, message: string = '') { return this.dialog(title, message, 'success'); }
+  error(title: string, message: string = '') { return this.dialog(title, message, 'error'); }
+  info(title: string, message: string = '') { return this.dialog(title, message, 'info'); }
 
-  dialogSuccess(title: string, message: string) {
-    return this.openDialog('success', title, message);
-  }
-
+  // --- 3. TOASTS (Notificações Rápidas) ---
   toastSuccess(title: string) {
-    this.snackBar.open(title, 'Fechar', {
-      duration: 3000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      panelClass: ['success-snackbar'],
-    });
+    this.toastConfig.fire({ icon: 'success', title: title });
   }
 
-  toastDanger(title: string) {
-    this.snackBar.open(title, 'Fechar', {
-      duration: 3000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      panelClass: ['danger-snackbar'],
-    });
+  toastError(title: string) {
+    this.toastConfig.fire({ icon: 'error', title: title });
   }
 
-  toastInfo() {
-    this.snackBar.open('Informação', 'Fechar', {
-      duration: 3000,
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-      panelClass: ['info-snackbar'],
-    });
+  toastInfo(title: string) {
+    this.toastConfig.fire({ icon: 'info', title: title });
+  }
+
+  toastWarning(title: string) {
+    this.toastConfig.fire({ icon: 'warning', title: title });
+  }
+
+  // --- HELPERS ---
+  private getColor(type: string): string {
+    switch (type) {
+      case 'success': return '#28a745';
+      case 'error': return '#dc3545';
+      case 'warning': return '#ffc107';
+      case 'info': return '#17a2b8';
+      default: return '#3085d6';
+    }
   }
 }

@@ -14,7 +14,7 @@
   <div class="search-container mb-4">
     <div class="p-input-icon-left w-full">
       <i class="pi pi-search"></i>
-      <input type="text" pInputText placeholder="Buscar por nome ou matrícula..." 
+      <input type="text" pInputText placeholder="Buscar por NomeFornec ou matrícula..." 
              [(ngModel)]="filtroTexto" (input)="aplicarFiltro()" class="w-full">
     </div>
   </div>
@@ -36,19 +36,19 @@
         <tr *ngFor="let func of funcionariosFiltrados">
           <td>
             <div class="flex align-items-center gap-3">
-              <div class="avatar">{{ getIniciais(func.nome) }}</div>
+              <div class="avatar">{{ getIniciais(func.NomeFunc) }}</div>
               <div class="flex flex-column">
-                <span class="font-bold">{{ func.nome }}</span>
-                <small class="text-muted">{{ func.email }}</small>
+                <span class="font-bold">{{ func.NomeFunc }}</span>
+                <small class="text-muted">{{ func.EmailFunc }}</small>
               </div>
             </div>
           </td>
-          <td><code>{{ func.matricula }}</code></td>
-          <td>{{ func.cpf }}</td>
-          <td><span class="region-badge">{{ func.regiao }}</span></td>
+          <td><code>{{ func.MatriculaFunc }}</code></td>
+          <td>{{ func.CPFFunc }}</td>
+          <td><span class="region-badge">{{ func.RegiaoFunc }}</span></td>
           <td>
-            <span class="badge" [ngClass]="func.ativo ? 'active' : 'inactive'">
-              {{ func.ativo ? 'Ativo' : 'Inativo' }}
+            <span class="badge" [ngClass]="func.Status ? 'active' : 'inactive'">
+              {{ func.Status ? 'Ativo' : 'Inativo' }}
             </span>
           </td>
           <td class="text-right actions">
@@ -88,8 +88,8 @@
         </div>
 
         <div class="form-group">
-          <label>Nome Completo</label>
-          <input type="text" [(ngModel)]="funcionarioSelecionado.nome" placeholder="Nome do funcionário">
+          <label>NomeFornec Completo</label>
+          <input type="text" [(ngModel)]="funcionarioSelecionado.NomeFornec" placeholder="NomeFornec do funcionário">
         </div>
 
         <div class="form-group">

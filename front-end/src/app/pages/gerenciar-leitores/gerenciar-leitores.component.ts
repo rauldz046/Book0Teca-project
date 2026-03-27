@@ -1,10 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { ClientesService } from 'src/app/services/clientes.service';
+import { ClientesService } from 'src/app/services/Clientes.service';
 import { UsuariosLogados } from '../../models/clientes.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalEditClienteComponent } from './modal-edit-cliente/modal-edit-cliente.component';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ToastService } from 'src/app/utils/toast-alert-service.service';
+import { AlertService } from 'src/app/utils/toast-alert-service.service';
 
 @Component({
   selector: 'app-gerenciar-leitores',
@@ -15,7 +15,7 @@ import { ToastService } from 'src/app/utils/toast-alert-service.service';
 export class GerenciarLeitoresComponent implements OnInit {
   private clienteService = inject(ClientesService);
   private dialog = inject(MatDialog);
-  alert = inject(ToastService);
+  alert = inject(AlertService);
   private confirmationService = inject(ConfirmationService);
 
   usuariosLogados: UsuariosLogados[] = [];
@@ -34,7 +34,7 @@ export class GerenciarLeitoresComponent implements OnInit {
         console.log(this.usuariosLogados);
       },
       error: () => {
-        this.alert.dialogErro('Erro', 'Falha ao carregar usuários');
+        this.alert.error('Erro', 'Falha ao carregar usuários');
         this.loading = false;
       },
     });
@@ -74,7 +74,7 @@ export class GerenciarLeitoresComponent implements OnInit {
           next: (res) => {
             if (res) {
               if (res.mensagem === 'success') {
-                this.alert.dialogSuccess(
+                this.alert.success(
                   'Atualizado',
                   `O usuário agora está ${novaDescricao}`,
                 );
@@ -82,14 +82,14 @@ export class GerenciarLeitoresComponent implements OnInit {
             }
           },
           error: () => {
-            this.alert.dialogErro(
+            this.alert.error(
               'Erro',
               'Falha ao atualizar status do usuário',
             );
           },
         });
 
-        this.alert.dialogSuccess(
+        this.alert.success(
           'Atualizado',
           `O usuário agora está ${novaDescricao}`,
         );
@@ -108,7 +108,7 @@ export class GerenciarLeitoresComponent implements OnInit {
         this.usuariosLogados = this.usuariosLogados.filter(
           (u) => u.idUsuario !== user.idUsuario,
         );
-        this.alert.dialogSuccess(
+        this.alert.success(
           'Excluído',
           'Usuário removido da base de dados',
         );

@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ClientesService } from 'src/app/services/clientes.service';
+import { ClientesService } from 'src/app/services/Clientes.service';
 
 @Component({
   selector: 'app-emprestimos-usuarios',
