@@ -1,10 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { ClientesService } from 'src/app/services/Clientes.service';
 import { UsuariosLogados } from '../../models/clientes.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalEditClienteComponent } from './modal-edit-cliente/modal-edit-cliente.component';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AlertService } from 'src/app/utils/toast-alert-service.service';
+import { ClientesService } from 'src/app/services/Clientes.service';
 
 @Component({
   selector: 'app-gerenciar-leitores',

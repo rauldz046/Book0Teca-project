@@ -1,0 +1,27 @@
+:host {
+    .card {
+        padding: 2rem;
+        background: var(--surface-card);
+        border-radius: 10px;
+        margin: 1rem;
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    .mr-2 {
+        margin-right: 0.5rem;
+    }
+
+    // Status custom colors se não quiser usar o p-tag padrão
+    .status-atrasado {
+        color: #d32f2f;
+        font-weight: bold;
+    }
+}

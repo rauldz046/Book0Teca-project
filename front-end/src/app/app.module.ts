@@ -52,7 +52,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SignInFormUserComponent } from './pages/auth-login/sign-in-form-user/sign-in-form-user.component';
-import { InputMaskModule } from 'primeng/inputmask'
+import { InputMaskModule } from 'primeng/inputmask';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { MatIconModule } from '@angular/material/icon';
@@ -63,13 +63,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DataViewModule } from 'primeng/dataview';
 import { DividerModule } from 'primeng/divider';
 import { RadioButtonModule } from 'primeng/radiobutton';
-
-// Adicione-os no array 'imports' do seu @NgModule
-
-
-
-
-
+import { ToolbarModule } from 'primeng/toolbar';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @NgModule({
   declarations: [
@@ -139,9 +134,10 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     ProgressSpinnerModule,
     DataViewModule,
     DividerModule,
-    RadioButtonModule
+    RadioButtonModule,
+    ToolbarModule,
   ],
-  providers: [],
+  providers: [MessageService, ConfirmationService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

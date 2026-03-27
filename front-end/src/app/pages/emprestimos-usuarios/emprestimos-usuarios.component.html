@@ -1,1 +1,93 @@
-<p>emprestimos-usuarios works!</p>
+<div class="card">
+    <p-toast></p-toast>
+    <p-confirmDialog></p-confirmDialog>
+
+    <p-toolbar styleClass="mb-4 gap-2">
+        <ng-template pTemplate="left">
+            <h2 class="m-0">Gerenciamento de Empréstimos</h2>
+        </ng-template>
+        <ng-template pTemplate="right">
+            <button pButton pRipple label="Novo Empréstimo" icon="pi pi-plus" class="p-button-success" (click)="abrirNovo()"></button>
+        </ng-template>
+    </p-toolbar>
+
+    <p-table [value]="emprestimos" [rows]="10" [paginator]="true" [filterDelay]="0" 
+             [globalFilterFields]="['livroTitulo', 'usuarioNome']"  class="p-datatable-striped">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Livro</th>
+                <th>Usuário</th>
+                <th>Data Empréstimo</th>
+                <th>Previsão Devolução</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-emprestimo>
+            <tr>
+                <td>{{emprestimo.livroTitulo}}</td>
+                <td>{{emprestimo.usuarioNome}}</td>
+                <td>{{emprestimo.dataEmprestimo | date: 'dd/MM/yyyy'}}</td>
+                <td>{{emprestimo.dataPrevisaoDevolucao | date: 'dd/MM/yyyy'}}</td>
+                <td>
+                    <p-tag [value]="emprestimo.status"></p-tag>
+                </td>
+                <td>
+                    <button pButton pRipple icon="pi pi-check-square" class="p-button-rounded p-button-success mr-2" 
+                            (click)="devolverLivro(emprestimo)" pTooltip="Devolver" [disabled]="emprestimo.status === 'DEVOLVIDO'"></button>
+                    <button pButton pRipple icon="pi pi-refresh" class="p-button-rounded p-button-warning" 
+                            (click)="renovarEmprestimo(emprestimo)" pTooltip="Renovar" [disabled]="emprestimo.status === 'DEVOLVIDO'"></button>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<!-- Modal Novo Empréstimo -->
+<p-dialog [(visible)]="emprestimoDialog" [style]="{width: '450px'}" 
+          header="Novo Empréstimo" [modal]="true" styleClass="p-fluid">
+
+    <ng-template pTemplate="content">
+
+        <!-- Usuário -->
+        <div class="field mb-3">
+            <label for="usuario">Usuário</label>
+            <p-dropdown 
+                [options]="usuarios"
+                [(ngModel)]="novoEmprestimo.usuario"
+                placeholder="Selecione o Usuário"
+                optionLabel="nome">
+            </p-dropdown>
+        </div>
+
+        <!-- Livro -->
+        <div class="field mb-3">
+            <label for="livro">Livro</label>
+            <p-dropdown 
+                [options]="livrosDisponiveis"
+                [(ngModel)]="novoEmprestimo.livro"
+                placeholder="Selecione o Livro"
+                optionLabel="titulo">
+            </p-dropdown>
+        </div>
+
+        <!-- Data -->
+        <div class="field mb-3">
+            <label for="dataDevolucao">Previsão de Devolução</label>
+            <p-calendar 
+                [(ngModel)]="novoEmprestimo.dataPrevisaoDevolucao"
+                dateFormat="dd/mm/yy">
+            </p-calendar>
+        </div>
+
+    </ng-template>
+
+    <ng-template pTemplate="footer">
+        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-text"
+                (click)="fecharDialog()"></button>
+
+        <button pButton label="Confirmar" icon="pi pi-check" class="p-button-success"
+                (click)="salvarEmprestimo()"></button>
+    </ng-template>
+
+</p-dialog>
