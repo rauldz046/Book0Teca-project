@@ -60,9 +60,9 @@ export class NavComponent implements OnInit {
 
   ngOnInit() {
     console.log(localStorage.getItem('infoSessao'));
-    if(!localStorage.getItem('infoSessao')) {
-      this.router.navigate(['/auth/log-in']);
-    }
+    // if(!localStorage.getItem('infoSessao')) {
+    //   this.router.navigate(['/auth/log-in']);
+    // }
     this.items = this.generateMenu();
   }
 

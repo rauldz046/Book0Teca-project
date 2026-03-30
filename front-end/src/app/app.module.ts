@@ -65,6 +65,12 @@ import { DividerModule } from 'primeng/divider';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { RatingModule } from 'primeng/rating';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { InputMaskModule as PrimeInputMaskModule } from 'primeng/inputmask';
+import { InputNumberModule as PrimeInputNumberModule } from 'primeng/inputnumber';
+import { InputTextareaModule as PrimeInputTextareaModule } from 'primeng/inputtextarea';
 
 @NgModule({
   declarations: [
@@ -136,6 +142,13 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     DividerModule,
     RadioButtonModule,
     ToolbarModule,
+    RatingModule,
+    InputNumberModule,
+    InputTextareaModule,
+    PrimeInputMaskModule,
+    PrimeInputNumberModule,
+    PrimeInputTextareaModule
+  
   ],
   providers: [MessageService, ConfirmationService, NavComponent,],
   bootstrap: [AppComponent],
