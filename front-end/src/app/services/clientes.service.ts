@@ -20,7 +20,7 @@ export class ClientesService {
   }
 
   CriarUsuario(data: any) {
-    const url = this.url + 'usuarios/create';
+    const url = this.url + 'usuarios/cretateUser';
     return this.http.post<UsuariosLogados>(url, data);
   }
 

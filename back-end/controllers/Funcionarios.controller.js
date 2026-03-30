@@ -38,20 +38,43 @@ controller.FuncionariosCreate = async (req, res) => {
 
 /* LOGIN */
 controller.loginValidation = async (req, res) => {
-  const { email, senha } = req.body;
+  const { email, senha } = req.body; 
 
   try {
-    const funcionario = await Funcionario.findOne({
-      where: { EmailFunc: email, SenhaFunc: senha },
+    const infoUser = await Funcionario.findOne({
+      where: { EmailFunc: email },
     });
 
-    if (!funcionario) {
-      return res.status(401).json({ message: "Usuário ou senha incorretos" });
+    if (!infoUser || !senha) {
+      return res.status(401).json({ message: "Usuário ou senha inválidos" });
     }
 
-    return res.status(200).json(funcionario);
+    // const senhaValida = await bcrypt.compare(senha, infoUser.Senha);
+
+    // if (!senhaValida) {
+    //   return res.status(401).json({ message: "Usuário ou senha inválidos" });
+
+    // }
+
+    const infoSessao = {
+      idFuncionario: infoUser.idFuncionario,
+      MatriculaFunc: infoUser.MatriculaFunc,
+      NomeFunc: infoUser.NomeFunc,
+      EmailFunc: infoUser.EmailFunc,
+      CPFFunc: infoUser.CPFFunc,
+      RegiaoFunc: infoUser.RegiaoFunc,
+      TelefoneFunc: infoUser.TelefoneFunc,
+      CadastradioPor: infoUser.CadastradoPor,
+      idPerfilFuncionarios: infoUser.idPerfilFuncionarios,
+      StatusAtividadeGeral_idStatus: infoUser.StatusAtividadeGeral_idStatus,
+      created_at: infoUser.created_at,
+      updated_at: infoUser.updated_at,
+    };
+    
+
+    return res.status(200).json({ menssage: "sucesso", infoSessao });
   } catch (err) {
-    res.status(500).json(err.message);
+    return res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
 

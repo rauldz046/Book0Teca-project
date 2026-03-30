@@ -137,7 +137,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     RadioButtonModule,
     ToolbarModule,
   ],
-  providers: [MessageService, ConfirmationService],
+  providers: [MessageService, ConfirmationService, NavComponent,],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

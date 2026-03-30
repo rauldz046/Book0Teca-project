@@ -5,6 +5,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AlertService } from 'src/app/utils/toast-alert-service.service';
 import { UsuariosLogados } from 'src/app/models/clientes.model';
+import { catchError, of, switchMap } from 'rxjs';
+import { NavComponent } from 'src/app/componentes/nav/nav.component';
 
 @Component({
   selector: 'app-auth-login',
@@ -16,6 +18,7 @@ export class AuthLoginComponent implements OnInit {
   private clienteService = inject(ClientesService); // Corrigido para camelCase (padrão TS)
   private alert = inject(AlertService);
   private funcionarioService = inject(FuncionariosService);
+  private nav = inject(NavComponent);
 
   sessaoUser!: UsuariosLogados;
   isLoading = false; // Adicionado para controle de loading no botão
@@ -32,35 +35,35 @@ export class AuthLoginComponent implements OnInit {
     this.router.navigate(['auth/sign-in']);
   }
 
-  submit() {
+
+
+
+submit() {
   this.isLoading = true;
   const infoUser = this.form.getRawValue();
 
-  this.clienteService.LoginValidation(infoUser).subscribe({
-    next: (res: UsuariosLogados) => {
-      if (res !== null) {
-        this.isLoading = false;
+  this.clienteService.LoginValidation(infoUser).pipe(
+    switchMap(res => {
+      if (!res) return this.funcionarioService.LoginValidation(infoUser);
+      return of(res);
+    }),
+    catchError(err => {
+      return this.funcionarioService.LoginValidation(infoUser);
+    })
+  ).subscribe({
+    next: (res: any) => {
+      this.isLoading = false;
+      
+      if (res && res.infoSessao) {
+        this.nav.infoAuthSessao(res.infoSessao);
         this.router.navigate(['/home']);
       } else {
-        this.funcionarioService.LoginValidation(infoUser).subscribe({
-          next: (res) => {
-            this.isLoading = false;
-            if (res !== null) {
-              this.router.navigate(['/home']);
-            } else {
-              this.alert.error('E-mail ou senha incorretos.');
-            }
-          },
-          error: (err) => {
-            this.isLoading = false;
-            this.alert.error('Falha no Login', "E-mail ou senha incorretos.");
-          }
-        });
+        this.alert.error('Erro', 'Usuário ou senha inválidos');
       }
     },
-    error: (err: any) => {
+    error: (err) => {
       this.isLoading = false;
-      this.alert.error('Falha no Login', err.message);
+      this.alert.error('Erro', 'Usuário não encontrado em nenhuma base.');
     }
   });
 }

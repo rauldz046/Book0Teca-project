@@ -117,6 +117,7 @@ CREATE TABLE UsuariosSistema (
   Email VARCHAR(200),
   SenhaInicial TINYINT,
   Status INT,
+  fotoperfil VARCHAR(2000),
   InfoEndereco INT,
   InfoBancario INT,
   created_at DATE,
@@ -294,13 +295,13 @@ INSERT INTO FormularioSolicitacao (FormularioJSON, created_at, updated_at) VALUE
 ('{"campo":"descricao"}', CURDATE(), CURDATE());
 
 INSERT INTO UsuariosSistema
-(Nome, CPF, Telefone, Email, Senha, SenhaInicial, Status, InfoEndereco, InfoBancario, created_at, updated_at)
+(Nome, CPF, Telefone, Email, Senha, SenhaInicial, Status, InfoEndereco, InfoBancario,fotoperfil, created_at, updated_at)
 VALUES
-('João Silva','11111111111','31999999901','joao@email.com','123',1,1,1,1,CURDATE(),CURDATE()),
-('Maria Souza','22222222222','31999999902','maria@email.com','123',1,1,2,2,CURDATE(),CURDATE()),
-('Pedro Costa','33333333333','31999999903','pedro@email.com','123',1,1,3,3,CURDATE(),CURDATE()),
-('Ana Lima','44444444444','31999999904','ana@email.com','123',1,1,4,4,CURDATE(),CURDATE()),
-('Lucas Rocha','55555555555','31999999905','lucas@email.com','123',1,1,5,5,CURDATE(),CURDATE());
+('João Silva','11111111111','31999999901','joao@email.com','123',1,1,1,1,'',CURDATE(),CURDATE()),
+('Maria Souza','22222222222','31999999902','maria@email.com','123',1,1,2,2,'',CURDATE(),CURDATE()),
+('Pedro Costa','33333333333','31999999903','pedro@email.com','123',1,1,3,3,'',CURDATE(),CURDATE()),
+('Ana Lima','44444444444','31999999904','ana@email.com','123',1,1,4,4,'',CURDATE(),CURDATE()),
+('Lucas Rocha','55555555555','31999999905','lucas@email.com','123',1,1,5,5,'',CURDATE(),CURDATE());
 
 INSERT INTO FuncionariosSistema
 (MatriculaFunc, NomeFunc, CPFFunc, EmailFunc, RegiaoFunc, SenhaFunc, SenhaInicialFunc,
@@ -308,7 +309,7 @@ INSERT INTO FuncionariosSistema
  InfoBancario_IdInfoBancario, InfoEndereco_idInfoEnd,
  created_date, update_date)
 VALUES
-('F001','Carlos Admin','111','admin@email.com','MG','123',1,1,1,1,1,CURDATE(),CURDATE()),
+('F001','Admin','111','admin@email.com','MG','TecInfo@2025.1',0,1,1,1,1,CURDATE(),CURDATE()),
 ('F002','Bruna Lima','222','bru@email.com','MG','123',1,2,1,2,2,CURDATE(),CURDATE()),
 ('F003','Marcos Silva','333','marc@email.com','MG','123',1,3,1,3,3,CURDATE(),CURDATE()),
 ('F004','Juliana Rocha','444','ju@email.com','MG','123',1,4,1,4,4,CURDATE(),CURDATE()),
