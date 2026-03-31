@@ -1,1 +1,42 @@
-<p>saida-livros works!</p>
+<div class="p-4">
+  <div class="flex justify-content-between align-items-center mb-4">
+    <h2 class="m-0"><i class="pi pi-chart-line mr-2 text-primary"></i>Relatório de Baixas (Saídas)</h2>
+    <button pButton label="Exportar Inventário" icon="pi pi-file-excel" class="p-button-success"></button>
+  </div>
+
+  <div class="grid mb-4">
+    <div class="col-12 md:col-4">
+      <div class="card-kpi p-3 shadow-1 border-round surface-card border-left-3 border-red-500">
+        <span class="text-500 font-medium block mb-2">Total de Baixas (Mês)</span>
+        <div class="text-900 font-bold text-2xl">14 Livros</div>
+      </div>
+    </div>
+    <div class="col-12 md:col-4">
+      <div class="card-kpi p-3 shadow-1 border-round surface-card border-left-3 border-orange-500">
+        <span class="text-500 font-medium block mb-2">Principal Motivo</span>
+        <div class="text-900 font-bold text-2xl">Dano Físico</div>
+      </div>
+    </div>
+  </div>
+
+  <p-table [value]="saidas" styleClass="p-datatable-gridlines">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Livro</th>
+        <th>ISBN</th>
+        <th>Data da Baixa</th>
+        <th>Motivo</th>
+        <th>Responsável</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-s>
+      <tr>
+        <td class="font-bold">{{s.livro}}</td>
+        <td>{{s.isbn}}</td>
+        <td>{{s.data | date:'dd/MM/yyyy'}}</td>
+        <td><p-tag [value]="s.motivo" severity="warning"></p-tag></td>
+        <td>{{s.responsavel}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

@@ -66,11 +66,15 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { RatingModule } from 'primeng/rating';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextareaModule } from 'primeng/inputtextarea';
-import { InputMaskModule as PrimeInputMaskModule } from 'primeng/inputmask';
-import { InputNumberModule as PrimeInputNumberModule } from 'primeng/inputnumber';
-import { InputTextareaModule as PrimeInputTextareaModule } from 'primeng/inputtextarea';
+import  {TabViewModule} from 'primeng/tabview';
+import { CalendarModule } from 'primeng/calendar';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+
+
+
+
 
 @NgModule({
   declarations: [
@@ -143,14 +147,13 @@ import { InputTextareaModule as PrimeInputTextareaModule } from 'primeng/inputte
     RadioButtonModule,
     ToolbarModule,
     RatingModule,
-    InputNumberModule,
-    InputTextareaModule,
-    PrimeInputMaskModule,
-    PrimeInputNumberModule,
-    PrimeInputTextareaModule
-  
+    TabViewModule,
+    CalendarModule,
+    SelectButtonModule,
+    ConfirmPopupModule,
+    AutoCompleteModule
   ],
-  providers: [MessageService, ConfirmationService, NavComponent,],
+  providers: [MessageService, ConfirmationService, NavComponent],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

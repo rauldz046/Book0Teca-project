@@ -1,7 +1,7 @@
+import { Emprestimo } from 'src/app/models/emprestimos';
 import { AlertService } from 'src/app/utils/toast-alert-service.service';
 import { Component, inject, OnInit } from '@angular/core';
 import { ClientesService } from 'src/app/services/Clientes.service';
-import { Emprestimo } from '../../models/emprestimos';
 
 @Component({
   selector: 'app-emprestimos-usuarios',
@@ -44,18 +44,22 @@ export class EmprestimosUsuariosComponent {
       {
         id: 1,
         livroTitulo: 'O Senhor dos Anéis',
-        usuarioNome: 'João Silva',
+        leitor: 'João Silva',
         dataEmprestimo: new Date(),
         dataPrevisaoDevolucao: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         status: 'ATIVO',
+        renovacoes: 0,
+        matricula: '2023001',
       },
       {
         id: 2,
         livroTitulo: 'Angular Pro',
-        usuarioNome: 'Maria Souza',
+        leitor: 'Maria Souza',
         dataEmprestimo: new Date(2023, 5, 1),
         dataPrevisaoDevolucao: new Date(2023, 5, 8),
         status: 'ATRASADO',
+        renovacoes: 0,
+        matricula: '2023002',
       },
     ];
   }
@@ -94,7 +98,6 @@ export class EmprestimosUsuariosComponent {
       status: 'ATIVO',
     };
 
-
     this.alert.success('Sucesso', 'Livro emprestado com sucesso');
 
     this.emprestimoDialog = false;
@@ -116,7 +119,7 @@ export class EmprestimosUsuariosComponent {
     const novaData = new Date(emprestimo.dataPrevisaoDevolucao);
     novaData.setDate(novaData.getDate() + 7);
     emprestimo.dataPrevisaoDevolucao = novaData;
-    emprestimo.status = 'RENOVADO';
+    emprestimo.status = 'ATIVO';
 
     this.alert.success('Sucesso', 'Livro renovado com sucesso');
   }

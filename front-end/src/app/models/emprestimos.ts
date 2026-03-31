@@ -1,11 +1,12 @@
 export interface Emprestimo {
-  id?: number;
+  id: number;
+  leitor: string;
+  matricula: string;
   livroTitulo: string;
-  usuarioNome: string;
   dataEmprestimo: Date;
   dataPrevisaoDevolucao: Date;
-  dataDevolucaoReal?: Date;
-  status: 'ATIVO' | 'DEVOLVIDO' | 'ATRASADO' | 'RENOVADO';
+  renovacoes: number;
+  status: 'ATIVO' | 'ATRASADO' | 'DEVOLVIDO';
 }
 
 export interface EmprestimoAtivo {

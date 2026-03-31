@@ -1,0 +1,28 @@
+:host {
+    .surface-card {
+        border: 1px solid var(--surface-border);
+    }
+
+    .p-datatable-sm {
+        .p-datatable-tbody > tr > td {
+            padding: 0.75rem 0.5rem;
+        }
+    }
+
+    // Estilo para o Saldo Negativo se houver
+    .text-red-600 {
+        color: #dc2626 !important;
+    }
+
+    .text-green-600 {
+        color: #16a34a !important;
+    }
+
+    ::ng-deep {
+        .p-tag-rounded {
+            padding-left: 0.8rem;
+            padding-right: 0.8rem;
+            font-size: 0.7rem;
+        }
+    }
+}

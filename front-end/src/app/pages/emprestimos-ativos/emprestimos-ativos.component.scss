@@ -1,0 +1,41 @@
+:host {
+    .p-datatable-lg {
+        .p-datatable-tbody > tr > td {
+            padding: 1.25rem 1rem;
+        }
+    }
+
+    .bg-red-50 {
+        background-color: #fff1f2 !important;
+    }
+
+    .p-badge-info {
+        background-color: var(--blue-100);
+        color: var(--blue-700);
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    ::ng-deep {
+        .p-selectbutton .p-button {
+            background: #ffffff;
+            border-color: #dee2e6;
+            color: #495057;
+            font-size: 0.85rem;
+            
+            &.p-highlight {
+                background: var(--primary-color);
+                border-color: var(--primary-color);
+                color: #ffffff;
+            }
+        }
+        
+        .p-inputgroup-addon {
+            background: #ffffff;
+        }
+    }
+}

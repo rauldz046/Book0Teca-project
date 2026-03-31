@@ -1,1 +1,104 @@
-<p>gerenciamento-financeiro works!</p>
+<div class="p-4">
+  <!-- HEADER -->
+  <div class="flex justify-content-between align-items-start mb-4">
+    <div>
+      <h1 class="text-3xl font-bold m-0 text-900">Gestão de Fluxo de Caixa</h1>
+      <p class="text-600 m-0">Monitoramento de receitas e despesas da biblioteca</p>
+    </div>
+    <div class="flex gap-2">
+      <button pButton label="Novo Lançamento" icon="pi pi-plus" class="p-button-primary"></button>
+      <button pButton label="Exportar Relatório" icon="pi pi-download" class="p-button-outlined"></button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="grid mb-4">
+    <div class="col-12 md:col-4">
+      <div class="surface-card p-4 shadow-1 border-round">
+        <div class="flex align-items-center justify-content-between mb-3">
+          <span class="text-500 font-medium">Total de Entradas</span>
+          <i class="pi pi-arrow-up-right text-green-500 text-2xl"></i>
+        </div>
+        <div class="text-900 font-bold text-3xl">{{totalEntradas | currency:'BRL'}}</div>
+        <div class="text-green-500 font-medium mt-2">↑ 12% <span class="text-500 font-normal">vs mês anterior</span></div>
+      </div>
+    </div>
+    <div class="col-12 md:col-4">
+      <div class="surface-card p-4 shadow-1 border-round">
+        <div class="flex align-items-center justify-content-between mb-3">
+          <span class="text-500 font-medium">Total de Saídas</span>
+          <i class="pi pi-arrow-down-right text-red-500 text-2xl"></i>
+        </div>
+        <div class="text-900 font-bold text-3xl">{{totalSaidas | currency:'BRL'}}</div>
+        <div class="text-red-500 font-medium mt-2">↓ 5% <span class="text-500 font-normal">vs mês anterior</span></div>
+      </div>
+    </div>
+    <div class="col-12 md:col-4">
+      <div class="surface-card p-4 shadow-1 border-round bg-blue-50">
+        <div class="flex align-items-center justify-content-between mb-3">
+          <span class="text-700 font-bold">Saldo Líquido</span>
+          <i class="pi pi-wallet text-blue-500 text-2xl"></i>
+        </div>
+        <div class="text-900 font-bold text-3xl" [class.text-red-600]="saldoGeral < 0">
+            {{saldoGeral | currency:'BRL'}}
+        </div>
+        <div class="text-700 font-medium mt-2">Disponível para reinvestimento</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- GRÁFICO -->
+    <div class="col-12 lg:col-4">
+      <div class="surface-card p-4 shadow-1 border-round h-full">
+        <span class="text-xl font-bold block mb-4">Comparativo Semanal</span>
+        <p-chart type="bar" [data]="chartData" [options]="chartOptions" height="300px"></p-chart>
+      </div>
+    </div>
+
+    <!-- TABELA DETALHADA -->
+    <div class="col-12 lg:col-8">
+      <div class="surface-card p-4 shadow-1 border-round h-full">
+        <div class="flex justify-content-between align-items-center mb-4">
+            <span class="text-xl font-bold">Últimas Movimentações</span>
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" placeholder="Filtrar descrição..." class="p-inputtext-sm" />
+            </span>
+        </div>
+
+        <p-table [value]="transacoes" [rows]="5" [paginator]="true" responsiveLayout="scroll" styleClass="p-datatable-sm">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th>Método</th>
+              <th>Valor</th>
+              <th>Status</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-t>
+            <tr>
+              <td class="text-sm">{{t.data | date:'dd/MM/yy'}}</td>
+              <td>
+                <div class="flex flex-column">
+                    <span class="font-bold">{{t.descricao}}</span>
+                    <small class="text-500">{{t.tipo}}</small>
+                </div>
+              </td>
+              <td><p-tag [value]="t.categoria" severity="info" [rounded]="true"></p-tag></td>
+              <td><i class="pi pi-credit-card mr-2 text-400"></i>{{t.metodoPagamento}}</td>
+              <td class="font-bold" [ngClass]="t.tipo === 'ENTRADA' ? 'text-green-600' : 'text-red-600'">
+                {{t.tipo === 'SAIDA' ? '-' : '+'}} {{t.valor | currency:'BRL'}}
+              </td>
+              <td>
+                <p-tag [value]="t.status" [severity]="getSeverity(t.status)"></p-tag>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>

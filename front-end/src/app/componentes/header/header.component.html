@@ -3,24 +3,43 @@
   <!-- Lado Esquerdo: Logo -->
   <div class="logo-section">
     <a routerLink="/home" class="flex align-items-center">
-      <!-- Logo Principal -->
       <img src="assets/imgs/bookteca-logo.PNG" alt="BookOteca" class="logo-img">
     </a>
   </div>
 
-  <!-- Centro: Busca -->
+  <!-- Centro: Busca Inteligente (Glassmorphism) -->
   <div class="search-section">
     <i class="pi pi-search search-icon"></i>
-    <input
-      pInputText
-      type="text"
-      placeholder="Pesquisar livros, autores ou registros..."
-    />
+    <p-autoComplete 
+      [(ngModel)]="searchQuery" 
+      [suggestions]="filteredRoutes" 
+      (completeMethod)="filterRoutes($event)"
+      (onSelect)="onSelectRoute($event)"
+      field="label"
+      placeholder="Pesquisar ferramentas, livros ou relatórios..."
+      styleClass="library-search"
+      [emptyMessage]="'Nenhum recurso encontrado'"
+      [minLength]="1">
+      
+      <!-- Template de cada item da lista de resultados -->
+      <ng-template let-route pTemplate="item">
+        <div class="flex align-items-center gap-3">
+          <div class="category-icon-circle">
+            <i [class]="route.icon"></i>
+          </div>
+          <div class="flex flex-column">
+            <span class="font-bold text-sm text-800">{{route.label}}</span>
+            <small class="text-500">{{route.category}}</small>
+          </div>
+        </div>
+      </ng-template>
+    </p-autoComplete>
   </div>
 
-  <!-- Lado Direito: Ações (Notificações, etc - opcional) -->
-  <div class="header-actions">
-     <button pButton icon="pi pi-bell" class="p-button-rounded p-button-text p-button-plain text-white" style="color: white !important;"></button>
+  <!-- Lado Direito: Ações -->
+  <div class="header-actions flex align-items-center gap-2">
+     <button pButton icon="pi pi-bell" class="p-button-rounded p-button-text text-white" style="color: white !important;"></button>
+     <!-- Seu Dropdown de Perfil aqui -->
   </div>
 
 </header>
