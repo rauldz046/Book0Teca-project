@@ -1,1 +1,305 @@
-<p>preferencias works!</p>
+<div class="preferencias-page">
+
+    <header class="page-header">
+        <h1>Preferências</h1>
+        <p>Personalize sua experiência e dados da conta</p>
+    </header>
+
+    <div class="container">
+        <div class="grid-layout">
+
+            <!-- Navegacao lateral -->
+            <aside class="settings-nav">
+                <button [class.active]="abaAtiva === 'dados'" (click)="trocarAba('dados')">
+                    <i class="pi pi-user"></i>
+                    <div>
+                        <strong>Dados Pessoais</strong>
+                        <small>Nome, contato e senha</small>
+                    </div>
+                </button>
+
+                <button [class.active]="abaAtiva === 'financeiro'" (click)="trocarAba('financeiro')">
+                    <i class="pi pi-wallet"></i>
+                    <div>
+                        <strong>Financeiro</strong>
+                        <small>Dados bancários e PIX</small>
+                    </div>
+                </button>
+
+                <button [class.active]="abaAtiva === 'acessibilidade'" (click)="trocarAba('acessibilidade')">
+                    <i class="pi pi-eye"></i>
+                    <div>
+                        <strong>Acessibilidade</strong>
+                        <small>Fonte, contraste e leitor</small>
+                    </div>
+                </button>
+
+                <button [class.active]="abaAtiva === 'aparencia'" (click)="trocarAba('aparencia')">
+                    <i class="pi pi-palette"></i>
+                    <div>
+                        <strong>Aparência</strong>
+                        <small>Tema e cores</small>
+                    </div>
+                </button>
+
+                <button [class.active]="abaAtiva === 'notificacoes'" (click)="trocarAba('notificacoes')">
+                    <i class="pi pi-bell"></i>
+                    <div>
+                        <strong>Notificações</strong>
+                        <small>Email, push e WhatsApp</small>
+                    </div>
+                </button>
+            </aside>
+
+            <!-- Conteudo -->
+            <main class="settings-content">
+
+                <!-- ===== DADOS PESSOAIS ===== -->
+                <section class="card" *ngIf="abaAtiva === 'dados'">
+                    <h3>Informações pessoais</h3>
+                    <p class="section-desc">Mantenha seus dados atualizados para receber notificações corretamente.</p>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nome completo</label>
+                            <input type="text" [(ngModel)]="dadosPessoais.nome">
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" [(ngModel)]="dadosPessoais.email">
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone</label>
+                            <input type="text" [(ngModel)]="dadosPessoais.telefone">
+                        </div>
+                        <div class="form-group">
+                            <label>CPF <small>(não editável)</small></label>
+                            <input type="text" [value]="dadosPessoais.cpf" disabled>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary" (click)="salvarDadosPessoais()">
+                            <i class="pi pi-save mr-2"></i>Salvar alterações
+                        </button>
+                    </div>
+
+                    <!-- Troca de senha -->
+                    <h3 class="mt-4">Alterar senha</h3>
+                    <p class="section-desc">Mínimo de 6 caracteres. Recomendado: usar letras, números e símbolos.</p>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Senha atual</label>
+                            <input type="password" [(ngModel)]="senhaAtual">
+                        </div>
+                        <div class="form-group">
+                            <label>Nova senha</label>
+                            <input type="password" [(ngModel)]="senhaNova">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirmar nova senha</label>
+                            <input type="password" [(ngModel)]="senhaConfirmacao">
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-warning" (click)="trocarSenha()">
+                            <i class="pi pi-key mr-2"></i>Alterar senha
+                        </button>
+                    </div>
+                </section>
+
+                <!-- ===== FINANCEIRO ===== -->
+                <section class="card" *ngIf="abaAtiva === 'financeiro'">
+                    <h3>Dados bancários</h3>
+                    <p class="section-desc">Necessário apenas para reembolsos. Dados criptografados conforme LGPD.</p>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Banco</label>
+                            <input type="text" placeholder="Ex: 260 - Nubank" [(ngModel)]="dadosFinanceiros.banco">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de conta</label>
+                            <select [(ngModel)]="dadosFinanceiros.tipoConta">
+                                <option value="corrente">Corrente</option>
+                                <option value="poupanca">Poupança</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Agência</label>
+                            <input type="text" [(ngModel)]="dadosFinanceiros.agencia">
+                        </div>
+                        <div class="form-group">
+                            <label>Conta</label>
+                            <input type="text" [(ngModel)]="dadosFinanceiros.conta">
+                        </div>
+                        <div class="form-group full-row">
+                            <label>Chave PIX</label>
+                            <input type="text" placeholder="E-mail, CPF, celular ou aleatória"
+                                [(ngModel)]="dadosFinanceiros.chavePix">
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary" (click)="salvarDadosFinanceiros()">
+                            <i class="pi pi-save mr-2"></i>Salvar alterações
+                        </button>
+                    </div>
+                </section>
+
+                <!-- ===== ACESSIBILIDADE ===== -->
+                <section class="card" *ngIf="abaAtiva === 'acessibilidade'">
+                    <h3>Acessibilidade</h3>
+                    <p class="section-desc">Recursos para melhorar sua experiência de navegação.</p>
+
+                    <div class="form-group">
+                        <label>Tamanho da fonte</label>
+                        <div class="font-size-selector">
+                            <button *ngFor="let t of tamanhosFonte"
+                                [class.active]="acessibilidade.tamanhoFonte === t.value"
+                                (click)="acessibilidade.tamanhoFonte = $any(t.value)">
+                                <span [class]="'font-' + t.value">{{ t.label }}</span>
+                                <small>{{ t.value }}</small>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="toggle-list">
+                        <label class="toggle-item">
+                            <div>
+                                <strong>Alto contraste</strong>
+                                <p>Realça bordas e textos para melhor leitura.</p>
+                            </div>
+                            <input type="checkbox" [(ngModel)]="acessibilidade.altoContraste">
+                        </label>
+
+                        <label class="toggle-item">
+                            <div>
+                                <strong>Reduzir movimento</strong>
+                                <p>Desabilita animações e transições da interface.</p>
+                            </div>
+                            <input type="checkbox" [(ngModel)]="acessibilidade.reducaoMovimento">
+                        </label>
+
+                        <label class="toggle-item">
+                            <div>
+                                <strong>Otimizar para leitor de tela</strong>
+                                <p>Adiciona descrições extras e labels ARIA.</p>
+                            </div>
+                            <input type="checkbox" [(ngModel)]="acessibilidade.leitorTela">
+                        </label>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary" (click)="salvarAcessibilidade()">
+                            <i class="pi pi-save mr-2"></i>Aplicar
+                        </button>
+                    </div>
+                </section>
+
+                <!-- ===== APARENCIA ===== -->
+                <section class="card" *ngIf="abaAtiva === 'aparencia'">
+                    <h3>Aparência</h3>
+                    <p class="section-desc">Escolha como o sistema aparece pra você.</p>
+
+                    <div class="form-group">
+                        <label>Tema</label>
+                        <div class="theme-selector">
+                            <button *ngFor="let t of temasDisponiveis" [class.active]="aparencia.tema === t.value"
+                                (click)="aparencia.tema = $any(t.value)">
+                                <i [class]="t.icon"></i>
+                                <span>{{ t.label }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cor de acento</label>
+                        <div class="color-picker">
+                            <button *ngFor="let c of coresDisponiveis" class="color-dot"
+                                [class.active]="aparencia.corAcento === c" [style.background]="c"
+                                (click)="aparencia.corAcento = c"></button>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary" (click)="salvarAparencia()">
+                            <i class="pi pi-save mr-2"></i>Aplicar
+                        </button>
+                    </div>
+                </section>
+
+                <!-- ===== NOTIFICACOES ===== -->
+                <section class="card" *ngIf="abaAtiva === 'notificacoes'">
+                    <h3>Notificações</h3>
+                    <p class="section-desc">Escolha como e quando quer ser avisado.</p>
+
+                    <h4 class="group-title">Por e-mail</h4>
+                    <div class="toggle-list">
+                        <label class="toggle-item">
+                            <div>
+                                <strong>Empréstimos e devoluções</strong>
+                                <p>Confirmações e avisos de vencimento.</p>
+                            </div>
+                            <input type="checkbox" [(ngModel)]="notificacoes.emailEmprestimos">
+                        </label>
+
+                        <label class="toggle-item">
+                            <div>
+                                <strong>Multas</strong>
+                                <p>Avisos de multas aplicadas ou em aberto.</p>
+                            </div>
+                            <input type="checkbox" [(ngModel)]="notificacoes.emailMultas">
+                        </label>
+
+                        <label class="toggle-item">
+                            <div>
+                                <strong>Promoções e novidades</strong>
+                                <p>Lançamentos do catálogo e eventos da biblioteca.</p>
+                            </div>
+                            <input type="checkbox" [(ngModel)]="notificacoes.emailPromocoes">
+                        </label>
+                    </div>
+
+                    <h4 class="group-title mt-4">Outros canais</h4>
+                    <div class="toggle-list">
+                        <label class="toggle-item">
+                            <div>
+                                <strong>Push no navegador</strong>
+                                <p>Notificações em tempo real enquanto o sistema estiver aberto.</p>
+                            </div>
+                            <input type="checkbox" [(ngModel)]="notificacoes.pushNavegador">
+                        </label>
+
+                        <label class="toggle-item">
+                            <div>
+                                <strong>WhatsApp</strong>
+                                <p>Comprovantes e lembretes por mensagem.</p>
+                            </div>
+                            <input type="checkbox" [(ngModel)]="notificacoes.whatsapp">
+                        </label>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <label>Avisar com antecedência de</label>
+                        <select [(ngModel)]="notificacoes.diasAntesVencimento">
+                            <option [ngValue]="1">1 dia antes</option>
+                            <option [ngValue]="3">3 dias antes</option>
+                            <option [ngValue]="5">5 dias antes</option>
+                            <option [ngValue]="7">1 semana antes</option>
+                        </select>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn btn-primary" (click)="salvarNotificacoes()">
+                            <i class="pi pi-save mr-2"></i>Salvar preferências
+                        </button>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+</div>

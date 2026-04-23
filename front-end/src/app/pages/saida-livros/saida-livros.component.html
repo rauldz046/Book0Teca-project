@@ -1,42 +1,210 @@
-<div class="p-4">
-  <div class="flex justify-content-between align-items-center mb-4">
-    <h2 class="m-0"><i class="pi pi-chart-line mr-2 text-primary"></i>Relatório de Baixas (Saídas)</h2>
-    <button pButton label="Exportar Inventário" icon="pi pi-file-excel" class="p-button-success"></button>
-  </div>
-
-  <div class="grid mb-4">
-    <div class="col-12 md:col-4">
-      <div class="card-kpi p-3 shadow-1 border-round surface-card border-left-3 border-red-500">
-        <span class="text-500 font-medium block mb-2">Total de Baixas (Mês)</span>
-        <div class="text-900 font-bold text-2xl">14 Livros</div>
-      </div>
+<div class="saida-livros-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>
+        <i class="pi pi-chart-line"></i>
+        Relatório de Baixas (Saídas)
+      </h1>
+      <p class="subtitle">Acompanhe os livros removidos do acervo e seus motivos</p>
     </div>
-    <div class="col-12 md:col-4">
-      <div class="card-kpi p-3 shadow-1 border-round surface-card border-left-3 border-orange-500">
-        <span class="text-500 font-medium block mb-2">Principal Motivo</span>
-        <div class="text-900 font-bold text-2xl">Dano Físico</div>
-      </div>
+    <div class="header-actions">
+      <button pButton label="Exportar Relatório" icon="pi pi-file-excel"
+        class="p-button-success p-button-outlined"></button>
+      <button pButton label="Imprimir" icon="pi pi-print" class="p-button-secondary p-button-outlined"></button>
     </div>
   </div>
 
-  <p-table [value]="saidas" styleClass="p-datatable-gridlines">
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Livro</th>
-        <th>ISBN</th>
-        <th>Data da Baixa</th>
-        <th>Motivo</th>
-        <th>Responsável</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-s>
-      <tr>
-        <td class="font-bold">{{s.livro}}</td>
-        <td>{{s.isbn}}</td>
-        <td>{{s.data | date:'dd/MM/yyyy'}}</td>
-        <td><p-tag [value]="s.motivo" severity="warning"></p-tag></td>
-        <td>{{s.responsavel}}</td>
-      </tr>
-    </ng-template>
-  </p-table>
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="p-field">
+      <label for="periodo">Período:</label>
+      <p-calendar id="periodo" [(ngModel)]="periodoSelecionado" selectionMode="range" [readonlyInput]="true"
+        placeholder="Selecione o período"></p-calendar>
+    </div>
+    <div class="p-field">
+      <label for="motivo">Motivo:</label>
+      <p-dropdown id="motivo" [(ngModel)]="motivoSelecionado" [options]="motivosOpcoes" placeholder="Todos os motivos"
+        [showClear]="true"></p-dropdown>
+    </div>
+    <div class="p-field">
+      <label for="responsavel">Responsável:</label>
+      <p-dropdown id="responsavel" [(ngModel)]="responsavelSelecionado" [options]="responsaveisOpcoes"
+        placeholder="Todos os responsáveis" [showClear]="true"></p-dropdown>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpis-grid">
+    <div class="kpi-card total-baixas">
+      <div class="kpi-icon">
+        <i class="pi pi-minus-circle"></i>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">{{ totalBaixasMes }}</div>
+        <div class="kpi-label">Baixas no Mês</div>
+        <div class="kpi-trend">
+          <i class="pi pi-arrow-down"></i>
+          <span>vs mês anterior</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card valor-perdido">
+      <div class="kpi-icon">
+        <i class="pi pi-dollar"></i>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">R$ {{ valorTotalPerdido.toFixed(2) }}</div>
+        <div class="kpi-label">Valor Perdido</div>
+        <div class="kpi-trend">
+          <i class="pi pi-exclamation-triangle"></i>
+          <span>Estimativa</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card motivo-principal">
+      <div class="kpi-icon">
+        <i class="pi pi-exclamation-circle"></i>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">{{ motivoMaisComum }}</div>
+        <div class="kpi-label">Motivo Mais Comum</div>
+        <div class="kpi-trend">
+          <i class="pi pi-info-circle"></i>
+          <span>Este mês</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-card taxa-baixa">
+      <div class="kpi-icon">
+        <i class="pi pi-percentage"></i>
+      </div>
+      <div class="kpi-content">
+        <div class="kpi-value">{{ ((totalBaixasMes / 30) * 100).toFixed(1) }}%</div>
+        <div class="kpi-label">Taxa Diária</div>
+        <div class="kpi-trend">
+          <i class="pi pi-calendar"></i>
+          <span>Por dia útil</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráfico de Motivos -->
+  <div class="chart-section">
+    <div class="chart-header">
+      <h3>Distribuição por Motivo</h3>
+      <p>Percentual de baixas por categoria</p>
+    </div>
+    <div class="chart-container">
+      <div class="motivos-chart">
+        <div class="motivo-item" *ngFor="let item of motivosData">
+          <div class="motivo-info">
+            <span class="motivo-name">{{ item.motivo }}</span>
+            <span class="motivo-count">{{ item.quantidade }} baixas</span>
+          </div>
+          <div class="motivo-bar">
+            <div class="bar-fill" [style.width.%]="item.percentual"></div>
+            <span class="percentual">{{ item.percentual }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabela de Saídas -->
+  <div class="table-section">
+
+    <p-table [value]="saidas" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5,10,25,50]"
+      [globalFilterFields]="['livro','isbn','motivo','responsavel']" [(selection)]="saidasSelecionadas"
+      [responsiveLayout]="'scroll'" styleClass="saidas-table">
+
+      <ng-template pTemplate="caption">
+        <div class="p-d-flex p-jc-between p-ai-center">
+          <h3 class="m-0">Histórico de Baixas</h3>
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input pInputText type="text" (input)="onGlobalFilter($event)" placeholder="Buscar livros..."
+              class="search-input">
+          </span>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th pSortableColumn="livro">
+            Livro <p-sortIcon field="livro"></p-sortIcon>
+          </th>
+          <th pSortableColumn="isbn">
+            ISBN <p-sortIcon field="isbn"></p-sortIcon>
+          </th>
+          <th pSortableColumn="data">
+            Data da Baixa <p-sortIcon field="data"></p-sortIcon>
+          </th>
+          <th pSortableColumn="motivo">
+            Motivo <p-sortIcon field="motivo"></p-sortIcon>
+          </th>
+          <th pSortableColumn="responsavel">
+            Responsável <p-sortIcon field="responsavel"></p-sortIcon>
+          </th>
+          <th pSortableColumn="valorEstimado">
+            Valor Estimado <p-sortIcon field="valorEstimado"></p-sortIcon>
+          </th>
+          <th>Ações</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-saida let-rowIndex="rowIndex">
+        <tr>
+          <td>
+            <p-tableCheckbox [value]="saida"></p-tableCheckbox>
+          </td>
+          <td class="font-bold">{{ saida.livro }}</td>
+          <td class="isbn-cell">{{ saida.isbn }}</td>
+          <td>{{ saida.data | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <p-tag [value]="saida.motivo" [severity]="getMotivoSeverity(saida.motivo)" styleClass="motivo-tag">
+            </p-tag>
+          </td>
+          <td>{{ saida.responsavel }}</td>
+          <td class="valor-cell">
+            <span *ngIf="saida.valorEstimado">R$ {{ saida.valorEstimado.toFixed(2) }}</span>
+            <span *ngIf="!saida.valorEstimado" class="text-color-secondary">-</span>
+          </td>
+          <td>
+            <button pButton type="button" icon="pi pi-eye" class="p-button-rounded p-button-text p-button-info"
+              pTooltip="Ver detalhes" tooltipPosition="top"></button>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="8" class="text-center py-4">
+            <i class="pi pi-info-circle text-color-secondary"></i>
+            <span class="ml-2">Nenhuma baixa encontrada para os filtros aplicados.</span>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <!-- Resumo da seleção -->
+    <div class="selection-summary" *ngIf="saidasSelecionadas && saidasSelecionadas.length > 0">
+      <div class="summary-content">
+        <span>{{ saidasSelecionadas.length }} item(ns) selecionado(s)</span>
+        <div class="summary-actions">
+          <button pButton label="Exportar Selecionados" icon="pi pi-file-excel"
+            class="p-button-sm p-button-success"></button>
+          <button pButton label="Imprimir Selecionados" icon="pi pi-print"
+            class="p-button-sm p-button-secondary"></button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

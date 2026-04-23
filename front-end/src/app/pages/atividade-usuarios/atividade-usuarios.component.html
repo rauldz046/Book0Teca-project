@@ -1,1 +1,130 @@
-<p>atividade-usuarios works!</p>
+<div class="card">
+    <p-toast></p-toast>
+
+    <p-toolbar styleClass="mb-4 gap-2">
+        <ng-template pTemplate="left">
+            <h2 class="m-0">Atividade & Auditoria</h2>
+        </ng-template>
+    </p-toolbar>
+
+    <p-tabView [(activeIndex)]="activeTabIndex">
+
+        <!-- ABA 1: MINHA ATIVIDADE (timeline pessoal do logado) -->
+        <p-tabPanel header="Minha Atividade" leftIcon="pi pi-user mr-2">
+            <div class="timeline-wrapper">
+                <div *ngIf="minhasAtividades.length === 0" class="empty-state">
+                    <i class="pi pi-inbox"></i>
+                    <p>Você ainda não tem atividade registrada.</p>
+                </div>
+
+                <div class="timeline" *ngIf="minhasAtividades.length > 0">
+                    <div class="timeline-item" *ngFor="let ativ of minhasAtividades">
+                        <div class="timeline-marker" [style.background]="corPorSeveridade(ativ.severidade)">
+                            <i [class]="iconePorTipo(ativ.tipo)"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <strong>{{ ativ.descricao }}</strong>
+                                <small>{{ ativ.dataHora | date: 'dd/MM/yyyy HH:mm' }}</small>
+                            </div>
+                            <div class="timeline-meta">
+                                <span class="tipo-pill">{{ ativ.tipo }}</span>
+                                <span *ngIf="ativ.entidadeAfetada" class="entidade">
+                                    <i class="pi pi-link"></i> {{ ativ.entidadeAfetada }}
+                                </span>
+                                <span *ngIf="ativ.ipOrigem" class="ip">
+                                    <i class="pi pi-globe"></i> {{ ativ.ipOrigem }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </p-tabPanel>
+
+        <!-- ABA 2: AUDITORIA DO SISTEMA (staff only) -->
+        <p-tabPanel header="Auditoria do Sistema" leftIcon="pi pi-shield mr-2" *ngIf="podeVerAuditoria()">
+
+            <!-- Filtros -->
+            <div class="filtros mb-4">
+                <div class="filtros-row">
+                    <div class="field">
+                        <label>Buscar</label>
+                        <input type="text" pInputText placeholder="Usuário ou descrição..." [(ngModel)]="filtroTexto"
+                            (input)="aplicarFiltros()">
+                    </div>
+                    <div class="field">
+                        <label>Tipo</label>
+                        <p-dropdown [options]="tiposDisponiveis" [(ngModel)]="filtroTipo" placeholder="Todos os tipos"
+                            [showClear]="true" optionLabel="label" optionValue="value"
+                            (onChange)="aplicarFiltros()"></p-dropdown>
+                    </div>
+                    <div class="field">
+                        <label>Perfil</label>
+                        <p-dropdown [options]="perfisDisponiveis" [(ngModel)]="filtroPerfil"
+                            placeholder="Todos os perfis" [showClear]="true" optionLabel="label" optionValue="value"
+                            (onChange)="aplicarFiltros()"></p-dropdown>
+                    </div>
+                    <div class="field">
+                        <label>De</label>
+                        <p-calendar [(ngModel)]="filtroDataInicio" dateFormat="dd/mm/yy" [showClear]="true"
+                            (onSelect)="aplicarFiltros()" (onClear)="aplicarFiltros()"></p-calendar>
+                    </div>
+                    <div class="field">
+                        <label>Até</label>
+                        <p-calendar [(ngModel)]="filtroDataFim" dateFormat="dd/mm/yy" [showClear]="true"
+                            (onSelect)="aplicarFiltros()" (onClear)="aplicarFiltros()"></p-calendar>
+                    </div>
+                </div>
+                <div class="filtros-actions">
+                    <button pButton label="Limpar" icon="pi pi-filter-slash" class="p-button-text"
+                        (click)="limparFiltros()"></button>
+                    <button pButton label="Exportar CSV" icon="pi pi-download" class="p-button-success"
+                        (click)="exportarCsv()"></button>
+                </div>
+            </div>
+
+            <!-- Tabela -->
+            <p-table [value]="auditoriaSistema" [rows]="10" [paginator]="true" class="p-datatable-striped">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Usuário</th>
+                        <th>Perfil</th>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                        <th>Entidade</th>
+                        <th>Severidade</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-a>
+                    <tr>
+                        <td>{{ a.dataHora | date: 'dd/MM/yyyy HH:mm' }}</td>
+                        <td>{{ a.usuarioNome }}</td>
+                        <td><span class="perfil-tag">{{ a.perfilUsuario }}</span></td>
+                        <td>
+                            <i [class]="iconePorTipo(a.tipo)" [style.color]="corPorSeveridade(a.severidade)"></i>
+                            <span class="ml-2">{{ a.tipo }}</span>
+                        </td>
+                        <td>{{ a.descricao }}</td>
+                        <td>
+                            <code *ngIf="a.entidadeAfetada">{{ a.entidadeAfetada }}</code>
+                            <span *ngIf="!a.entidadeAfetada" class="text-muted">—</span>
+                        </td>
+                        <td>
+                            <p-tag [value]="a.severidade" [severity]="getSeverityTag(a.severidade)"></p-tag>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="7" class="text-center empty-row">
+                            <i class="pi pi-inbox mr-2"></i>Nenhum registro encontrado.
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-tabPanel>
+
+    </p-tabView>
+</div>

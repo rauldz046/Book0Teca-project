@@ -1,1 +1,80 @@
-<p>gerenciar-permissoes works!</p>
+<div class="container">
+    <div class="top-bar">
+        <div>
+            <h2>Gerenciar Permissões</h2>
+            <p class="text-muted">Controle de acesso baseado em perfil (RBAC)</p>
+        </div>
+    </div>
+
+    <div class="permissoes-layout">
+
+        <!-- Lista lateral de perfis -->
+        <aside class="perfis-list">
+            <h4 class="section-title">Perfis</h4>
+
+            <button class="perfil-item" *ngFor="let p of perfis" [class.active]="perfilSelecionado?.id === p.id"
+                (click)="selecionarPerfil(p)">
+                <div class="perfil-bullet" [style.background]="corPorPerfil(p.nome)"></div>
+                <div class="perfil-info">
+                    <div class="perfil-nome">
+                        {{ p.nome }}
+                        <i *ngIf="!p.editavel" class="pi pi-lock" title="Não editável"></i>
+                    </div>
+                    <small class="text-muted">{{ p.totalUsuarios }} usuário(s)</small>
+                </div>
+                <i class="pi pi-chevron-right"></i>
+            </button>
+        </aside>
+
+        <!-- Painel de edicao -->
+        <main class="perfil-editor" *ngIf="perfilSelecionado">
+            <header class="editor-header">
+                <div>
+                    <h3>
+                        <span class="perfil-bullet-lg" [style.background]="corPorPerfil(perfilSelecionado.nome)"></span>
+                        {{ perfilSelecionado.nome }}
+                    </h3>
+                    <p class="text-muted">{{ perfilSelecionado.descricao }}</p>
+                </div>
+
+                <div class="editor-actions">
+                    <button class="btn btn-secondary" (click)="descartar()" [disabled]="!perfilSelecionado.editavel">
+                        Descartar
+                    </button>
+                    <button class="btn btn-primary" (click)="salvarAlteracoes()"
+                        [disabled]="!perfilSelecionado.editavel">
+                        <i class="pi pi-save mr-2"></i>Salvar alterações
+                    </button>
+                </div>
+            </header>
+
+            <!-- Aviso de perfil nao editavel -->
+            <div class="alert-lock" *ngIf="!perfilSelecionado.editavel">
+                <i class="pi pi-shield"></i>
+                <div>
+                    <strong>Perfil protegido.</strong>
+                    As permissões do perfil <code>{{ perfilSelecionado.nome }}</code>
+                    não podem ser alteradas pela interface.
+                </div>
+            </div>
+
+            <!-- Permissoes agrupadas por categoria -->
+            <div class="categoria" *ngFor="let cat of categorias">
+                <h4 class="categoria-titulo">{{ cat }}</h4>
+
+                <div class="permissoes-grid">
+                    <label class="permissao-item" *ngFor="let p of permissoesPorCategoria[cat]"
+                        [class.checked]="temPermissao(p.acao)" [class.disabled]="!perfilSelecionado.editavel">
+                        <input type="checkbox" [checked]="temPermissao(p.acao)" [disabled]="!perfilSelecionado.editavel"
+                            (change)="togglePermissao(p.acao)">
+                        <div class="permissao-info">
+                            <strong>{{ p.label }}</strong>
+                            <code>{{ p.acao }}</code>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </main>
+
+    </div>
+</div>
