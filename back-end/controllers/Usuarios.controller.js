@@ -4,68 +4,66 @@ const bcrypt = require("bcrypt");
 const Status = require("../models/StatusAtividadeGeral");
 const InfoEndereco = require("../models/InfoEndereco");
 const InfoBancario = require("../models/InfoBancario");
+
 const controller = {};
 
+/* CREATE — usa transação ACID (RNF04) */
 controller.UsuariosCreate = async (req, res) => {
-  const data = req.body;
-  const infoUser = data.payloadUser;
-  const infoBanco = data.payloadBanco;
-  const infoEndereco = data.payloadEndereco;
-  const senhaHash = await bcrypt.hash(infoUser.Senha, 10);
+  const { payloadUser, payloadBanco, payloadEndereco } = req.body;
   const t = await sequelize.transaction();
+
   try {
+    const senhaHash = await bcrypt.hash(payloadUser.Senha, 10);
+
     const banco = await InfoBancario.create(
-      { ...infoBanco, created_at: Date.now(), updated_at: Date.now() },
-      { transaction: t },
+      { ...payloadBanco, created_at: new Date(), updated_at: new Date() },
+      { transaction: t }
     );
+
     const endereco = await InfoEndereco.create(
-      { ...infoEndereco, created_at: Date.now(), updated_at: Date.now() },
-      {
-        transaction: t,
-      },
+      { ...payloadEndereco, created_at: new Date(), updated_at: new Date() },
+      { transaction: t }
     );
+
     const user = await Usuario.create(
       {
-        ...infoUser,
-
+        ...payloadUser,
         Senha: senhaHash,
         Status: 1,
-        InfoEndereco: endereco.dataValues.idInfoEnd,
-        InfoBancario: banco.dataValues.IdInfoBancario,
-        created_at: Date.now(),
-        updated_at: Date.now(),
+        InfoEndereco: endereco.idInfoEnd,
+        InfoBancario: banco.IdInfoBancario,
+        created_at: new Date(),
+        updated_at: new Date(),
       },
-      { transaction: t },
+      { transaction: t }
     );
 
     await t.commit();
-
-    res.status(200).json(user);
+    return res.status(201).json(user);
   } catch (err) {
     await t.rollback();
-    return res.status(500).json(err.message);
+    return res.status(500).json({ error: err.message });
   }
 };
 
+/* LOGIN */
 controller.loginValidation = async (req, res) => {
-  const { email, senha } = req.body; // Desestruturação mais limpa
+  const { email, senha } = req.body;
 
   try {
-    const infoUser = await Usuario.findOne({
-      where: { Email: email },
-    });
+    const infoUser = await Usuario.findOne({ where: { Email: email } });
 
-    if (!infoUser || !senha) {
-      return res.status(401).json("invalid");
+    if (!infoUser) {
+      return res.status(401).json({ message: "Usuário não encontrado" });
     }
 
-    // const senhaValida = await bcrypt.compare(senha, infoUser.Senha);
+    const senhaValida = await bcrypt.compare(senha, infoUser.Senha);
+    if (!senhaValida) {
+      return res.status(401).json({ message: "Senha incorreta" });
+    }
 
-    // if (!senhaValida) {
-    //   return res.status(401).json({ message: "invalid" });
-    // }
-
-    const infoSessao ={
+    // Nunca retornar a senha — LGPD + segurança básica
+    const infoSessao = {
       idUsuario: infoUser.idUsuario,
       Nome: infoUser.Nome,
       Email: infoUser.Email,
@@ -74,98 +72,111 @@ controller.loginValidation = async (req, res) => {
       Telefone: infoUser.Telefone,
       InfoEndereco: infoUser.InfoEndereco,
       InfoBancario: infoUser.InfoBancario,
-      FotoPerfil: infoUser.fotoperfil,  
       created_at: infoUser.created_at,
-      updated_at: infoUser.updated_at
+      updated_at: infoUser.updated_at,
     };
-    
 
-    return res.status(200).json({ menssage: "valid", infoSessao });
+    return res.status(200).json({ message: "valid", infoSessao });
   } catch (err) {
-    return res.status(500).json({ error: "internal server error" });
+    return res.status(500).json({ error: "Erro interno no servidor" });
   }
 };
 
+/* GET ALL */
 controller.getUsers = async (req, res) => {
   try {
     const users = await Usuario.findAll({
+      attributes: { exclude: ["Senha"] },
       include: [
         { model: Status, as: "statusInfo", attributes: ["Descricao"] },
         { model: InfoEndereco, as: "endereco" },
         { model: InfoBancario, as: "banco" },
       ],
     });
-
     return res.status(200).json(users);
   } catch (err) {
-    return res.status(500).json(err.message);
+    return res.status(500).json({ error: err.message });
   }
 };
 
+/* GET BY ID */
 controller.getUserById = async (req, res) => {
   try {
-    const user = await Usuario.findByPk(req.params.id);
+    const user = await Usuario.findByPk(req.params.id, {
+      attributes: { exclude: ["Senha"] },
+      include: [
+        { model: Status, as: "statusInfo", attributes: ["Descricao"] },
+        { model: InfoEndereco, as: "endereco" },
+        { model: InfoBancario, as: "banco" },
+      ],
+    });
+    if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
     return res.status(200).json(user);
   } catch (err) {
-    return res.status(500).json(err.message);
+    return res.status(500).json({ error: err.message });
   }
 };
 
+/* UPDATE STATUS — BUG CORRIGIDO (era resres + lógica errada do update) */
 controller.updateStatus = async (req, res) => {
-  const data = req.body;
+  const { idUsuario, idStatus } = req.body;
   try {
-    const newStatus = await Status.findOne(data, {
-      where: { Descricao: data.Descricao },
-    });
-
-    if (newStatus) {
-      await Usuario.update(data, {
-        where: { idUsuario: data.idUsuario },
-        attributes: { Status: newStatus.idStatus },
-      });
-      return resres.status(200).json({ message: "Atualizado" });
-    }
+    const [updated] = await Usuario.update(
+      { Status: idStatus, updated_at: new Date() },
+      { where: { idUsuario } }
+    );
+    if (!updated) return res.status(404).json({ message: "Usuário não encontrado" });
+    return res.status(200).json({ message: "Status atualizado" });
   } catch (err) {
-    res.status(500).json(err.message);
+    return res.status(500).json({ error: err.message });
   }
 };
 
+/* UPDATE USER */
 controller.updateUser = async (req, res) => {
-  const data = req.body;
+  const { idUsuario, ...dados } = req.body;
   try {
-    await Usuario.update(req.body, {
-      where: { idUsuario: data.idUsuario },
-    });
+    const [updated] = await Usuario.update(
+      { ...dados, updated_at: new Date() },
+      { where: { idUsuario } }
+    );
+    if (!updated) return res.status(404).json({ message: "Usuário não encontrado" });
     return res.status(200).json({ message: "Atualizado" });
   } catch (err) {
-    return res.status(500).json(err.message);
+    return res.status(500).json({ error: err.message });
   }
 };
 
+/* UPDATE PASSWORD */
 controller.updatePassword = async (req, res) => {
-  const data = req.body;
-  const senhaHash = await bcrypt.hash(data.Senha, 10);
+  const { idUsuario, Senha } = req.body;
   try {
-    await Usuario.update(req.body, {
-      where: { idUsuario: data.idUsuario },
-      attributes: { Senha: senhaHash },
-    });
-    return res.json({ message: "Atualizado" });
+    const senhaHash = await bcrypt.hash(Senha, 10);
+    const [updated] = await Usuario.update(
+      { Senha: senhaHash, SenhaInicial: 0, updated_at: new Date() },
+      { where: { idUsuario } }
+    );
+    if (!updated) return res.status(404).json({ message: "Usuário não encontrado" });
+    return res.status(200).json({ message: "Senha atualizada" });
   } catch (err) {
-    return res.status(500).json(err.message);
+    return res.status(500).json({ error: err.message });
   }
 };
 
+/* SOFT DELETE — BUG CORRIGIDO (destroy não aceita attributes) */
 controller.deleteUser = async (req, res) => {
-  const data = req.body;
+  const { idUsuario } = req.body;
   try {
-    await Usuario.destroy({
-      where: { idUsuario: data.idUsuario },
-      attributes: { Status: 2, deleted_at: Date.now() },
-    });
-    return res.json({ message: "Deletado" });
+    // paranoid: true no model garante que deleted_at seja preenchido automaticamente
+    // Antes do destroy, desativa o status
+    await Usuario.update(
+      { Status: 2, updated_at: new Date() },
+      { where: { idUsuario } }
+    );
+    await Usuario.destroy({ where: { idUsuario } });
+    return res.status(200).json({ message: "Usuário desativado" });
   } catch (err) {
-    return res.status(500).json(err.message);
+    return res.status(500).json({ error: err.message });
   }
 };
 

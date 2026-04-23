@@ -1,45 +1,46 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { FuncionariosLogados } from '../models/funcionarios.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FuncionariosService {
-  http = inject(HttpClient);
-  url: string = 'http://localhost:4000/';
+  private http = inject(HttpClient);
+  private readonly BASE_URL = 'http://localhost:4000/funcionarios';
 
-  BuscarFuncionarios() {
-    const url = this.url + 'funcionarios/findAll';
-    return this.http.get<FuncionariosLogados[]>(url);
-  }
-  CriarFuncionarios(data: any) {
-    const url = this.url + 'funcionarios/create';
-    return this.http.post<FuncionariosLogados>(url, data);
+  BuscarFuncionarios(): Observable<FuncionariosLogados[]> {
+    return this.http.get<FuncionariosLogados[]>(`${this.BASE_URL}/findAll`);
   }
 
-  LoginValidation(data: any) {
-    const url = this.url + 'funcionarios/login';
-    return this.http.post<FuncionariosLogados>(url, data);
+  BuscarFuncionarioPorId(id: number): Observable<FuncionariosLogados> {
+    return this.http.get<FuncionariosLogados>(`${this.BASE_URL}/${id}`);
   }
 
-  UpdateFuncionario(data: any) {
-    const url = this.url + 'funcionarios/updateUser';
-    return this.http.post<FuncionariosLogados>(url, data);
+  CriarFuncionario(data: any): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/create`, data);
   }
 
-  UpdateSenhaFuncionario(data: any) {
-    const url = this.url + 'funcionarios/updatePassword';
-    return this.http.post<any>(url, data);
+  LoginValidation(data: { email: string; senha: string }): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/login`, data);
   }
 
-  UpdateStatusFuncionario(data: any) {
-    const url = this.url + 'funcionarios/updateStatus';
-    return this.http.post<any>(url, data);
+  // CORRIGIDO: era '/funcionarios/updateUser' — rota não existia
+  UpdateFuncionario(data: Partial<FuncionariosLogados> & { idFuncionario: number }): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/update`, data);
   }
 
-  DeleteFuncionario(id: number) {
-    const url = this.url + `funcionarios/deleteUser`;
-    return this.http.post<any>(url, id);
+  UpdateSenhaFuncionario(data: { idFuncionario: number; SenhaFunc: string }): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/updatePassword`, data);
+  }
+
+  UpdateStatusFuncionario(data: { idFuncionario: number; idStatus: number }): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/updateStatus`, data);
+  }
+
+  // CORRIGIDO: era '/funcionarios/deleteUser' — rota não existia
+  DeleteFuncionario(idFuncionario: number): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}/delete`, { idFuncionario });
   }
 }

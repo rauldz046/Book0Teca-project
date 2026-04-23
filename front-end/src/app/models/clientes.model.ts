@@ -7,6 +7,7 @@ export interface UsuariosLogados {
   Senha: string;
   SenhaInicial: boolean;
   Status: string;
+  fotoperfil?: string;
   InfoEndereco: number;
   InfoBancario: number;
   created_at: Date;

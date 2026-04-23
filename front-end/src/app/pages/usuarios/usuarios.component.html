@@ -1,1 +1,37 @@
-<p>usuarios works!</p>
+<div class="container">
+
+    <div class="page-header">
+        <h2>Gestão de Usuários</h2>
+        <p class="text-muted">Selecione a área que deseja gerenciar.</p>
+    </div>
+
+    <div class="cards-grid">
+        <div class="hub-card" *ngFor="let card of cardsVisiveis" (click)="navegar(card.rota)">
+            <div class="card-icon" [style.background]="card.cor + '18'" [style.color]="card.cor">
+                <i [class]="card.icone"></i>
+            </div>
+
+            <div class="card-body">
+                <h3>{{ card.titulo }}</h3>
+                <p>{{ card.descricao }}</p>
+            </div>
+
+            <div class="card-footer">
+                <div class="stat">
+                    <span class="stat-value" [style.color]="card.cor">{{ card.stat }}</span>
+                    <span class="stat-label">{{ card.statLabel }}</span>
+                </div>
+                <button class="btn-acessar" [style.background]="card.cor" (click)="navegar(card.rota)">
+                    Acessar <i class="pi pi-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aviso se nenhum card visivel (não deve acontecer se o menu estiver configurado certo) -->
+    <div class="empty-state" *ngIf="cardsVisiveis.length === 0">
+        <i class="pi pi-lock"></i>
+        <p>Você não tem permissão para acessar esta área.</p>
+    </div>
+
+</div>

@@ -10,7 +10,7 @@ import { ClientesService } from 'src/app/services/Clientes.service';
   selector: 'app-gerenciar-leitores',
   templateUrl: './gerenciar-leitores.component.html',
   styleUrls: ['./gerenciar-leitores.component.scss'],
-  providers: [ConfirmationService, MessageService], // Providers locais para serviços do PrimeNG
+  providers: [ConfirmationService, MessageService],
 })
 export class GerenciarLeitoresComponent implements OnInit {
   private clienteService = inject(ClientesService);
@@ -31,7 +31,6 @@ export class GerenciarLeitoresComponent implements OnInit {
       next: (res) => {
         this.usuariosLogados = res;
         this.loading = false;
-        console.log(this.usuariosLogados);
       },
       error: () => {
         this.alert.error('Erro', 'Falha ao carregar usuários');
@@ -50,7 +49,7 @@ export class GerenciarLeitoresComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.carregarUsuarios(); // Recarrega a lista se houver alteração
+      if (result) this.carregarUsuarios();
     });
   }
 
@@ -65,34 +64,23 @@ export class GerenciarLeitoresComponent implements OnInit {
       acceptLabel: 'Confirmar',
       rejectLabel: 'Cancelar',
       accept: () => {
-        // Lógica para refletir a mudança no Front antes/durante a chamada de API
-        const novoStatus = isAtivo ? 0 : 1;
+        // idStatus: 1 = Ativo, 2 = Inativo (conforme INSERT do banco)
+        const novoIdStatus = isAtivo ? 2 : 1;
         const novaDescricao = isAtivo ? 'Inativo' : 'Ativo';
-        const payload = { idUsuario: user.idUsuario, Status: novoStatus };
 
-        this.clienteService.UpdateStatusUsuario(novaDescricao).subscribe({
-          next: (res) => {
-            if (res) {
-              if (res.mensagem === 'success') {
-                this.alert.success(
-                  'Atualizado',
-                  `O usuário agora está ${novaDescricao}`,
-                );
-              }
-            }
-          },
-          error: () => {
-            this.alert.error(
-              'Erro',
-              'Falha ao atualizar status do usuário',
-            );
-          },
-        });
-
-        this.alert.success(
-          'Atualizado',
-          `O usuário agora está ${novaDescricao}`,
-        );
+        // CORRIGIDO: payload correto { idUsuario, idStatus }
+        this.clienteService
+          .UpdateStatusUsuario({ idUsuario: user.idUsuario, idStatus: novoIdStatus })
+          .subscribe({
+            next: () => {
+              // Atualiza localmente sem precisar recarregar toda a lista
+              user.Status = novoIdStatus;
+              this.alert.success('Atualizado', `O usuário agora está ${novaDescricao}`);
+            },
+            error: () => {
+              this.alert.error('Erro', 'Falha ao atualizar status do usuário');
+            },
+          });
       },
     });
   }
@@ -104,14 +92,18 @@ export class GerenciarLeitoresComponent implements OnInit {
       icon: 'pi pi-trash',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        // Chama serviço de delete
-        this.usuariosLogados = this.usuariosLogados.filter(
-          (u) => u.idUsuario !== user.idUsuario,
-        );
-        this.alert.success(
-          'Excluído',
-          'Usuário removido da base de dados',
-        );
+        // CORRIGIDO: agora chama o back de verdade (soft delete)
+        this.clienteService.DeleteUsuario(user.idUsuario).subscribe({
+          next: () => {
+            this.usuariosLogados = this.usuariosLogados.filter(
+              (u) => u.idUsuario !== user.idUsuario,
+            );
+            this.alert.success('Excluído', 'Usuário removido da base de dados');
+          },
+          error: () => {
+            this.alert.error('Erro', 'Falha ao excluir usuário');
+          },
+        });
       },
     });
   }

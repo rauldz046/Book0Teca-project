@@ -1,0 +1,143 @@
+$bg-body: #f8fafc;
+$text-main: #1e293b;
+$text-muted: #64748b;
+$border-color: #e2e8f0;
+$white: #ffffff;
+
+:host {
+    display: block;
+    background-color: $bg-body;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 2.5rem auto;
+    padding: 0 1.5rem;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+
+    h2 {
+        font-size: 1.75rem;
+        color: $text-main;
+        margin: 0 0 0.35rem 0;
+    }
+
+    p { margin: 0; }
+}
+
+.text-muted { color: $text-muted; }
+
+// ---------- Grid de cards ----------
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.hub-card {
+    background: $white;
+    border: 1px solid $border-color;
+    border-radius: 14px;
+    padding: 1.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    transition: all 0.2s;
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        border-color: #cbd5e1;
+    }
+}
+
+.card-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i { font-size: 1.6rem; }
+}
+
+.card-body {
+    flex: 1;
+
+    h3 {
+        font-size: 1.15rem;
+        color: $text-main;
+        margin: 0 0 0.5rem 0;
+    }
+
+    p {
+        font-size: 0.875rem;
+        color: $text-muted;
+        margin: 0;
+        line-height: 1.6;
+    }
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid $border-color;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: $text-muted;
+        margin-top: 0.2rem;
+    }
+}
+
+.btn-acessar {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: none;
+    cursor: pointer;
+    transition: filter 0.15s;
+
+    &:hover { filter: brightness(0.9); }
+}
+
+// ---------- Estado vazio ----------
+.empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: $text-muted;
+
+    i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    p { font-size: 1rem; }
+}
+
+.ml-2 { margin-left: 0.5rem; }
