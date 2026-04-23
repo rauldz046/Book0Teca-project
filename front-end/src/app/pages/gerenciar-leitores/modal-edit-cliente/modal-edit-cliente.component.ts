@@ -1,9 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { UsuariosLogados } from 'src/app/models/clientes.model';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ClientesService } from '../../../services/Clientes.service';
 import { AlertService } from 'src/app/utils/toast-alert-service.service';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-modal-edit-cliente',
@@ -16,91 +15,78 @@ export class ModalEditClienteComponent implements OnInit {
   alert = inject(AlertService);
   ClienteService = inject(ClientesService);
 
-  userinfo!: UsuariosLogados;
   isEdit = false;
   loading = false;
 
   statusOptions = [
-    { label: 'Ativo', value: '1' },
-    { label: 'Inativo', value: '2' },
+    { label: 'Ativo', value: 1 },
+    { label: 'Inativo', value: 2 },
   ];
 
   form = new FormGroup({
     idUsuario: new FormControl<number | null>(null),
-    nomeCompleto: new FormControl<string>('', [Validators.required]),
-    cpf: new FormControl<string>('', [Validators.required]),
-    telefone: new FormControl<string>('', [Validators.required]),
-    email: new FormControl<string>('', [Validators.required, Validators.email]),
-    status: new FormControl<string>('1', [Validators.required]),
-    fotoperfil: new FormControl<string>(''),
+    nomeCompleto: new FormControl('', [Validators.required]),
+    cpf: new FormControl('', [Validators.required]),
+    telefone: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    status: new FormControl<number>(1, [Validators.required]),
   });
 
   ngOnInit(): void {
-    this.userinfo = this.data;
-    this.isEdit = !!this.userinfo?.idUsuario;
+    const user = this.data;
+    this.isEdit = !!user?.idUsuario;
 
-    if (this.userinfo) {
+    if (user) {
       this.form.patchValue({
-        idUsuario: this.userinfo.idUsuario,
-        nomeCompleto: this.userinfo.Nome || '',
-        cpf: this.userinfo.CPF || '',
-        telefone: this.userinfo.Telefone || '',
-        email: this.userinfo.Email || '',
-        status: String(this.userinfo.Status || '1'),
-        fotoperfil: (this.userinfo as any).fotoperfil || '',
+        idUsuario: user.idUsuario,
+        nomeCompleto: user.Nome,
+        cpf: user.CPF,
+        telefone: user.Telefone,
+        email: user.Email,
+        status: user.Status,
       });
     }
   }
 
-  async salvar() {
+  async salvar(): Promise<void> {
     if (this.form.invalid) {
       this.alert.error('Erro', 'Preencha todos os campos obrigatórios');
       return;
     }
 
-    const confirmar = await this.alert.confirm(
-      'Alterar Dados',
-      'Deseja realmente salvar os dados?',
+    const ok = await this.alert.confirm(
+      'Salvar',
+      'Confirmar alteração dos dados?',
     );
-    if (!confirmar) return;
+    if (!ok) return;
 
     this.loading = true;
+    const raw = this.form.getRawValue();
 
-    const raw = this.form.getRawValue() as {
-      idUsuario: number | null;
-      nomeCompleto: string;
-      cpf: string;
-      telefone: string;
-      email: string;
-      status: string;
-      fotoperfil: string;
-    };
-
-    // CORRIGIDO: mapeamento dos nomes do formulário para os nomes do banco
-    const payload: Partial<UsuariosLogados> & { idUsuario: number } = {
+    // Mapeamento form → campos do banco
+    const payload = {
       idUsuario: raw.idUsuario!,
-      Nome: raw.nomeCompleto || '',
-      CPF: raw.cpf || '',
-      Telefone: raw.telefone || '',
-      Email: raw.email || '',
-      Status: raw.status || '1',
-      fotoperfil: raw.fotoperfil || '',
+      Nome: raw.nomeCompleto ?? '',
+      CPF: raw.cpf ?? '',
+      Telefone: raw.telefone ?? '',
+      Email: raw.email ?? '',
+      Status: raw.status ?? 1,
     };
 
     this.ClienteService.UpdateUsuario(payload).subscribe({
       next: () => {
         this.loading = false;
-        this.alert.success('Sucesso', 'Dados alterados com sucesso');
-        this.ref?.close(true); // true = sinaliza que houve alteração → recarrega a lista
+        this.alert.success('Sucesso', 'Dados atualizados');
+        this.ref?.close(true);
       },
       error: () => {
         this.loading = false;
-        this.alert.error('Erro', 'Falha ao salvar os dados');
+        this.alert.error('Erro', 'Falha ao salvar');
       },
     });
   }
 
-  fechar() {
+  fechar(): void {
     this.ref?.close(false);
   }
 }

@@ -1,18 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-
-type StatusLivro = 'DISPONIVEL' | 'EMPRESTADO' | 'RESERVADO';
-
-interface Livro {
-  id: number;
-  titulo: string;
-  autor: string;
-  categoria: string;
-  status: StatusLivro;
-  capa: string;
-  ano: number;
-  favorito?: boolean;
-  noCarrinho?: boolean;
-}
+import { Component, OnInit, inject } from '@angular/core';
+import { LivrosService } from 'src/app/services/Livros.service';
+import { AlertService } from 'src/app/utils/toast-alert-service.service';
+import { Livro } from 'src/app/models/livros.model';
 
 @Component({
   selector: 'app-catalogo',
@@ -20,218 +9,25 @@ interface Livro {
   styleUrls: ['./catalogo.component.scss'],
 })
 export class CatalogoComponent implements OnInit {
-  // Lista expandida para comportar as categorias
-  livros: Livro[] = [
-    // FANTASIA
-    {
-      id: 1,
-      titulo: 'O Senhor dos Anéis',
-      autor: 'J.R.R. Tolkien',
-      categoria: 'Fantasia',
-      status: 'DISPONIVEL',
-      ano: 1954,
-      capa: 'https://covers.openlibrary.org/b/id/8231996-L.jpg',
-    },
-    {
-      id: 5,
-      titulo: 'O Hobbit',
-      autor: 'J.R.R. Tolkien',
-      categoria: 'Fantasia',
-      status: 'DISPONIVEL',
-      ano: 1937,
-      capa: 'https://covers.openlibrary.org/b/id/6979861-L.jpg',
-    },
-    {
-      id: 11,
-      titulo: 'Harry Potter',
-      autor: 'J.K. Rowling',
-      categoria: 'Fantasia',
-      status: 'DISPONIVEL',
-      ano: 1997,
-      capa: 'https://covers.openlibrary.org/b/id/7984916-L.jpg',
-    },
-    {
-      id: 12,
-      titulo: 'As Crônicas de Nárnia',
-      autor: 'C.S. Lewis',
-      categoria: 'Fantasia',
-      status: 'DISPONIVEL',
-      ano: 1950,
-      capa: 'https://covers.openlibrary.org/b/id/11153223-L.jpg',
-    },
+  private livrosService = inject(LivrosService);
+  private alert = inject(AlertService);
 
-    // PROGRAMAÇÃO
-    {
-      id: 4,
-      titulo: 'Código Limpo',
-      autor: 'Robert C. Martin',
-      categoria: 'Programação',
-      status: 'DISPONIVEL',
-      ano: 2008,
-      capa: 'https://covers.openlibrary.org/b/id/9611981-L.jpg',
-    },
-    {
-      id: 13,
-      titulo: 'Arquitetura Limpa',
-      autor: 'Robert C. Martin',
-      categoria: 'Programação',
-      status: 'DISPONIVEL',
-      ano: 2017,
-      capa: 'https://covers.openlibrary.org/b/id/9259251-L.jpg',
-    },
-    {
-      id: 14,
-      titulo: 'Refatoração',
-      autor: 'Martin Fowler',
-      categoria: 'Programação',
-      status: 'EMPRESTADO',
-      ano: 1999,
-      capa: 'https://covers.openlibrary.org/b/id/8101356-L.jpg',
-    },
-    {
-      id: 15,
-      titulo: 'Padrões de Projeto',
-      autor: 'GoF',
-      categoria: 'Programação',
-      status: 'DISPONIVEL',
-      ano: 1994,
-      capa: 'https://covers.openlibrary.org/b/id/8235116-L.jpg',
-    },
+  todosLivros: Livro[] = [];
+  livrosFiltrados: Livro[] = [];
+  loading = true;
 
-    // CLÁSSICOS
-    {
-      id: 6,
-      titulo: 'Orgulho e Preconceito',
-      autor: 'Jane Austen',
-      categoria: 'Clássico',
-      status: 'EMPRESTADO',
-      ano: 1813,
-      capa: 'https://covers.openlibrary.org/b/id/8228691-L.jpg',
-    },
-    {
-      id: 10,
-      titulo: 'O Grande Gatsby',
-      autor: 'F. Scott Fitzgerald',
-      categoria: 'Clássico',
-      status: 'DISPONIVEL',
-      ano: 1925,
-      capa: 'https://covers.openlibrary.org/b/id/7222246-L.jpg',
-    },
-    {
-      id: 16,
-      titulo: 'Dom Casmurro',
-      autor: 'Machado de Assis',
-      categoria: 'Clássico',
-      status: 'DISPONIVEL',
-      ano: 1899,
-      capa: 'https://covers.openlibrary.org/b/id/8231856-L.jpg',
-    },
-    {
-      id: 17,
-      titulo: 'Cem Anos de Solidão',
-      autor: 'Gabriel García Márquez',
-      categoria: 'Clássico',
-      status: 'RESERVADO',
-      ano: 1967,
-      capa: 'https://covers.openlibrary.org/b/id/8225631-L.jpg',
-    },
+  filtroTexto = '';
+  filtroTipo: 'todos' | 'fisico' | 'digital' = 'todos';
 
-    // FICÇÃO CIENTÍFICA
-    {
-      id: 3,
-      titulo: 'Duna',
-      autor: 'Frank Herbert',
-      categoria: 'Ficção Científica',
-      status: 'RESERVADO',
-      ano: 1965,
-      capa: 'https://covers.openlibrary.org/b/id/8108691-L.jpg',
-    },
-    {
-      id: 18,
-      titulo: 'Fundação',
-      autor: 'Isaac Asimov',
-      categoria: 'Ficção Científica',
-      status: 'DISPONIVEL',
-      ano: 1951,
-      capa: 'https://covers.openlibrary.org/b/id/8235081-L.jpg',
-    },
-    {
-      id: 19,
-      titulo: 'Neuromancer',
-      autor: 'William Gibson',
-      categoria: 'Ficção Científica',
-      status: 'DISPONIVEL',
-      ano: 1984,
-      capa: 'https://covers.openlibrary.org/b/id/8221256-L.jpg',
-    },
+  categorias: string[] = [];
 
-    // SUSPENSE / HISTÓRIA
-    {
-      id: 8,
-      titulo: 'A Paciente Silenciosa',
-      autor: 'Alex Michaelides',
-      categoria: 'Suspense',
-      status: 'RESERVADO',
-      ano: 2019,
-      capa: 'https://covers.openlibrary.org/b/id/10523338-L.jpg',
-    },
-    {
-      id: 2,
-      titulo: '1984',
-      autor: 'George Orwell',
-      categoria: 'Distopia',
-      status: 'EMPRESTADO',
-      ano: 1949,
-      capa: 'https://covers.openlibrary.org/b/id/7222246-L.jpg',
-    },
-    {
-      id: 9,
-      titulo: 'Sapiens',
-      autor: 'Yuval Noah Harari',
-      categoria: 'História',
-      status: 'DISPONIVEL',
-      ano: 2011,
-      capa: 'https://covers.openlibrary.org/b/id/8370226-L.jpg',
-    },
-
-    // AUTOAJUDA
-    {
-      id: 7,
-      titulo: 'Hábitos Atômicos',
-      autor: 'James Clear',
-      categoria: 'Autoajuda',
-      status: 'DISPONIVEL',
-      ano: 2018,
-      capa: 'https://covers.openlibrary.org/b/id/11141517-L.jpg',
-    },
-    {
-      id: 20,
-      titulo: 'O Poder do Hábito',
-      autor: 'Charles Duhigg',
-      categoria: 'Autoajuda',
-      status: 'DISPONIVEL',
-      ano: 2012,
-      capa: 'https://covers.openlibrary.org/b/id/8165261-L.jpg',
-    },
-  ];
-  fantasia = this.livros.filter((l) => l.categoria === 'Fantasia');
-  programacao = this.livros.filter((l) => l.categoria === 'Programação');
-  classicos = this.livros.filter((l) => l.categoria === 'Clássico');
-  ficcao = this.livros.filter((l) => l.categoria === 'Ficção Científica');
-  suspense = this.livros.filter((l) => l.categoria === 'Suspense');
-  distopia = this.livros.filter((l) => l.categoria === 'Distopia');
-  historia = this.livros.filter((l) => l.categoria === 'História');
-  autoajuda = this.livros.filter((l) => l.categoria === 'Autoajuda');
-
-  filtroTexto: string = '';
-  categorias: string[] = [
-    'Fantasia',
-    'Programação',
-    'Clássico',
-    'Ficção Científica',
-    'Autoajuda',
-    'História',
-  ];
+  fantasia: Livro[] = [];
+  programacao: Livro[] = [];
+  classicos: Livro[] = [];
+  ficcao: Livro[] = [];
+  suspense: Livro[] = [];
+  distopia: Livro[] = [];
+  historia: Livro[] = [];
 
   responsiveOptions = [
     { breakpoint: '1400px', numVisible: 4, numScroll: 1 },
@@ -240,42 +36,99 @@ export class CatalogoComponent implements OnInit {
     { breakpoint: '767px', numVisible: 1, numScroll: 1 },
   ];
 
-  ngOnInit() {}
+  ngOnInit(): void {
+    this.carregarLivros();
+  }
 
-  // Função centralizada para filtrar livros em cada carrossel
-  getLivrosPorCategoria(categoria: string): Livro[] {
-    const texto = this.filtroTexto.toLowerCase();
-    return this.livros.filter(
-      (l) =>
-        l.categoria === categoria &&
-        (l.titulo.toLowerCase().includes(texto) ||
-          l.autor.toLowerCase().includes(texto)),
+  carregarLivros(): void {
+    this.loading = true;
+    this.livrosService.FindAll().subscribe({
+      next: (res) => {
+        this.todosLivros = res;
+        this.livrosFiltrados = res;
+        this.extrairCategorias();
+        this.preencherColecoes();
+        this.loading = false;
+      },
+      error: () => {
+        this.alert.error('Erro', 'Falha ao carregar catálogo de livros');
+        this.loading = false;
+      },
+    });
+  }
+
+  extrairCategorias(): void {
+    // Como o banco não tem campo Categoria ainda, agrupamos por autor
+    // TODO: adicionar campo Categoria na tabela LivrosCatalogo
+    const cats = new Set(
+      this.todosLivros.map((l) => l.autorInfo?.NomeAutor || 'Sem categoria'),
+    );
+    this.categorias = Array.from(cats);
+  }
+
+  preencherColecoes(): void {
+    const livros = this.todosLivros;
+    this.fantasia = livros.slice(0, 8);
+    this.programacao = livros.slice(8, 16);
+    this.classicos = livros.slice(16, 24);
+    this.ficcao = livros.slice(24, 32);
+    this.suspense = livros.slice(32, 40);
+    this.distopia = livros.slice(40, 48);
+    this.historia = livros.slice(48, 56);
+  }
+
+  formatarStatus(status: string | undefined): string {
+    if (!status) return 'INDISPONÍVEL';
+    return status === 'DISPONIVEL' ? 'INSTOCK' : status.toUpperCase();
+  }
+
+  toggleFavorito(livro: Livro): void {
+    livro.favorito = !livro.favorito;
+  }
+
+  adicionarCarrinho(livro: Livro): void {
+    this.alert.info('Carrinho', `"${livro.Titulo}" adicionado ao carrinho`);
+  }
+
+  aplicarFiltro(): void {
+    const txt = this.filtroTexto.toLowerCase();
+    this.livrosFiltrados = this.todosLivros.filter((l) => {
+      const bateTitulo = l.Titulo?.toLowerCase().includes(txt);
+      const bateAutor = l.autorInfo?.NomeAutor?.toLowerCase().includes(txt);
+      const bateTipo =
+        this.filtroTipo === 'todos'
+          ? true
+          : this.filtroTipo === 'fisico'
+            ? l.LivroFisico === 1
+            : l.LivroDigital === 1;
+      return (bateTitulo || bateAutor) && bateTipo;
+    });
+  }
+
+  getLivrosPorAutor(nomeAutor: string): Livro[] {
+    return this.livrosFiltrados.filter(
+      (l) => l.autorInfo?.NomeAutor === nomeAutor,
     );
   }
 
-  // Verifica se a categoria deve ser exibida (tem algum livro após o filtro)
-  temLivrosNaCategoria(categoria: string): boolean {
-    return this.getLivrosPorCategoria(categoria).length > 0;
+  temLivrosNoGrupo(nomeAutor: string): boolean {
+    return this.getLivrosPorAutor(nomeAutor).length > 0;
   }
 
-  toggleFavorito(livro: Livro) {
-    livro.favorito = !livro.favorito;
+  getStatusLabel(livro: Livro): string {
+    if (!livro.QtdLivros || livro.QtdLivros <= 0) return 'Indisponível';
+    return 'Disponível';
   }
-  adicionarCarrinho(livro: Livro) {
-    livro.noCarrinho = !livro.noCarrinho;
+
+  getSeverity(livro: Livro): 'success' | 'danger' | 'warning' {
+    if (!livro.QtdLivros || livro.QtdLivros <= 0) return 'danger';
+    if (livro.QtdLivros <= 2) return 'warning';
+    return 'success';
   }
-  formatarStatus(status: StatusLivro) {
-    return status === 'DISPONIVEL'
-      ? 'Disponível'
-      : status === 'EMPRESTADO'
-        ? 'Emprestado'
-        : 'Reservado';
-  }
-  getSeverity(status: StatusLivro) {
-    return status === 'DISPONIVEL'
-      ? 'success'
-      : status === 'EMPRESTADO'
-        ? 'danger'
-        : 'warning';
+
+  getTipoBadge(livro: Livro): string {
+    if (livro.LivroFisico && livro.LivroDigital) return 'Físico + Digital';
+    if (livro.LivroDigital) return 'E-book';
+    return 'Físico';
   }
 }

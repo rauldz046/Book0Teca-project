@@ -1,111 +1,115 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FuncionariosLogados } from 'src/app/models/funcionarios.model';
 import { FuncionariosService } from 'src/app/services/Funcionarios.service';
+import { AlertService } from 'src/app/utils/toast-alert-service.service';
+
 @Component({
   selector: 'app-gerenciar-funcionarios',
   templateUrl: './gerenciar-funcionarios.component.html',
   styleUrls: ['./gerenciar-funcionarios.component.scss'],
 })
 export class GerenciarFuncionariosComponent implements OnInit {
-  FuncionarioService = inject(FuncionariosService);
+  private FuncionarioService = inject(FuncionariosService);
+  private alert              = inject(AlertService);
+
   isModalOpen = false;
-  isEditMode = false;
+  isEditMode  = false;
   filtroTexto = '';
+  loading     = true;
 
-  // Objeto para o formulário
   funcionarioSelecionado: any = {};
-
-  funcionarios: FuncionariosLogados[] = [
-    {
-      id: 1,
-      MatriculaFunc: 'FUNC001',
-      NomeFunc: 'Maria Souza',
-      EmailFunc: 'maria@email.com',
-      CPFFunc: '000.000.000-00',
-      RegiaoFunc: 'MG',
-      Status: 1,
-      idPerfilFuncionarios: 'Administrador',
-    },
-    {
-      id: 2,
-      MatriculaFunc: 'FUNC002',
-      NomeFunc: 'João Silva',
-      EmailFunc: 'joao@email.com',
-      CPFFunc: '111.111.111-11',
-      RegiaoFunc: 'SP',
-      Status: 1,
-      idPerfilFuncionarios: 'Bibliotecário',
-    },
-    {
-      id: 3,
-      MatriculaFunc: 'FUNC003',
-      NomeFunc: 'Ana Costa',
-      EmailFunc: 'ana.costa@email.com',
-      CPFFunc: '222.222.222-22',
-      RegiaoFunc: 'RJ',
-      Status: 1,
-      idPerfilFuncionarios: 'Atendente',
-    },
-    {
-      id: 4,
-      MatriculaFunc: 'FUNC004',
-      NomeFunc: 'Carlos Oliveira',
-      EmailFunc: 'carlos.o@email.com',
-      CPFFunc: '333.333.333-33',
-      RegiaoFunc: 'RS',
-      Status: 1,
-      idPerfilFuncionarios: 'Bibliotecário',
-    },
-  ];
-
+  funcionarios: FuncionariosLogados[] = [];
   funcionariosFiltrados: FuncionariosLogados[] = [];
 
-  ngOnInit() {
-    this.FuncionarioService.BuscarFuncionarios().subscribe((res) => {
-      if (res !== null) {
+  perfisDisponiveis = [
+    { label: 'Administrador', value: 1 },
+    { label: 'Bibliotecário', value: 2 },
+    { label: 'Financeiro',    value: 3 },
+    { label: 'Estoque',       value: 4 },
+    { label: 'Usuário',       value: 5 },
+  ];
+
+  ngOnInit(): void {
+    this.carregarFuncionarios();
+  }
+
+  carregarFuncionarios(): void {
+    this.loading = true;
+    this.FuncionarioService.BuscarFuncionarios().subscribe({
+      next: (res) => {
         this.funcionarios = res;
         this.aplicarFiltro();
-      }
+        this.loading = false;
+      },
+      error: () => {
+        this.alert.error('Erro', 'Falha ao carregar funcionários');
+        this.loading = false;
+      },
     });
   }
-  aplicarFiltro() {
+
+  aplicarFiltro(): void {
+    const txt = this.filtroTexto.toLowerCase();
     this.funcionariosFiltrados = this.funcionarios.filter(
       (f) =>
-        f.NomeFunc.toLowerCase().includes(this.filtroTexto.toLowerCase()) ||
-        f.MatriculaFunc.toLowerCase().includes(this.filtroTexto.toLowerCase()),
+        f.NomeFunc?.toLowerCase().includes(txt) ||
+        f.MatriculaFunc?.toLowerCase().includes(txt),
     );
   }
 
-  abrirModal(funcionario?: FuncionariosLogados) {
+  abrirModal(funcionario?: FuncionariosLogados): void {
     this.isEditMode = !!funcionario;
-    this.funcionarioSelecionado = funcionario
-      ? { ...funcionario }
-      : { ativo: true, perfil: '1' };
+    this.funcionarioSelecionado = funcionario ? { ...funcionario } : { Status: 1 };
     this.isModalOpen = true;
   }
 
-  fecharModal() {
+  fecharModal(): void {
     this.isModalOpen = false;
     this.funcionarioSelecionado = {};
   }
 
-  salvar() {
-    this.fecharModal();
+  salvar(): void {
+    if (this.isEditMode) {
+      this.FuncionarioService.UpdateFuncionario(this.funcionarioSelecionado).subscribe({
+        next: () => {
+          this.alert.toastSuccess('Funcionário atualizado');
+          this.fecharModal();
+          this.carregarFuncionarios();
+        },
+        error: () => this.alert.error('Erro', 'Falha ao atualizar'),
+      });
+    } else {
+      this.FuncionarioService.CriarFuncionario(this.funcionarioSelecionado).subscribe({
+        next: () => {
+          this.alert.toastSuccess('Funcionário cadastrado');
+          this.fecharModal();
+          this.carregarFuncionarios();
+        },
+        error: () => this.alert.error('Erro', 'Falha ao cadastrar'),
+      });
+    }
   }
 
-  excluir(id: number) {
-    if (confirm('Tem certeza que deseja remover este funcionário?')) {
-      this.funcionarios = this.funcionarios.filter((f) => f.id !== id);
-      this.aplicarFiltro();
-    }
+  async excluir(id: number): Promise<void> {
+    const ok = await this.alert.confirm('Excluir', 'Deseja remover este funcionário?');
+    if (!ok) return;
+
+    this.FuncionarioService.DeleteFuncionario(id).subscribe({
+      next: () => {
+        this.funcionarios = this.funcionarios.filter((f) => f.id !== id);
+        this.aplicarFiltro();
+        this.alert.toastSuccess('Funcionário removido');
+      },
+      error: () => this.alert.error('Erro', 'Falha ao excluir'),
+    });
   }
 
   getIniciais(nome: string): string {
     return nome
-      .split(' ')
+      ?.split(' ')
       .map((n) => n[0])
       .join('')
       .toUpperCase()
-      .substring(0, 2);
+      .substring(0, 2) || '?';
   }
 }

@@ -14,12 +14,12 @@ import { ClientesService } from 'src/app/services/Clientes.service';
 })
 export class GerenciarLeitoresComponent implements OnInit {
   private clienteService = inject(ClientesService);
-  private dialog = inject(MatDialog);
-  alert = inject(AlertService);
+  private dialog         = inject(MatDialog);
+  alert                  = inject(AlertService);
   private confirmationService = inject(ConfirmationService);
 
   usuariosLogados: UsuariosLogados[] = [];
-  loading: boolean = true;
+  loading = true;
 
   ngOnInit(): void {
     this.carregarUsuarios();
@@ -47,39 +47,31 @@ export class GerenciarLeitoresComponent implements OnInit {
       data: user || null,
       position: { top: '50px' },
     });
-
     dialogRef.afterClosed().subscribe((result) => {
       if (result) this.carregarUsuarios();
     });
   }
 
   toggleUserStatus(user: any): void {
-    const isAtivo = user.Status === 1;
-    const acao = isAtivo ? 'desativar' : 'ativar';
+    const isAtivo   = user.Status === 1;
+    const acao      = isAtivo ? 'desativar' : 'ativar';
+    const novoStatus = isAtivo ? 2 : 1; // 1=Ativo, 2=Inativo conforme banco
 
     this.confirmationService.confirm({
-      message: `Tem certeza que deseja <b>${acao}</b> o leitor <b>${user.Nome}</b>?`,
+      message: `Deseja <b>${acao}</b> o leitor <b>${user.Nome}</b>?`,
       header: 'Alterar Status',
-      icon: 'pi pi-exclamation-alt',
+      icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Confirmar',
       rejectLabel: 'Cancelar',
       accept: () => {
-        // idStatus: 1 = Ativo, 2 = Inativo (conforme INSERT do banco)
-        const novoIdStatus = isAtivo ? 2 : 1;
-        const novaDescricao = isAtivo ? 'Inativo' : 'Ativo';
-
-        // CORRIGIDO: payload correto { idUsuario, idStatus }
         this.clienteService
-          .UpdateStatusUsuario({ idUsuario: user.idUsuario, idStatus: novoIdStatus })
+          .UpdateStatusUsuario({ idUsuario: user.idUsuario, idStatus: novoStatus })
           .subscribe({
             next: () => {
-              // Atualiza localmente sem precisar recarregar toda a lista
-              user.Status = novoIdStatus;
-              this.alert.success('Atualizado', `O usuário agora está ${novaDescricao}`);
+              user.Status = novoStatus;
+              this.alert.success('Atualizado', `Usuário agora está ${isAtivo ? 'Inativo' : 'Ativo'}`);
             },
-            error: () => {
-              this.alert.error('Erro', 'Falha ao atualizar status do usuário');
-            },
+            error: () => this.alert.error('Erro', 'Falha ao atualizar status'),
           });
       },
     });
@@ -87,22 +79,21 @@ export class GerenciarLeitoresComponent implements OnInit {
 
   deleteUser(user: any): void {
     this.confirmationService.confirm({
-      message: `Você está prestes a excluir <b>${user.Nome}</b>. Esta ação é irreversível. Deseja continuar?`,
-      header: 'Confirmar Exclusão Crítica',
+      message: `Excluir <b>${user.Nome}</b>? Esta ação é irreversível.`,
+      header: 'Confirmar Exclusão',
       icon: 'pi pi-trash',
       acceptButtonStyleClass: 'p-button-danger',
+      acceptLabel: 'Excluir',
+      rejectLabel: 'Cancelar',
       accept: () => {
-        // CORRIGIDO: agora chama o back de verdade (soft delete)
         this.clienteService.DeleteUsuario(user.idUsuario).subscribe({
           next: () => {
             this.usuariosLogados = this.usuariosLogados.filter(
               (u) => u.idUsuario !== user.idUsuario,
             );
-            this.alert.success('Excluído', 'Usuário removido da base de dados');
+            this.alert.success('Excluído', 'Usuário removido com sucesso');
           },
-          error: () => {
-            this.alert.error('Erro', 'Falha ao excluir usuário');
-          },
+          error: () => this.alert.error('Erro', 'Falha ao excluir usuário'),
         });
       },
     });

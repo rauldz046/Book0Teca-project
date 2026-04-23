@@ -15,6 +15,11 @@ export interface Livro {
   updated_at?: string;
   // Join com Autores
   autorInfo?: { NomeAutor: string };
+  capa?: string;
+  titulo?: string;
+  status?: string;
+  favorito?: boolean;
+  ano?: number;
 }
 
 export interface EntradaEstoque {

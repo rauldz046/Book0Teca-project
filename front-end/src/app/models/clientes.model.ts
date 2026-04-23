@@ -6,7 +6,7 @@ export interface UsuariosLogados {
   Telefone: string;
   Senha: string;
   SenhaInicial: boolean;
-  Status: string;
+  Status: number;
   fotoperfil?: string;
   InfoEndereco: number;
   InfoBancario: number;

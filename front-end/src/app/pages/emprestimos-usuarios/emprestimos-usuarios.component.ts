@@ -1,141 +1,157 @@
-import { Emprestimo } from 'src/app/models/emprestimos';
-import { AlertService } from 'src/app/utils/toast-alert-service.service';
 import { Component, inject, OnInit } from '@angular/core';
+import { AlertService } from 'src/app/utils/toast-alert-service.service';
+import { EmprestimosService } from 'src/app/services/Emprestimos.service';
 import { ClientesService } from 'src/app/services/Clientes.service';
+import { LivrosService } from 'src/app/services/Livros.service';
+import { EmprestimoDB } from 'src/app/models/emprestimos.model';
+import { Livro } from 'src/app/models/livros.model';
 
 @Component({
   selector: 'app-emprestimos-usuarios',
   templateUrl: './emprestimos-usuarios.component.html',
   styleUrls: ['./emprestimos-usuarios.component.scss'],
 })
-export class EmprestimosUsuariosComponent {
-  emprestimos: Emprestimo[] = [];
-  emprestimoDialog: boolean = false;
+export class EmprestimosUsuariosComponent implements OnInit {
+  private emprestimosService = inject(EmprestimosService);
+  private clientesService = inject(ClientesService);
+  private livrosService = inject(LivrosService);
+  private alert = inject(AlertService);
+
+  // Dados do back-end
+  emprestimos: EmprestimoDB[] = [];
+  livrosDisponiveis: Livro[] = [];
+  usuarios: any[] = [];
+
+  // Controle do dialog
+  emprestimoDialog = false;
+  submitted = false;
+  loading = true;
+
   novoEmprestimo: any = {
     usuario: null,
     livro: null,
-    dataEmprestimo: null,
     dataPrevisaoDevolucao: null,
-    status: 'ATIVO',
   };
-  submitted: boolean = false;
-  livrosDisponiveis: any[] = []; // Viria do seu BookService
-  usuarios: any[] = []; //
-  private clientesService = inject(ClientesService);
-  private alert = inject(AlertService);
 
-  ngOnInit() {
-    this.carregarDadosIniciais();
-
-    this.usuarios = [
-      { id: 1, nome: 'João Silva' },
-      { id: 2, nome: 'Maria Souza' },
-    ];
-
-    this.livrosDisponiveis = [
-      { id: 1, titulo: 'O Senhor dos Anéis' },
-      { id: 2, titulo: 'Angular Pro' },
-    ];
+  // ID do funcionário logado — virá do localStorage/AuthService
+  get funcionarioLogadoId(): number {
+    const sessao = JSON.parse(localStorage.getItem('infoSessao') || '{}');
+    return sessao?.idFuncionario || 1;
   }
 
-  carregarDadosIniciais() {
-    // Simulação de dados
-    this.emprestimos = [
-      {
-        id: 1,
-        livroTitulo: 'O Senhor dos Anéis',
-        leitor: 'João Silva',
-        dataEmprestimo: new Date(),
-        dataPrevisaoDevolucao: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        status: 'ATIVO',
-        renovacoes: 0,
-        matricula: '2023001',
-      },
-      {
-        id: 2,
-        livroTitulo: 'Angular Pro',
-        leitor: 'Maria Souza',
-        dataEmprestimo: new Date(2023, 5, 1),
-        dataPrevisaoDevolucao: new Date(2023, 5, 8),
-        status: 'ATRASADO',
-        renovacoes: 0,
-        matricula: '2023002',
-      },
-    ];
+  ngOnInit(): void {
+    this.carregarDados();
   }
 
-  abrirNovo() {
+  carregarDados(): void {
+    this.loading = true;
+
+    // Carrega empréstimos ativos
+    this.emprestimosService.FindAll().subscribe({
+      next: (res) => {
+        this.emprestimos = res;
+        this.loading = false;
+      },
+      error: () => {
+        this.alert.error('Erro', 'Falha ao carregar empréstimos');
+        this.loading = false;
+      },
+    });
+
+    // Carrega listas para o dropdown do modal
+    this.clientesService.BuscarUsuarios().subscribe({
+      next: (res) => (this.usuarios = res),
+    });
+
+    this.livrosService.FindAll().subscribe({
+      next: (res) =>
+        (this.livrosDisponiveis = res.filter((l) => l.QtdLivros > 0)),
+    });
+  }
+
+  abrirNovo(): void {
     this.novoEmprestimo = {
       usuario: null,
       livro: null,
-      dataEmprestimo: new Date(),
       dataPrevisaoDevolucao: null,
-      status: 'ATIVO',
     };
-
+    this.submitted = false;
     this.emprestimoDialog = true;
   }
 
-  fecharDialog() {
+  fecharDialog(): void {
     this.emprestimoDialog = false;
     this.submitted = false;
   }
 
-  salvarEmprestimo() {
+  salvarEmprestimo(): void {
     this.submitted = true;
 
     if (!this.novoEmprestimo.usuario || !this.novoEmprestimo.livro) {
-      this.alert.error('Erro', 'Preencha todos os campos');
+      this.alert.error('Erro', 'Selecione o usuário e o livro');
       return;
     }
 
-    const novo = {
-      id: Math.random(),
-      livroTitulo: this.novoEmprestimo.livro.titulo,
-      usuarioNome: this.novoEmprestimo.usuario.nome,
-      dataEmprestimo: this.novoEmprestimo.dataEmprestimo,
-      dataPrevisaoDevolucao: this.novoEmprestimo.dataPrevisaoDevolucao,
-      status: 'ATIVO',
+    const payload = {
+      idLivro: this.novoEmprestimo.livro.idLivro,
+      idUser: this.novoEmprestimo.usuario.idUsuario,
+      AutorizadoPor: this.funcionarioLogadoId,
+      VistoriadoPor: this.funcionarioLogadoId,
     };
 
-    this.alert.success('Sucesso', 'Livro emprestado com sucesso');
-
-    this.emprestimoDialog = false;
+    this.emprestimosService.Registrar(payload).subscribe({
+      next: () => {
+        this.alert.success('Sucesso', 'Empréstimo registrado');
+        this.emprestimoDialog = false;
+        this.carregarDados(); // Recarrega a lista
+      },
+      error: (err) => {
+        const msg = err?.error?.message || 'Falha ao registrar empréstimo';
+        this.alert.error('Erro', msg);
+      },
+    });
   }
 
-  async devolverLivro(emprestimo: Emprestimo) {
-    const confirm = await this.alert.confirm(
+  async devolverLivro(emp: EmprestimoDB): Promise<void> {
+    const ok = await this.alert.confirm(
       'Confirmar Devolução',
-      'Tem certeza que deseja devolver o livro?',
+      `Devolver "${emp.livro?.Titulo}"?`,
     );
-    if (confirm) {
-      emprestimo.status = 'DEVOLVIDO';
-      this.alert.success('Sucesso', 'Livro devolvido com sucesso');
-    }
+    if (!ok) return;
+
+    const payload = {
+      idEmprestimo: emp.id,
+      VistoriadoPor: this.funcionarioLogadoId,
+      dataPrevisao: emp.created_at, // Ajuste quando campo de prazo for adicionado ao banco
+    };
+
+    this.emprestimosService.ConfirmarDevolucao(payload).subscribe({
+      next: (res) => {
+        if (res.multaAplicada > 0) {
+          this.alert.toastWarning(
+            `Multa de R$ ${res.multaAplicada.toFixed(2)} gerada por atraso`,
+          );
+        } else {
+          this.alert.toastSuccess('Devolução confirmada');
+        }
+        this.carregarDados();
+      },
+      error: () => this.alert.error('Erro', 'Falha ao confirmar devolução'),
+    });
   }
 
-  renovarEmprestimo(emprestimo: Emprestimo) {
-    // Adiciona mais 7 dias à data de previsão
-    const novaData = new Date(emprestimo.dataPrevisaoDevolucao);
-    novaData.setDate(novaData.getDate() + 7);
-    emprestimo.dataPrevisaoDevolucao = novaData;
-    emprestimo.status = 'ATIVO';
-
-    this.alert.success('Sucesso', 'Livro renovado com sucesso');
+  getSeverity(livro: Livro | undefined): 'success' | 'danger' | 'warning' {
+    if (!livro || !livro.QtdLivros || livro.QtdLivros <= 0) return 'danger';
+    return 'success';
   }
 
-  getSeverity(status: string) {
-    switch (status) {
-      case 'ATIVO':
-        return 'info';
-      case 'DEVOLVIDO':
-        return 'success';
-      case 'ATRASADO':
-        return 'danger';
-      case 'RENOVADO':
-        return 'warning';
-      default:
-        return 'info';
-    }
+  // Formata data ISO para dd/MM/yyyy
+  formatarData(data: string | undefined): string {
+    if (!data) return '—';
+    return new Date(data).toLocaleDateString('pt-BR');
+  }
+
+  renovarEmprestimo(emp: EmprestimoDB): void {
+    this.alert.info('Renovação', 'Recurso de renovação ainda não implementado');
   }
 }
