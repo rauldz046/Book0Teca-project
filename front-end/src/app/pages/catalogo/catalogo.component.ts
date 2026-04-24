@@ -107,7 +107,7 @@ export class CatalogoComponent implements OnInit {
   // ─── helpers de apresentação ─────────────────────────────────────────
 
   getCapa(livro: Livro): string {
-    return livro.capa || this.CAPA_PLACEHOLDER;
+    return livro.capa || livro.Capa || this.CAPA_PLACEHOLDER;
   }
 
   getPreco(livro: Livro): number {
@@ -134,6 +134,14 @@ export class CatalogoComponent implements OnInit {
 
   toggleFavorito(livro: Livro): void {
     livro.favorito = !livro.favorito;
+  }
+
+  /** Fallback caso a URL da capa (Open Library, etc.) não retorne imagem. */
+  onCoverError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && img.src !== this.CAPA_PLACEHOLDER) {
+      img.src = this.CAPA_PLACEHOLDER;
+    }
   }
 
   adicionarCarrinho(livro: Livro): void {

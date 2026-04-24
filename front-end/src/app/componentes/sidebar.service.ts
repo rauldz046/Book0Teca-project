@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { AuthService, UserProfile } from '../services/auth.service';
+import { Colors } from 'chart.js';
 
 @Injectable({ providedIn: 'root' })
 export class SidebarService {

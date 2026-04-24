@@ -1,16 +1,37 @@
-<div class="profile-page">
-  <!-- Header do Perfil -->
-  <header class="profile-header">
+<div class="profile-page" *ngIf="user; else semSessao">
+
+  <!-- HEADER -->
+  <header class="profile-header" [attr.data-role]="user.role">
     <div class="header-content">
       <div class="avatar-wrapper">
         <img [src]="user.avatar" alt="Avatar">
-        <button class="btn-edit-photo"><i class="pi pi-camera"></i></button>
+        <button class="btn-edit-photo" title="Alterar foto"><i class="pi pi-camera"></i></button>
       </div>
+
       <div class="user-info">
         <h1>{{ user.nome }}</h1>
+        <p class="email-hint">
+          <i class="pi pi-envelope"></i> {{ user.email }}
+        </p>
         <div class="badges">
-          <span class="badge-role" [ngClass]="user.role.toLowerCase()">{{ user.role }}</span>
-          <span class="member-since">Membro desde {{ user.membroDesde }}</span>
+          <span class="badge-role" [ngClass]="user.role.toLowerCase()">
+            <i class="pi pi-shield"></i> {{ roleLabel() }}
+          </span>
+
+          <span class="badge-status" [ngClass]="statusInfo().cls">
+            <i class="pi pi-circle-fill"></i> {{ statusInfo().label }}
+          </span>
+
+          <span class="badge-tipo" *ngIf="user.isFuncionario">
+            <i class="pi pi-briefcase"></i> Funcionário
+          </span>
+          <span class="badge-tipo leitor" *ngIf="!user.isFuncionario">
+            <i class="pi pi-book"></i> Leitor
+          </span>
+
+          <span class="member-since">
+            <i class="pi pi-calendar"></i> Membro desde {{ user.membroDesde }}
+          </span>
         </div>
       </div>
     </div>
@@ -18,8 +39,8 @@
 
   <div class="container">
     <div class="grid-layout">
-      
-      <!-- Sidebar de Navegação Lateral (Tabs) -->
+
+      <!-- NAV LATERAL -->
       <aside class="settings-nav">
         <button [class.active]="activeTab === 'dados'" (click)="changeTab('dados')">
           <i class="pi pi-user"></i> Dados Pessoais
@@ -33,91 +54,250 @@
         <button [class.active]="activeTab === 'atividade'" (click)="changeTab('atividade')">
           <i class="pi pi-history"></i> {{ isStaff() ? 'Minhas Atividades' : 'Meus Empréstimos' }}
         </button>
+
+        <button class="logout-btn" (click)="logout()">
+          <i class="pi pi-sign-out"></i> Sair da conta
+        </button>
       </aside>
 
-      <!-- Conteúdo Principal -->
+      <!-- CONTEÚDO -->
       <main class="settings-content">
-        
-        <!-- Cards de Resumo (Visíveis para Leitor) -->
-        <section class="stats-grid" *ngIf="activeTab === 'dados'">
-          <div class="stat-card">
-            <span class="label">Livros Lidos</span>
-            <span class="value">{{ user.estatisticas.livrosEmprestados }}</span>
-          </div>
-          <div class="stat-card">
-            <span class="label">Compras</span>
-            <span class="value">{{ user.estatisticas.comprasRealizadas }}</span>
-          </div>
-          <div class="stat-card" [class.danger]="user.estatisticas.multasPendentes > 0">
-            <span class="label">Multas</span>
-            <span class="value">R$ {{ user.estatisticas.multasPendentes }},00</span>
-          </div>
-        </section>
 
-        <!-- Formulário de Dados Pessoais -->
-        <div class="card" *ngIf="activeTab === 'dados'">
-          <h3>Informações da Conta</h3>
-          <form class="profile-form">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Nome Completo</label>
-                <input type="text" [(ngModel)]="user.nome" name="nome">
-              </div>
-              <div class="form-group">
-                <label>Email</label>
-                <input type="email" [(ngModel)]="user.email" name="email">
+        <!-- ============ ABA: DADOS ============ -->
+        <ng-container *ngIf="activeTab === 'dados'">
+
+          <!-- Identificação rápida (staff) -->
+          <section class="stats-grid" *ngIf="isStaff()">
+            <div class="stat-card">
+              <span class="label">Matrícula</span>
+              <span class="value mono">{{ user.matricula || '—' }}</span>
+            </div>
+            <div class="stat-card">
+              <span class="label">CPF</span>
+              <span class="value mono">{{ user.cpf }}</span>
+            </div>
+            <div class="stat-card">
+              <span class="label">Região</span>
+              <span class="value">{{ user.regiao || '—' }}</span>
+            </div>
+          </section>
+
+          <!-- Estatísticas (leitor) -->
+          <section class="stats-grid" *ngIf="!isStaff()">
+            <div class="stat-card info">
+              <span class="label">Livros emprestados</span>
+              <span class="value">{{ estatisticas.livrosEmprestados }}</span>
+            </div>
+            <div class="stat-card success">
+              <span class="label">Compras realizadas</span>
+              <span class="value">{{ estatisticas.comprasRealizadas }}</span>
+            </div>
+            <div class="stat-card" [class.danger]="estatisticas.multasPendentes > 0">
+              <span class="label">Multas pendentes</span>
+              <span class="value">R$ {{ estatisticas.multasPendentes | number:'1.2-2' }}</span>
+            </div>
+          </section>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3>Informações da Conta</h3>
+                <small>Mantenha seus dados atualizados</small>
               </div>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Telefone</label>
-                <input type="text" [(ngModel)]="user.telefone" name="tel">
+
+            <form [formGroup]="dadosForm" class="profile-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Nome Completo *</label>
+                  <input type="text" formControlName="nome"
+                         [class.invalid]="hasError(dadosForm, 'nome')">
+                  <small class="field-error" *ngIf="hasError(dadosForm, 'nome')">
+                    {{ errorMessage(dadosForm, 'nome') }}
+                  </small>
+                </div>
+                <div class="form-group">
+                  <label>Email *</label>
+                  <input type="email" formControlName="email"
+                         [class.invalid]="hasError(dadosForm, 'email')">
+                  <small class="field-error" *ngIf="hasError(dadosForm, 'email')">
+                    {{ errorMessage(dadosForm, 'email') }}
+                  </small>
+                </div>
               </div>
+
+              <div class="form-row">
+                <div class="form-group" *ngIf="!isStaff()">
+                  <label>Telefone</label>
+                  <input type="text" formControlName="telefone" placeholder="(00) 00000-0000">
+                </div>
+                <div class="form-group" *ngIf="isStaff()">
+                  <label>Região (UF)</label>
+                  <input type="text" maxlength="2" formControlName="regiao">
+                </div>
+
+                <div class="form-group">
+                  <label>CPF <small class="locked">(bloqueado)</small></label>
+                  <input type="text" [value]="user.cpf" disabled>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn-save" (click)="saveProfile()"
+                        [disabled]="savingProfile">
+                  <i class="pi pi-save"></i>
+                  {{ savingProfile ? 'Salvando...' : 'Salvar Alterações' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </ng-container>
+
+        <!-- ============ ABA: SEGURANÇA ============ -->
+        <div class="card" *ngIf="activeTab === 'seguranca'">
+          <div class="card-header">
+            <div>
+              <h3>Alterar Senha</h3>
+              <small>Use uma senha forte e não compartilhe com ninguém</small>
+            </div>
+          </div>
+
+          <form [formGroup]="senhaForm" class="profile-form">
+            <div class="form-row one-col">
               <div class="form-group">
-                <label>CPF (Privado)</label>
-                <input type="text" [value]="user.cpf" disabled>
+                <label>Senha Atual *</label>
+                <input type="password" formControlName="atual"
+                       [class.invalid]="hasError(senhaForm, 'atual')">
+                <small class="field-error" *ngIf="hasError(senhaForm, 'atual')">
+                  {{ errorMessage(senhaForm, 'atual') }}
+                </small>
               </div>
             </div>
-            <button class="btn-save" (click)="saveProfile()">Salvar Alterações</button>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nova Senha *</label>
+                <input type="password" formControlName="nova"
+                       [class.invalid]="hasError(senhaForm, 'nova')">
+                <small class="field-error" *ngIf="hasError(senhaForm, 'nova')">
+                  {{ errorMessage(senhaForm, 'nova') }}
+                </small>
+              </div>
+              <div class="form-group">
+                <label>Confirmar Nova Senha *</label>
+                <input type="password" formControlName="confirmacao"
+                       [class.invalid]="hasError(senhaForm, 'confirmacao')">
+                <small class="field-error" *ngIf="hasError(senhaForm, 'confirmacao')">
+                  {{ errorMessage(senhaForm, 'confirmacao') }}
+                </small>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-save" (click)="changePassword()"
+                      [disabled]="savingPassword">
+                <i class="pi pi-key"></i>
+                {{ savingPassword ? 'Atualizando...' : 'Atualizar Senha' }}
+              </button>
+            </div>
           </form>
         </div>
 
-        <!-- Preferências do Site -->
+        <!-- ============ ABA: PREFERÊNCIAS ============ -->
         <div class="card" *ngIf="activeTab === 'preferencias'">
-          <h3>Configurações de Experiência</h3>
+          <div class="card-header">
+            <div>
+              <h3>Preferências de Experiência</h3>
+              <small>Personalize como você interage com a Bookoteca</small>
+            </div>
+          </div>
+
           <div class="settings-list">
             <div class="setting-item">
               <div class="info">
                 <strong>Notificações por Email</strong>
-                <p>Receber avisos de vencimento de livros e promoções.</p>
+                <p>Avisos de vencimento de livros, reservas e promoções.</p>
               </div>
-              <input type="checkbox" [(ngModel)]="user.preferencias.notificacoesEmail">
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="preferencias.notificacoesEmail">
+                <span class="slider"></span>
+              </label>
             </div>
+
             <div class="setting-item">
               <div class="info">
                 <strong>WhatsApp</strong>
-                <p>Receber comprovantes de empréstimo via Zap.</p>
+                <p>Comprovantes de empréstimo e lembretes.</p>
               </div>
-              <input type="checkbox" [(ngModel)]="user.preferencias.notificacoesWpp">
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="preferencias.notificacoesWpp">
+                <span class="slider"></span>
+              </label>
             </div>
+
             <div class="setting-item">
               <div class="info">
                 <strong>Modo Escuro</strong>
-                <p>Alterar a aparência do sistema.</p>
+                <p>Tema com menor contraste para leitura noturna.</p>
               </div>
-              <input type="checkbox" [(ngModel)]="user.preferencias.temaEscuro">
+              <label class="switch">
+                <input type="checkbox" [(ngModel)]="preferencias.temaEscuro">
+                <span class="slider"></span>
+              </label>
             </div>
+
+            <div class="setting-item">
+              <div class="info">
+                <strong>Idioma</strong>
+                <p>Idioma da interface.</p>
+              </div>
+              <select [(ngModel)]="preferencias.idioma" class="inline-select">
+                <option value="pt-br">Português (BR)</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-save" (click)="savePreferencias()">
+              <i class="pi pi-check"></i> Salvar Preferências
+            </button>
           </div>
         </div>
 
-        <!-- Conteúdo Condicional para Staff -->
-        <div class="card" *ngIf="activeTab === 'atividade' && isStaff()">
-          <h3>Logs de Operação</h3>
-          <p>Como <strong>{{user.role}}</strong>, você realizou 142 ações no sistema este mês.</p>
-          <button class="btn-save">Exportar meu Relatório</button>
+        <!-- ============ ABA: ATIVIDADE ============ -->
+        <div class="card" *ngIf="activeTab === 'atividade'">
+          <div class="card-header">
+            <div>
+              <h3>{{ isStaff() ? 'Logs de Operação' : 'Meus Empréstimos' }}</h3>
+              <small *ngIf="isStaff()">
+                Como <strong>{{ user.role }}</strong>, suas ações ficam registradas no sistema.
+              </small>
+              <small *ngIf="!isStaff()">
+                Acompanhe o histórico das suas movimentações.
+              </small>
+            </div>
+          </div>
+
+          <div class="timeline-placeholder">
+            <i class="pi pi-inbox"></i>
+            <p>Em breve, aqui você verá todo o histórico detalhado.</p>
+            <button class="btn-save outline">
+              <i class="pi pi-download"></i> Exportar Relatório
+            </button>
+          </div>
         </div>
 
       </main>
     </div>
   </div>
 </div>
+
+<ng-template #semSessao>
+  <div class="no-session">
+    <i class="pi pi-exclamation-circle"></i>
+    <p>Nenhuma sessão ativa encontrada.</p>
+    <a routerLink="/auth/log-in" class="btn-save">Fazer login</a>
+  </div>
+</ng-template>

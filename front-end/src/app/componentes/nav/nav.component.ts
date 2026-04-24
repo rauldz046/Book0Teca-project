@@ -11,7 +11,7 @@ import { AuthService, UserProfile } from '../../services/auth.service';
 })
 export class NavComponent implements OnInit {
   items: MenuItem[] = [];
-  collapsed = false;
+  isCollapsed = false;
   userNome: string = '';
   currentUserProfile: UserProfile | null = null;
   OptionSelected!: string;
@@ -61,6 +61,9 @@ export class NavComponent implements OnInit {
       this.router.navigate(['/auth/log-in']);
       return;
     }
+
+    // Sincroniza estado colapsado da sidebar
+    this.sidebarService.collapsed$.subscribe((c) => (this.isCollapsed = c));
 
     // Reage a mudanças de perfil (login/logout) regerando o menu
     this.auth.profile$.subscribe((perfil) => {

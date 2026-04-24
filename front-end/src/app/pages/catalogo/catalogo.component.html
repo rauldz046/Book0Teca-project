@@ -77,7 +77,13 @@
         <ng-template let-livro pTemplate="item">
           <div class="book-card-v2">
             <div class="image-container">
-              <img [src]="getCapa(livro)" [alt]="livro.Titulo" class="book-cover" />
+              <img
+                [src]="getCapa(livro)"
+                [alt]="livro.Titulo"
+                class="book-cover"
+                loading="lazy"
+                (error)="onCoverError($event)"
+              />
 
               <span class="status-badge" [ngClass]="getSeverity(livro)">
                 {{ getStatusLabel(livro) }}

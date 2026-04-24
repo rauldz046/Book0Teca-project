@@ -11,15 +11,17 @@ export interface Livro {
   PathDownload?: string;
   PalavrasChave?: any;
   Descricao?: string;
+  Capa?: string;          // URL da capa (persistida no banco)
+  Ano?: number;           // ano de publicação
   created_at?: string;
   updated_at?: string;
-  // Join com Autores
+  // Campos derivados/enrich vindos do back
   autorInfo?: { NomeAutor: string };
-  capa?: string;
+  capa?: string;          // alias lowercase (enrichLivro)
   titulo?: string;
   status?: string;
-  favorito?: boolean;
   ano?: number;
+  favorito?: boolean;
 }
 
 export interface EntradaEstoque {

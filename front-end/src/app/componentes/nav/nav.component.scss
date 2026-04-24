@@ -1,195 +1,422 @@
-// 1. Variáveis de Identidade Visual
-$primary-blue: #1b365d;
-$secondary-green: #5a8d2d;
-$accent-gold: #e8a838;
-$hover-white: rgba(255, 255, 255, 0.08);
-$text-muted: #94a3b8;
+/* ════════════════════════════════════════════════════════════════════
+   NAVBAR / SIDEBAR - Bookoteca
+   Visual: gradiente suave + pill de perfil + estados hover/active bem definidos
+   ══════════════════════════════════════════════════════════════════════ */
 
-// 2. Container Principal
+// Paleta
+$primary: #1f4db8;              // azul escuro
+$primary-soft: #1e293b;
+$accent: #10b981;               // verde esmeralda
+$accent-soft: #34d399;
+$gold: #f59e0b;
+$text-base: #e2e8f0;
+$text-muted: #94a3b8;
+$text-dim: #64748b;
+$border-soft: rgba(255, 255, 255, 0.06);
+$hover-bg: rgba(255, 255, 255, 0.06);
+$active-bg: rgba(16, 185, 129, 0.14);
+
+/* ─── CONTAINER ──────────────────────────────────────────────────── */
 .container-nav {
   position: fixed;
   top: 0;
   left: 0;
-  width: 16rem; // Largura levemente ajustada para respiro
+  width: 16.5rem;
   height: 100vh;
-  background: $primary-blue;
-  color: #fff;
-  padding: 1.5rem 1rem;
+  background: linear-gradient(180deg, $primary 0%, $primary-soft 100%);
+  color: $text-base;
+  padding: 1.25rem 0.9rem;
   display: flex;
   flex-direction: column;
-  transition: width 0.4s cubic-bezier(0.05, 0.7, 0.1, 1);
-  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
+  gap: 0.8rem;
+  transition: width 0.35s cubic-bezier(0.05, 0.7, 0.1, 1);
+  box-shadow: 6px 0 30px rgba(15, 23, 42, 0.15);
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  z-index: 100;
+  overflow: visible;
 
   &.collapsed {
-    width: 5.5rem;
-    padding: 1.5rem 0.75rem;
-
-    .brand-section, .user-name, .dropdown-label-text {
-      opacity: 0;
-      visibility: hidden;
-    }
-    
-    .user-section {
-      background: transparent;
-      justify-content: center;
-      padding: 10px 0;
-    }
+    width: 4.8rem;
+    padding: 1.25rem 0.5rem;
+    align-items: center;
   }
 }
 
-// 3. Logo e Toggle
+/* ─── BRAND ──────────────────────────────────────────────────────── */
 .brand-section {
-  padding: 0 1rem 2rem;
-  font-weight: 800;
-  font-size: 1.5rem;
-  white-space: nowrap;
-  transition: all 0.3s;
-  i { color: $secondary-green; margin-right: 10px; }
-  span { color: $secondary-green; }
-}
-
-.toggle-container {
-  margin-bottom: 1.5rem;
   display: flex;
-  justify-content: flex-end;
-}
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
 
-.toggle-btn {
-  background: $hover-white !important;
-  border: none !important;
-  color: white !important;
-  border-radius: 10px !important;
-  width: 35px !important;
-  height: 35px !important;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.15) !important;
-    transform: scale(1.05);
+  .brand-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, $accent 0%, darken($accent, 10%) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    overflow: hidden;
+
+    .brand-name {
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: #fff;
+      letter-spacing: -0.3px;
+      white-space: nowrap;
+
+      .accent { color: $accent-soft; }
+    }
+
+    .brand-tag {
+      font-size: 0.68rem;
+      color: $text-muted;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
   }
 }
 
-// 4. Área de Menu (Scroll)
+.container-nav.collapsed .brand-section {
+  justify-content: center;
+  padding: 4px 0;
+}
+
+/* ─── TOGGLE ─────────────────────────────────────────────────────── */
+.toggle-btn {
+  position: relative;
+  margin-top: 0.3rem;
+  margin-left: auto;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  color: $primary;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s;
+  z-index: 100;
+
+  i { font-size: 0.7rem; }
+
+  &:hover {
+    background: $accent;
+    color: #fff;
+    border-color: $accent;
+    transform: scale(1.1);
+  }
+}
+
+.container-nav.collapsed .toggle-btn {
+  margin-left: auto;
+}
+
+/* ─── USER CARD ──────────────────────────────────────────────────── */
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid $border-soft;
+  border-radius: 12px;
+  padding: 10px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  .user-card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+
+    .user-name {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-role {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      width: fit-content;
+      background: rgba(255, 255, 255, 0.08);
+
+      i { font-size: 0.6rem; }
+
+      &.role-administrador { background: rgba(220, 38, 38, 0.18); color: #fca5a5; }
+      &.role-bibliotecario { background: rgba(59, 130, 246, 0.18); color: #93c5fd; }
+      &.role-financeiro    { background: rgba(16, 185, 129, 0.18); color: $accent-soft; }
+      &.role-estoque       { background: rgba(234, 88, 12, 0.18);  color: #fdba74; }
+      &.role-leitor        { background: rgba(100, 116, 139, 0.22); color: #cbd5e1; }
+    }
+  }
+
+  &.compact {
+    padding: 6px;
+    justify-content: center;
+    background: transparent;
+    border: none;
+  }
+}
+
+/* ─── DIVIDER ────────────────────────────────────────────────────── */
+.nav-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 4px 0;
+  color: $text-dim;
+
+  span {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+  }
+
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, $border-soft, transparent);
+  }
+}
+
+/* ─── MENU SCROLL ────────────────────────────────────────────────── */
 .menu-scroll {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 4px;
+  padding-right: 2px;
+  margin-right: -2px;
 
   &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    &:hover { background: rgba(255, 255, 255, 0.18); }
+  }
 }
 
-// 5. CUSTOMIZAÇÃO PRIMENG (Global na página)
+/* ─── PRIMENG PANEL MENU ─────────────────────────────────────────── */
 ::ng-deep {
-  /* PANEL MENU (Navegação) */
   .p-panelmenu {
     background: transparent !important;
-    
-    .p-panelmenu-header > a {
+
+    .p-panelmenu-panel {
       background: transparent !important;
       border: none !important;
-      color: rgba(255, 255, 255, 0.8) !important;
-      padding: 0.85rem 1rem !important;
-      border-radius: 10px;
-      transition: all 0.2s;
+      margin-bottom: 2px;
+    }
 
-      &:hover { background: $hover-white !important; color: white !important; }
+    .p-panelmenu-header > a,
+    .p-panelmenu-header-link {
+      background: transparent !important;
+      border: none !important;
+      color: rgb(255, 255, 255) !important;
+      padding: 0.7rem 0.85rem !important;
+      border-radius: 10px !important;
+      transition: all 0.18s ease !important;
+      font-size: 0.9rem !important;
+      font-weight: 500 !important;
+      gap: 10px !important;
+
+      .p-menuitem-icon {
+        color: $text-muted !important;
+        font-size: 1rem !important;
+        margin-right: 4px !important;
+      }
+
+      &:hover {
+        background: $hover-bg !important;
+        color: #fff !important;
+        .p-menuitem-icon { color: $accent-soft !important; }
+      }
+
+      &:focus { box-shadow: none !important; }
+    }
+
+    .p-panelmenu-header.p-highlight > a {
+      background: $active-bg !important;
+      color: $accent-soft !important;
+      .p-menuitem-icon { color: $accent-soft !important; }
     }
 
     .p-panelmenu-content {
       background: transparent !important;
       border: none !important;
-      color: white !important;
+      padding: 2px 0 4px 0.5rem !important;
+      margin-left: 0.5rem;
+      border-left: 1px dashed rgba(255, 255, 255, 0.08);
     }
 
     .p-menuitem-link {
-      color: rgba(255, 255, 255, 0.6) !important;
-      padding: 0.6rem 2.5rem !important;
-      &:hover { color: $secondary-green !important; background: transparent !important; }
+      color: #e2e8f0 !important;
+      padding: 0.5rem 0.85rem !important;
+      border-radius: 8px !important;
+      font-size: 0.85rem !important;
+      margin: 1px 0;
+      transition: all 0.15s ease !important;
+
+      .p-menuitem-icon {
+        color: #94a3b8 !important;
+        font-size: 0.85rem !important;
+      }
+
+      .p-menuitem-text {
+        color: #e2e8f0 !important;
+      }
+
+      &:hover {
+        background: $hover-bg !important;
+        color: #fff !important;
+        .p-menuitem-icon { color: $accent-soft !important; }
+        .p-menuitem-text { color: #fff !important; }
+      }
+
+      &:focus { box-shadow: none !important; }
+    }
+
+    /* Ícone do chevron do panelmenu */
+    .p-panelmenu-icon {
+      color: $text-muted !important;
+      font-size: 0.75rem !important;
     }
   }
 
-  /* DROPDOWN (Estilo dentro da Sidebar) */
-  .user-section .p-dropdown {
-    background: transparent !important; // Remove fundo branco
-    border: none !important;           // Remove bordas
-    box-shadow: none !important;       // Remove sombra padrão
-    padding: 0 !important;
-    height: auto !important;
+  /* Modo colapsado */
+  .nav-menu.collapsed {
+    .p-panelmenu-header > a,
+    .p-panelmenu-header-link {
+      padding: 0.75rem !important;
+      justify-content: center !important;
+      .p-menuitem-text { display: none !important; }
+      .p-panelmenu-icon { display: none !important; }
+    }
+    .p-panelmenu-content { display: none !important; }
+  }
 
-    .p-dropdown-label  .p-dropdown  {
+  /* ─── DROPDOWN DA CONTA ─────────────────────────────────────── */
+  .account-dropdown-inner.p-dropdown {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid $border-soft !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    padding: 4px 4px !important;
+    transition: all 0.2s;
+
+    &:hover { background: rgba(255, 255, 255, 0.1) !important; }
+
+    .p-dropdown-label {
       background: transparent !important;
-      color: $secondary-green !important; // Texto em verde destaque
-      font-size: 0.75rem !important;
+      color: #fff !important;
+      font-size: 0.82rem !important;
       font-weight: 600 !important;
-      padding: 0 !important;
-      text-align: left;
+      padding: 6px 10px !important;
     }
 
     .p-dropdown-trigger {
-      color: rgba(255, 255, 255, 0.4) !important;
-      width: 20px !important;
+      color: $text-muted !important;
+      width: 28px !important;
     }
+
+    .p-placeholder { color: $text-muted !important; }
   }
 
-  /* PAINEL QUE ABRE (Fora da Sidebar) */
+  /* Painel aberto do dropdown */
   .p-dropdown-panel {
-    background: #ffffff !important;
+    background: #1e293b !important;
     border-radius: 12px !important;
-    border: none !important;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
-    
+    border: 1px solid $border-soft !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4) !important;
+    overflow: hidden;
+
+    .p-dropdown-items { padding: 6px !important; }
+
     .p-dropdown-item {
-      color: $primary-blue !important;
-      padding: 10px 15px !important;
+      color: #f1f5f9 !important;
+      padding: 9px 12px !important;
       font-size: 0.85rem !important;
-      
+      border-radius: 8px !important;
+      font-weight: 500;
+
       &:hover {
-        background: rgba($secondary-green, 0.08) !important;
-        color: $secondary-green !important;
+        background: rgba($accent, 0.2) !important;
+        color: #fff !important;
+      }
+
+      &.p-highlight {
+        background: rgba($accent, 0.3) !important;
+        color: #fff !important;
       }
     }
   }
+}
 
-  /* Ajuste ícones colapsados */
-  .collapsed .p-menuitem-text, 
-  .collapsed .p-panelmenu-icon {
-    display: none !important;
+/* ─── NAV FOOTER ─────────────────────────────────────────────────── */
+.nav-footer {
+  padding-top: 0.75rem;
+  border-top: 1px solid $border-soft;
+  margin-top: auto;
+
+  .account-dropdown { width: 100%; }
+
+  .logout-icon-btn {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0 auto;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.22);
+      color: #fff;
+    }
   }
 }
 
-// 6. Seção do Usuário (Rodapé)
-.user-section {
-  margin-top: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: all 0.3s;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-
-  .user-avatar {
-    flex-shrink: 0;
-    p-avatar { 
-      box-shadow: 0 0 10px rgba($secondary-green, 0.2);
-    }
-  }
-
-  .user-info-container {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    width: 100%;
-
-    .user-name {
-      font-weight: 700;
-      font-size: 0.9rem;
-      color: #fff;
-      white-space: nowrap;
-      margin-bottom: 2px;
-      transition: opacity 0.3s;
-    }
+/* ─── RESPONSIVO ─────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .container-nav {
+    width: 14rem;
+    &.collapsed { width: 4rem; }
   }
 }

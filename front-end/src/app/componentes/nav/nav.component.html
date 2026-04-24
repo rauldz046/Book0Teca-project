@@ -1,50 +1,87 @@
-<section class="container-nav" [ngClass]="{ collapsed: (sidebarService.collapsed$ | async) }">
-  
-  <!-- Logo -->
+<section class="container-nav" [ngClass]="{ collapsed: isCollapsed }">
+
+  <!-- BRAND -->
   <div class="brand-section">
-    <i class="pi pi-book-open"></i>
-    <span *ngIf="!collapsed">Book<span>Oteca</span></span>
+    <div class="brand-logo">
+      <i class="pi pi-book"></i>
+    </div>
+    <div class="brand-text" *ngIf="!isCollapsed">
+      <span class="brand-name">Book<span class="accent">oteca</span></span>
+      <small class="brand-tag">Biblioteca Digital</small>
+    </div>
   </div>
 
-  <!-- Botão Toggle -->
-  <div class="toggle-container">
-    <button
-      pButton
-      type="button"
-      [icon]="collapsed ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"
-      (click)="toggleSidebar()"
-      class="toggle-btn"
-    ></button>
+  <!-- TOGGLE (flutuante fora da sidebar) -->
+  <button
+    type="button"
+    class="toggle-btn"
+    (click)="toggleSidebar()"
+    [title]="isCollapsed ? 'Expandir menu' : 'Recolher menu'"
+  >
+    <i [class]="isCollapsed ? 'pi pi-chevron-right' : 'pi pi-chevron-left'"></i>
+  </button>
+
+  <!-- USER CARD (expandido) -->
+  <div class="user-card" *ngIf="!isCollapsed">
+    <p-avatar
+      image="https://cdn-icons-png.flaticon.com/512/9187/9187604.png"
+      shape="circle"
+      size="large"
+      styleClass="user-avatar-img"
+    ></p-avatar>
+    <div class="user-card-info">
+      <span class="user-name" [title]="userNome">{{ userNome || 'Usuário' }}</span>
+      <span class="user-role" *ngIf="currentUserProfile"
+            [ngClass]="'role-' + currentUserProfile.toLowerCase()">
+        <i class="pi pi-shield"></i> {{ currentUserProfile }}
+      </span>
+    </div>
   </div>
 
-  <!-- Menu Central -->
+  <!-- USER CARD (colapsado) -->
+  <div class="user-card compact" *ngIf="isCollapsed" [title]="userNome">
+    <p-avatar
+      image="https://cdn-icons-png.flaticon.com/512/9187/9187604.png"
+      shape="circle"
+      size="normal"
+    ></p-avatar>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="nav-divider" *ngIf="!isCollapsed">
+    <span>NAVEGAÇÃO</span>
+  </div>
+
+  <!-- MENU -->
   <div class="menu-scroll">
     <p-panelMenu
       [model]="items"
-      [styleClass]="collapsed ? 'collapsed' : 'expanded'"
+      [styleClass]="isCollapsed ? 'nav-menu collapsed' : 'nav-menu expanded'"
     ></p-panelMenu>
   </div>
 
-  <!-- Sessão Usuário -->
-  <div class="user-section">
-    <div class="user-avatar">
-      <p-avatar
-        image="https://cdn-icons-png.flaticon.com/512/9187/9187604.png"
-        shape="circle"
-        size="large">
-      </p-avatar>
-    </div>
-
-    <div class="user-info-container" *ngIf="!collapsed">
-      <span class="user-name">{{ userNome }}</span>
+  <!-- FOOTER -->
+  <div class="nav-footer">
+    <div class="account-dropdown" *ngIf="!isCollapsed">
       <p-dropdown
         [options]="filteredDropdown"
         [(ngModel)]="OptionSelected"
         optionLabel="name"
         placeholder="Minha Conta"
         (onChange)="navigateOut($event.value)"
-        appendTo="body"> <!-- IMPORTANTE: Faz o menu flutuar fora da sidebar -->
-      </p-dropdown>
+        appendTo="body"
+        styleClass="account-dropdown-inner"
+      ></p-dropdown>
     </div>
+
+    <button
+      class="logout-icon-btn"
+      *ngIf="isCollapsed"
+      (click)="navigateOut({ name: 'Logout', code: '/' })"
+      title="Sair"
+    >
+      <i class="pi pi-sign-out"></i>
+    </button>
   </div>
+
 </section>

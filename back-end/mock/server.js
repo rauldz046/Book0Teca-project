@@ -287,9 +287,21 @@ app.post("/autores/deleteAutor", (req, res) => {
 // ─── LIVROS ───────────────────────────────────────────────────────────────────
 
 function enrichLivro(livro, db) {
+  const FALLBACK_CAPA =
+    "https://via.placeholder.com/240x340/e2e8f0/64748b?text=Sem+Capa";
   return {
     ...livro,
     autorInfo: db.autores.find((a) => a.id === livro.Autor) || null,
+    // aliases em lowercase esperados pelo front
+    capa: livro.Capa || FALLBACK_CAPA,
+    ano: livro.Ano ?? null,
+    titulo: livro.Titulo,
+    status:
+      !livro.QtdLivros || livro.QtdLivros <= 0
+        ? "Indisponível"
+        : livro.QtdLivros <= 2
+        ? "Últimas unidades"
+        : "Disponível",
   };
 }
 
