@@ -1,21 +1,22 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Livro, EntradaEstoque, FiltroBuscaLivro } from '../models/livros.model';
+import { ApiService } from './core/api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LivrosService {
-  private http = inject(HttpClient);
-  private readonly BASE_URL = 'http://localhost:4000/livros';
+  private api = inject(ApiService);
+  private readonly ROOT = '/livros';
 
   FindAll(): Observable<Livro[]> {
-    return this.http.get<Livro[]>(`${this.BASE_URL}/findAll`);
+    return this.api.get<Livro[]>(`${this.ROOT}/findAll`);
   }
 
   FindById(id: number): Observable<Livro> {
-    return this.http.get<Livro>(`${this.BASE_URL}/${id}`);
+    return this.api.get<Livro>(`${this.ROOT}/${id}`);
   }
 
   // Busca com filtros — atende RF06
@@ -24,23 +25,23 @@ export class LivrosService {
     if (filtros.titulo)  params = params.set('titulo', filtros.titulo);
     if (filtros.autorId) params = params.set('autorId', String(filtros.autorId));
     if (filtros.tipo)    params = params.set('tipo', filtros.tipo);
-    return this.http.get<Livro[]>(`${this.BASE_URL}/buscar`, { params });
+    return this.api.get<Livro[]>(`${this.ROOT}/buscar`, params);
   }
 
   Criar(data: Partial<Livro>): Observable<Livro> {
-    return this.http.post<Livro>(`${this.BASE_URL}/create`, data);
+    return this.api.post<Livro>(`${this.ROOT}/create`, data);
   }
 
   Atualizar(data: Partial<Livro> & { idLivro: number }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/update`, data);
+    return this.api.post<any>(`${this.ROOT}/update`, data);
   }
 
   // Entrada de lote de estoque — atende RF21
   EntradaEstoque(data: EntradaEstoque): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/estoque`, data);
+    return this.api.post<any>(`${this.ROOT}/estoque`, data);
   }
 
   Deletar(idLivro: number): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/delete`, { idLivro });
+    return this.api.post<any>(`${this.ROOT}/delete`, { idLivro });
   }
 }

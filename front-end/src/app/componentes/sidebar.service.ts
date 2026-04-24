@@ -1,19 +1,18 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { MenuItem, PrimeIcons } from 'primeng/api';
-
-type UserProfile =
-  | 'LEITOR'
-  | 'BIBLIOTECARIO'
-  | 'FINANCEIRO'
-  | 'ESTOQUE'
-  | 'ADMINISTRADOR';
+import { AuthService, UserProfile } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class SidebarService {
   private collapsedSubject = new BehaviorSubject<boolean>(false);
-  currentUserProfile: UserProfile = 'ADMINISTRADOR'; // Simulação
   collapsed$ = this.collapsedSubject.asObservable();
+
+  private auth = inject(AuthService);
+
+  get currentUserProfile(): UserProfile | null {
+    return this.auth.profile;
+  }
 
   toggle() {
     this.collapsedSubject.next(!this.collapsedSubject.value);
@@ -42,10 +41,8 @@ export class SidebarService {
     return flat;
   }
 
-  // --- Seus métodos originais mantidos ---
   hasPermission(allowedProfiles: UserProfile[]): boolean {
-    if (this.currentUserProfile === 'ADMINISTRADOR') return true;
-    return allowedProfiles.includes(this.currentUserProfile);
+    return this.auth.hasProfile(allowedProfiles);
   }
 
   generateMenu(): MenuItem[] {
@@ -65,7 +62,7 @@ export class SidebarService {
             label: 'Geren. Funcionários',
             icon: PrimeIcons.ID_CARD,
             routerLink: '/usuarios/funcionarios',
-            visible: this.hasPermission([]),
+            visible: this.hasPermission([]), // só ADMIN
           },
         ],
       },
@@ -173,7 +170,7 @@ export class SidebarService {
       {
         label: 'Sistema',
         icon: PrimeIcons.SERVER,
-        visible: this.hasPermission([]),
+        visible: this.hasPermission([]), // só ADMIN
         items: [
           { label: 'Logs', icon: PrimeIcons.FILE, routerLink: '/sistema/logs' },
           {

@@ -1,233 +1,119 @@
 <div class="catalog-container">
-  <!-- Cabeçalho do Bloco -->
-  <div class="section-header mb-4 ml-2">
-    <h2 class="title">Leia Novamente</h2>
-    <p class="subtitle">Vistos recentemente por você</p>
+  <!-- HEADER + FILTROS -->
+  <div class="catalog-header">
+    <div>
+      <h1 class="page-title">Catálogo de Livros</h1>
+      <p class="page-subtitle">
+        {{ livrosFiltrados.length }} {{ livrosFiltrados.length === 1 ? 'livro encontrado' : 'livros encontrados' }}
+      </p>
+    </div>
+
+    <div class="filter-bar">
+      <span class="p-input-icon-left search-input">
+        <i class="pi pi-search"></i>
+        <input
+          pInputText
+          type="text"
+          placeholder="Buscar por título, autor ou ISBN..."
+          [(ngModel)]="filtroTexto"
+          (input)="aplicarFiltro()"
+        />
+      </span>
+
+      <p-selectButton
+        [options]="[
+          { label: 'Todos', value: 'todos' },
+          { label: 'Físico', value: 'fisico' },
+          { label: 'Digital', value: 'digital' }
+        ]"
+        [(ngModel)]="filtroTipo"
+        optionLabel="label"
+        optionValue="value"
+        (onChange)="aplicarFiltro()"
+      ></p-selectButton>
+
+      <button
+        pButton
+        icon="pi pi-filter-slash"
+        label="Limpar"
+        class="p-button-text p-button-sm"
+        (click)="limparFiltros()"
+        *ngIf="filtroTexto || filtroTipo !== 'todos'"
+      ></button>
+    </div>
   </div>
 
-  <!-- Carrossel ou Grid (Usando p-carousel para idêntico à imagem) -->
-  <p-carousel [value]="fantasia" [numVisible]="4" [numScroll]="1" [circular]="false" [responsiveOptions]="responsiveOptions">
-    <ng-template let-livro pTemplate="item">
-      <div class="book-card-v2">
-        
-        <!-- Área da Imagem -->
-        <div class="image-container">
-          <img [src]="livro.capa" [alt]="livro.titulo" class="book-cover">
-          <!-- Badge de Status (Instock) -->
-          <span class="status-badge" [ngClass]="getSeverity(livro.status)">
-            {{ livro.status === 'DISPONIVEL' ? 'INSTOCK' : formatarStatus(livro.status) }}
-          </span>
-        </div>
+  <!-- LOADING -->
+  <div *ngIf="loading" class="state-container">
+    <i class="pi pi-spin pi-spinner"></i>
+    <p>Carregando catálogo...</p>
+  </div>
 
-        <!-- Informações -->
-        <div class="book-info">
-          <h3 class="book-title">{{ livro.titulo }}</h3>
-          <p class="book-price">R${{ livro.ano }}.99</p> <!-- Simulando preço com o ano ou campo novo -->
-          
-          <!-- Ações -->
-          <div class="book-actions">
-            <button class="btn-fav" (click)="toggleFavorito(livro)" [class.active]="livro.favorito">
-              <i [class]="livro.favorito ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
-            </button>
-            <button class="btn-cart" (click)="adicionarCarrinho(livro)">
-              <i class="pi pi-shopping-cart"></i>
-            </button>
-          </div>
-        </div>
+  <!-- EMPTY STATE -->
+  <div *ngIf="!loading && livrosFiltrados.length === 0" class="state-container empty">
+    <i class="pi pi-book"></i>
+    <h3>Nenhum livro encontrado</h3>
+    <p>Tente ajustar os filtros de busca.</p>
+    <button pButton label="Limpar filtros" icon="pi pi-filter-slash" class="p-button-outlined" (click)="limparFiltros()"></button>
+  </div>
 
+  <!-- COLEÇÕES -->
+  <ng-container *ngIf="!loading && livrosFiltrados.length > 0">
+    <section *ngFor="let colecao of colecoes" class="collection-section">
+      <div class="section-header">
+        <div>
+          <h2 class="title">{{ colecao.titulo }}</h2>
+          <p class="subtitle">{{ colecao.subtitulo }}</p>
+        </div>
       </div>
-    </ng-template>
-  </p-carousel>
-  <p-carousel [value]="programacao" [numVisible]="4" [numScroll]="1" [circular]="false" [responsiveOptions]="responsiveOptions">
-    <ng-template let-livro pTemplate="item">
-      <div class="book-card-v2">
-        
-        <!-- Área da Imagem -->
-        <div class="image-container">
-          <img [src]="livro.capa" [alt]="livro.titulo" class="book-cover">
-          <!-- Badge de Status (Instock) -->
-          <span class="status-badge" [ngClass]="getSeverity(livro.status)">
-            {{ livro.status === 'DISPONIVEL' ? 'INSTOCK' : formatarStatus(livro.status) }}
-          </span>
-        </div>
 
-        <!-- Informações -->
-        <div class="book-info">
-          <h3 class="book-title">{{ livro.titulo }}</h3>
-          <p class="book-price">R${{ livro.ano }}.99</p> <!-- Simulando preço com o ano ou campo novo -->
-          
-          <!-- Ações -->
-          <div class="book-actions">
-            <button class="btn-fav" (click)="toggleFavorito(livro)" [class.active]="livro.favorito">
-              <i [class]="livro.favorito ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
-            </button>
-            <button class="btn-cart" (click)="adicionarCarrinho(livro)">
-              <i class="pi pi-shopping-cart"></i>
-            </button>
+      <p-carousel
+        [value]="colecao.livros"
+        [numVisible]="4"
+        [numScroll]="1"
+        [circular]="false"
+        [responsiveOptions]="responsiveOptions"
+      >
+        <ng-template let-livro pTemplate="item">
+          <div class="book-card-v2">
+            <div class="image-container">
+              <img [src]="getCapa(livro)" [alt]="livro.Titulo" class="book-cover" />
+
+              <span class="status-badge" [ngClass]="getSeverity(livro)">
+                {{ getStatusLabel(livro) }}
+              </span>
+
+              <span class="type-badge">{{ getTipoBadge(livro) }}</span>
+            </div>
+
+            <div class="book-info">
+              <h3 class="book-title" [title]="livro.Titulo">{{ livro.Titulo }}</h3>
+              <p class="book-author">{{ livro.autorInfo?.NomeAutor || 'Autor desconhecido' }}</p>
+              <p class="book-price">{{ getPreco(livro) | currency:'BRL' }}</p>
+
+              <div class="book-actions">
+                <button
+                  class="btn-fav"
+                  (click)="toggleFavorito(livro)"
+                  [class.active]="livro.favorito"
+                  [title]="livro.favorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'"
+                >
+                  <i [class]="livro.favorito ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
+                </button>
+
+                <button
+                  class="btn-cart"
+                  (click)="adicionarCarrinho(livro)"
+                  [disabled]="getSeverity(livro) === 'danger'"
+                  title="Adicionar ao carrinho"
+                >
+                  <i class="pi pi-shopping-cart"></i>
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-
-      </div>
-    </ng-template>
-  </p-carousel>
-  <p-carousel [value]="classicos" [numVisible]="4" [numScroll]="1" [circular]="false" [responsiveOptions]="responsiveOptions">
-    <ng-template let-livro pTemplate="item">
-      <div class="book-card-v2">
-        
-        <!-- Área da Imagem -->
-        <div class="image-container">
-          <img [src]="livro.capa" [alt]="livro.titulo" class="book-cover">
-          <!-- Badge de Status (Instock) -->
-          <span class="status-badge" [ngClass]="getSeverity(livro.status)">
-            {{ livro.status === 'DISPONIVEL' ? 'INSTOCK' : formatarStatus(livro.status) }}
-          </span>
-        </div>
-
-        <!-- Informações -->
-        <div class="book-info">
-          <h3 class="book-title">{{ livro.titulo }}</h3>
-          <p class="book-price">R${{ livro.ano }}.99</p> <!-- Simulando preço com o ano ou campo novo -->
-          
-          <!-- Ações -->
-          <div class="book-actions">
-            <button class="btn-fav" (click)="toggleFavorito(livro)" [class.active]="livro.favorito">
-              <i [class]="livro.favorito ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
-            </button>
-            <button class="btn-cart" (click)="adicionarCarrinho(livro)">
-              <i class="pi pi-shopping-cart"></i>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </ng-template>
-  </p-carousel>
-  <p-carousel [value]="ficcao" [numVisible]="4" [numScroll]="1" [circular]="false" [responsiveOptions]="responsiveOptions">
-    <ng-template let-livro pTemplate="item">
-      <div class="book-card-v2">
-        
-        <!-- Área da Imagem -->
-        <div class="image-container">
-          <img [src]="livro.capa" [alt]="livro.titulo" class="book-cover">
-          <!-- Badge de Status (Instock) -->
-          <span class="status-badge" [ngClass]="getSeverity(livro.status)">
-            {{ livro.status === 'DISPONIVEL' ? 'INSTOCK' : formatarStatus(livro.status) }}
-          </span>
-        </div>
-
-        <!-- Informações -->
-        <div class="book-info">
-          <h3 class="book-title">{{ livro.titulo }}</h3>
-          <p class="book-price">R${{ livro.ano }}.99</p> <!-- Simulando preço com o ano ou campo novo -->
-          
-          <!-- Ações -->
-          <div class="book-actions">
-            <button class="btn-fav" (click)="toggleFavorito(livro)" [class.active]="livro.favorito">
-              <i [class]="livro.favorito ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
-            </button>
-            <button class="btn-cart" (click)="adicionarCarrinho(livro)">
-              <i class="pi pi-shopping-cart"></i>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </ng-template>
-  </p-carousel>
-  <p-carousel [value]="suspense" [numVisible]="4" [numScroll]="1" [circular]="false" [responsiveOptions]="responsiveOptions">
-    <ng-template let-livro pTemplate="item">
-      <div class="book-card-v2">
-        
-        <!-- Área da Imagem -->
-        <div class="image-container">
-          <img [src]="livro.capa" [alt]="livro.titulo" class="book-cover">
-          <!-- Badge de Status (Instock) -->
-          <span class="status-badge" [ngClass]="getSeverity(livro.status)">
-            {{ livro.status === 'DISPONIVEL' ? 'INSTOCK' : formatarStatus(livro.status) }}
-          </span>
-        </div>
-
-        <!-- Informações -->
-        <div class="book-info">
-          <h3 class="book-title">{{ livro.titulo }}</h3>
-          <p class="book-price">R${{ livro.ano }}.99</p> <!-- Simulando preço com o ano ou campo novo -->
-          
-          <!-- Ações -->
-          <div class="book-actions">
-            <button class="btn-fav" (click)="toggleFavorito(livro)" [class.active]="livro.favorito">
-              <i [class]="livro.favorito ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
-            </button>
-            <button class="btn-cart" (click)="adicionarCarrinho(livro)">
-              <i class="pi pi-shopping-cart"></i>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </ng-template>
-  </p-carousel>
-  <p-carousel [value]="distopia" [numVisible]="4" [numScroll]="1" [circular]="false" [responsiveOptions]="responsiveOptions">
-    <ng-template let-livro pTemplate="item">
-      <div class="book-card-v2">
-        
-        <!-- Área da Imagem -->
-        <div class="image-container">
-          <img [src]="livro.capa" [alt]="livro.titulo" class="book-cover">
-          <!-- Badge de Status (Instock) -->
-          <span class="status-badge" [ngClass]="getSeverity(livro.status)">
-            {{ livro.status === 'DISPONIVEL' ? 'INSTOCK' : formatarStatus(livro.status) }}
-          </span>
-        </div>
-
-        <!-- Informações -->
-        <div class="book-info">
-          <h3 class="book-title">{{ livro.titulo }}</h3>
-          <p class="book-price">R${{ livro.ano }}.99</p> <!-- Simulando preço com o ano ou campo novo -->
-          
-          <!-- Ações -->
-          <div class="book-actions">
-            <button class="btn-fav" (click)="toggleFavorito(livro)" [class.active]="livro.favorito">
-              <i [class]="livro.favorito ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
-            </button>
-            <button class="btn-cart" (click)="adicionarCarrinho(livro)">
-              <i class="pi pi-shopping-cart"></i>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </ng-template>
-  </p-carousel>
-  <p-carousel [value]="historia" [numVisible]="4" [numScroll]="1" [circular]="false" [responsiveOptions]="responsiveOptions">
-    <ng-template let-livro pTemplate="item">
-      <div class="book-card-v2">
-        
-        <!-- Área da Imagem -->
-        <div class="image-container">
-          <img [src]="livro.capa" [alt]="livro.titulo" class="book-cover">
-          <!-- Badge de Status (Instock) -->
-          <span class="status-badge" [ngClass]="getSeverity(livro.status)">
-            {{ livro.status === 'DISPONIVEL' ? 'INSTOCK' : formatarStatus(livro.status) }}
-          </span>
-        </div>
-
-        <!-- Informações -->
-        <div class="book-info">
-          <h3 class="book-title">{{ livro.titulo }}</h3>
-          <p class="book-price">R${{ livro.ano }}.99</p> <!-- Simulando preço com o ano ou campo novo -->
-          
-          <!-- Ações -->
-          <div class="book-actions">
-            <button class="btn-fav" (click)="toggleFavorito(livro)" [class.active]="livro.favorito">
-              <i [class]="livro.favorito ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
-            </button>
-            <button class="btn-cart" (click)="adicionarCarrinho(livro)">
-              <i class="pi pi-shopping-cart"></i>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </ng-template>
-  </p-carousel>
+        </ng-template>
+      </p-carousel>
+    </section>
+  </ng-container>
 </div>

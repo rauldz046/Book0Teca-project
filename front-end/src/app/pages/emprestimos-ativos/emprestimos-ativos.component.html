@@ -1,80 +1,172 @@
-<div class="p-4">
+<div class="p-4 emprestimos-page">
   <p-toast></p-toast>
   <p-confirmPopup></p-confirmPopup>
 
   <!-- HEADER OPERACIONAL -->
-  <div class="flex flex-column md:flex-row justify-content-between align-items-center mb-4 bg-white p-4 shadow-1 border-round">
+  <div class="page-header">
     <div>
-      <h1 class="text-3xl font-bold m-0 text-900">Gerenciamento de Empréstimos</h1>
-      <div class="flex gap-3 mt-2">
-        <span class="text-green-600 font-semibold"><i class="pi pi-check-circle mr-1"></i>85 Ativos</span>
-        <span class="text-red-600 font-semibold"><i class="pi pi-clock mr-1"></i>12 Atrasados</span>
-      </div>
+      <h1 class="page-title">Gerenciamento de Empréstimos</h1>
+      <p class="page-subtitle">Controle de saídas, devoluções e renovações</p>
     </div>
-    <div class="flex gap-2 mt-3 md:mt-0">
+    <div class="header-actions">
       <button pButton label="Novo Empréstimo" icon="pi pi-plus" class="p-button-raised" (click)="displayNovoEmprestimo = true"></button>
       <button pButton label="Relatório de Atrasos" icon="pi pi-print" class="p-button-outlined p-button-danger"></button>
     </div>
   </div>
 
-  <!-- BARRA DE PESQUISA E FILTROS -->
-  <div class="surface-card p-3 shadow-1 border-round mb-4 flex flex-wrap gap-3 align-items-center">
-    <div class="p-inputgroup flex-1 min-w-max">
-        <span class="p-inputgroup-addon"><i class="pi pi-search"></i></span>
-        <input pInputText placeholder="Buscar por Nome, Matrícula ou Título do Livro..." class="w-full" />
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-info">
+      <div class="kpi-icon"><i class="pi pi-book"></i></div>
+      <div class="kpi-body">
+        <span class="kpi-label">Ativos</span>
+        <span class="kpi-value">{{ kpiAtivos }}</span>
+      </div>
     </div>
-    <p-selectButton [options]="['TODOS', 'ATIVO', 'ATRASADO', 'DEVOLVIDO']" [(ngModel)]="filtroStatus"></p-selectButton>
+    <div class="kpi-card kpi-danger">
+      <div class="kpi-icon"><i class="pi pi-clock"></i></div>
+      <div class="kpi-body">
+        <span class="kpi-label">Atrasados</span>
+        <span class="kpi-value">{{ kpiAtrasados }}</span>
+      </div>
+    </div>
+    <div class="kpi-card kpi-success">
+      <div class="kpi-icon"><i class="pi pi-check-circle"></i></div>
+      <div class="kpi-body">
+        <span class="kpi-label">Devolvidos</span>
+        <span class="kpi-value">{{ kpiDevolvidos }}</span>
+      </div>
+    </div>
+    <div class="kpi-card kpi-neutral">
+      <div class="kpi-icon"><i class="pi pi-chart-bar"></i></div>
+      <div class="kpi-body">
+        <span class="kpi-label">Total</span>
+        <span class="kpi-value">{{ emprestimos.length }}</span>
+      </div>
+    </div>
   </div>
 
-  <!-- TABELA DE GESTÃO -->
-  <p-table [value]="emprestimos" [rows]="10" [paginator]="true" responsiveLayout="stack" breakpoint="960px"
-           styleClass="p-datatable-lg p-datatable-striped shadow-1">
+  <!-- BARRA DE PESQUISA E FILTROS -->
+  <div class="filter-bar">
+    <span class="p-input-icon-left flex-1">
+      <i class="pi pi-search"></i>
+      <input
+        pInputText
+        placeholder="Buscar por leitor, matrícula ou título..."
+        class="w-full"
+        [(ngModel)]="filtroTexto"
+        (input)="aplicarFiltros()"
+      />
+    </span>
+
+    <p-selectButton
+      [options]="['TODOS', 'ATIVO', 'ATRASADO', 'DEVOLVIDO']"
+      [(ngModel)]="filtroStatus"
+      (onChange)="aplicarFiltros()"
+    ></p-selectButton>
+
+    <button
+      pButton
+      icon="pi pi-filter-slash"
+      class="p-button-text p-button-sm"
+      (click)="limparFiltros()"
+      *ngIf="filtroTexto || filtroStatus !== 'TODOS'"
+      title="Limpar filtros"
+    ></button>
+  </div>
+
+  <!-- TABELA -->
+  <p-table
+    [value]="emprestimosFiltrados"
+    [rows]="10"
+    [paginator]="emprestimosFiltrados.length > 10"
+    responsiveLayout="stack"
+    breakpoint="960px"
+    styleClass="p-datatable-lg p-datatable-striped shadow-1"
+  >
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 25%">Leitor</th>
-        <th style="width: 25%">Livro</th>
+        <th style="width: 22%">Leitor</th>
+        <th style="width: 22%">Livro</th>
         <th>Empréstimo</th>
         <th>Vencimento</th>
-        <th>Renov.</th>
+        <th class="text-center">Renov.</th>
         <th>Status</th>
         <th class="text-center">Ações</th>
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-emp>
-      <tr [ngClass]="{'bg-red-50': emp.status === 'ATRASADO'}">
+      <tr [ngClass]="{ 'row-atrasado': emp.status === 'ATRASADO' }">
         <td>
-          <div class="flex flex-column">
-            <span class="font-bold text-900">{{emp.leitor}}</span>
-            <small class="text-600">Matrícula: {{emp.matricula}}</small>
+          <div class="leitor-cell">
+            <span class="leitor-nome">{{ emp.leitor }}</span>
+            <small class="leitor-matricula">Matrícula: {{ emp.matricula }}</small>
           </div>
         </td>
         <td>
-          <div class="flex align-items-center">
-            <i class="pi pi-book mr-2 text-400"></i>
-            <span class="font-medium">{{emp.livro}}</span>
+          <div class="livro-cell">
+            <i class="pi pi-book"></i>
+            <span>{{ emp.livroTitulo }}</span>
           </div>
         </td>
-        <td>{{emp.dataEmprestimo | date:'dd/MM/yyyy'}}</td>
+        <td>{{ emp.dataEmprestimo | date: 'dd/MM/yyyy' }}</td>
         <td>
-          <span [class]="emp.status === 'ATRASADO' ? 'text-red-600 font-bold' : ''">
-            {{emp.dataDevolucaoPrevista | date:'dd/MM/yyyy'}}
-          </span>
+          <div class="vencimento-cell">
+            <span [class.text-danger]="emp.status === 'ATRASADO'">
+              {{ emp.dataPrevisaoDevolucao | date: 'dd/MM/yyyy' }}
+            </span>
+            <small
+              class="prazo-label"
+              [class.atrasado]="emp.status === 'ATRASADO'"
+              [class.finalizado]="emp.status === 'DEVOLVIDO'"
+            >
+              {{ getPrazoLabel(emp) }}
+            </small>
+          </div>
         </td>
         <td class="text-center">
-            <span class="p-badge p-badge-info">{{emp.renovacoes}}/3</span>
+          <span class="renov-badge" [class.full]="emp.renovacoes >= LIMITE_RENOVACOES">
+            {{ emp.renovacoes }}/{{ LIMITE_RENOVACOES }}
+          </span>
         </td>
         <td>
           <p-tag [value]="emp.status" [severity]="getSeverity(emp.status)"></p-tag>
         </td>
         <td>
-          <div class="flex justify-content-center gap-2">
-            <button pButton icon="pi pi-sync" class="p-button-rounded p-button-text p-button-info" 
-                    title="Renovar" (click)="renovar(emp)" [disabled]="emp.status === 'DEVOLVIDO'"></button>
-            <button pButton icon="pi pi-check-square" class="p-button-rounded p-button-text p-button-success" 
-                    title="Devolver" (click)="confirmarDevolucao($event, emp)" [disabled]="emp.status === 'DEVOLVIDO'"></button>
-            <button pButton icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-secondary"></button>
+          <div class="action-cell">
+            <button
+              pButton
+              icon="pi pi-sync"
+              class="p-button-rounded p-button-text p-button-info"
+              title="Renovar"
+              (click)="renovar(emp)"
+              [disabled]="emp.status === 'DEVOLVIDO' || emp.renovacoes >= LIMITE_RENOVACOES"
+            ></button>
+            <button
+              pButton
+              icon="pi pi-check-square"
+              class="p-button-rounded p-button-text p-button-success"
+              title="Devolver"
+              (click)="confirmarDevolucao($event, emp)"
+              [disabled]="emp.status === 'DEVOLVIDO'"
+            ></button>
+            <button
+              pButton
+              icon="pi pi-ellipsis-v"
+              class="p-button-rounded p-button-text p-button-secondary"
+              title="Mais opções"
+            ></button>
           </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7" class="empty-state">
+          <i class="pi pi-inbox"></i>
+          <p>Nenhum empréstimo encontrado para os filtros atuais.</p>
         </td>
       </tr>
     </ng-template>
@@ -82,23 +174,23 @@
 </div>
 
 <!-- DIALOG NOVO EMPRÉSTIMO -->
-<p-dialog header="Registrar Novo Empréstimo" [(visible)]="displayNovoEmprestimo" [modal]="true" [style]="{width: '500px'}">
-    <div class="flex flex-column gap-3 mt-2">
-        <div class="flex flex-column gap-2">
-            <label class="font-bold">Leitor (Matrícula ou Nome)</label>
-            <input pInputText placeholder="Ex: 2023001 ou João Silva" />
-        </div>
-        <div class="flex flex-column gap-2">
-            <label class="font-bold">Livro (ISBN ou Título)</label>
-            <input pInputText placeholder="Ex: 978-3-16..." />
-        </div>
-        <div class="flex flex-column gap-2">
-            <label class="font-bold">Data de Devolução</label>
-            <p-calendar appendTo="body"></p-calendar>
-        </div>
+<p-dialog header="Registrar Novo Empréstimo" [(visible)]="displayNovoEmprestimo" [modal]="true" [style]="{ width: '500px' }">
+  <div class="flex flex-column gap-3 mt-2">
+    <div class="flex flex-column gap-2">
+      <label class="font-bold">Leitor (Matrícula ou Nome)</label>
+      <input pInputText placeholder="Ex: 2023001 ou João Silva" />
     </div>
-    <ng-template pTemplate="footer">
-        <button pButton label="Cancelar" class="p-button-text" (click)="displayNovoEmprestimo = false"></button>
-        <button pButton label="Finalizar Empréstimo" icon="pi pi-check"></button>
-    </ng-template>
+    <div class="flex flex-column gap-2">
+      <label class="font-bold">Livro (ISBN ou Título)</label>
+      <input pInputText placeholder="Ex: 978-3-16..." />
+    </div>
+    <div class="flex flex-column gap-2">
+      <label class="font-bold">Data de Devolução</label>
+      <p-calendar appendTo="body"></p-calendar>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" class="p-button-text" (click)="displayNovoEmprestimo = false"></button>
+    <button pButton label="Finalizar Empréstimo" icon="pi pi-check"></button>
+  </ng-template>
 </p-dialog>

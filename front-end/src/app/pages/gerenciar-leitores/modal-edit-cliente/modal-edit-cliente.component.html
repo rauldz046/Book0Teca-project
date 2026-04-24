@@ -1,135 +1,131 @@
-<p-dialog
-  [visible]="true"
-  [modal]="true"
-  [closable]="false"
-  [resizable]="false"
-  [style]="{ width: '880px' }"
-  [baseZIndex]="10000"
->
-  <div class="dialog-container">
+<div class="dialog-container">
 
-    <!-- HEADER -->
-    <div class="custom-modal-header">
-      <div class="title-group">
-        <div class="avatar-preview" *ngIf="isEdit">
-          <img
-            [src]="form.get('fotoperfil')?.value || 'assets/img/default-avatar.png'"
-          />
-        </div>
-
-        <i class="pi pi-user-plus" *ngIf="!isEdit"></i>
-
-        <div>
-          <h2>
-            {{
-              isEdit
-                ? form.get("nomeCompleto")?.value || "Editar Usuário"
-                : "Novo Usuário"
-            }}
-          </h2>
-          <small>Gerencie as informações do usuário</small>
-        </div>
+  <!-- HEADER -->
+  <div class="custom-modal-header">
+    <div class="title-group">
+      <div class="avatar-preview" *ngIf="isEdit">
+        <img
+          [src]="form.get('fotoperfil')?.value || 'assets/img/default-avatar.png'"
+        />
       </div>
 
-      <button
-        pButton
-        icon="pi pi-times"
-        class="p-button-rounded p-button-text"
-        (click)="fechar()"
-      ></button>
+      <i class="pi pi-user-plus" *ngIf="!isEdit"></i>
+
+      <div>
+        <h2>
+          {{
+            isEdit
+              ? form.get("nomeCompleto")?.value || "Editar Usuário"
+              : "Novo Usuário"
+          }}
+        </h2>
+        <small>Gerencie as informações do usuário</small>
+      </div>
     </div>
 
-    <!-- FORM -->
-    <form [formGroup]="form" class="form-container">
-
-      <!-- SEÇÃO: DADOS PESSOAIS -->
-      <div class="section-title">Dados Pessoais</div>
-
-      <div class="grid form-grid">
-
-        <div class="col-8">
-          <span class="p-float-label">
-            <input pInputText formControlName="nomeCompleto" />
-            <label>Nome Completo</label>
-          </span>
-        </div>
-
-        <div class="col-4">
-          <span class="p-float-label">
-            <p-dropdown
-              [options]="statusOptions"
-              formControlName="status"
-              optionLabel="label"
-              optionValue="value"
-            ></p-dropdown>
-            <label>Status</label>
-          </span>
-        </div>
-
-        <div class="col-6">
-          <span class="p-float-label">
-            <input pInputText formControlName="email" />
-            <label>Email</label>
-          </span>
-        </div>
-
-        <div class="col-3">
-          <span class="p-float-label">
-            <input pInputText formControlName="telefone" />
-            <label>Telefone</label>
-          </span>
-        </div>
-
-        <div class="col-3">
-          <span class="p-float-label">
-            <input pInputText formControlName="cpf" />
-            <label>CPF</label>
-          </span>
-        </div>
-
-      </div>
-
-      <!-- SEÇÃO: SEGURANÇA -->
-      <div class="section-title">Segurança</div>
-
-      <div class="grid form-grid">
-
-        <div class="col-6">
-          <span class="p-float-label">
-            <input pPassword formControlName="senha" toggleMask="true" />
-            <label>Senha</label>
-          </span>
-        </div>
-
-        <div class="col-6 checkbox-box">
-          <p-checkbox
-            formControlName="senhaInicial"
-            [binary]="true"
-            label="Forçar troca no primeiro login"
-          ></p-checkbox>
-        </div>
-
-      </div>
-
-    </form>
-
-    <!-- FOOTER -->
-    <ng-template pTemplate="footer">
-      <button
-        pButton
-        label="Cancelar"
-        class="p-button-text"
-        (click)="fechar()"
-      ></button>
-
-      <button
-        pButton
-        label="Salvar"
-        icon="pi pi-save"
-        (click)="salvar()"
-        [loading]="loading"
-      ></button>
-    </ng-template>
-
+    <button
+      pButton
+      icon="pi pi-times"
+      class="p-button-rounded p-button-text"
+      (click)="fechar()"
+    ></button>
   </div>
-</p-dialog>
+
+  <!-- FORM -->
+  <form [formGroup]="form" class="form-container">
+
+    <!-- SEÇÃO: DADOS PESSOAIS -->
+    <div class="section-title">Dados Pessoais</div>
+
+    <div class="grid form-grid">
+
+      <div class="col-8">
+        <span class="p-float-label">
+          <input pInputText formControlName="nomeCompleto" [class.ng-invalid]="hasError('nomeCompleto')" />
+          <label>Nome Completo</label>
+        </span>
+        <small class="field-error" *ngIf="hasError('nomeCompleto')">{{ errorMessage('nomeCompleto') }}</small>
+      </div>
+
+      <div class="col-4">
+        <span class="p-float-label">
+          <p-dropdown
+            [options]="statusOptions"
+            formControlName="status"
+            optionLabel="label"
+            optionValue="value"
+          ></p-dropdown>
+          <label>Status</label>
+        </span>
+      </div>
+
+      <div class="col-6">
+        <span class="p-float-label">
+          <input pInputText formControlName="email" [class.ng-invalid]="hasError('email')" />
+          <label>Email</label>
+        </span>
+        <small class="field-error" *ngIf="hasError('email')">{{ errorMessage('email') }}</small>
+      </div>
+
+      <div class="col-3">
+        <span class="p-float-label">
+          <input pInputText formControlName="telefone" [class.ng-invalid]="hasError('telefone')" />
+          <label>Telefone</label>
+        </span>
+        <small class="field-error" *ngIf="hasError('telefone')">{{ errorMessage('telefone') }}</small>
+      </div>
+
+      <div class="col-3">
+        <span class="p-float-label">
+          <input pInputText formControlName="cpf" [class.ng-invalid]="hasError('cpf')" />
+          <label>CPF</label>
+        </span>
+        <small class="field-error" *ngIf="hasError('cpf')">{{ errorMessage('cpf') }}</small>
+      </div>
+
+    </div>
+
+    <!-- SEÇÃO: SEGURANÇA -->
+    <div class="section-title" *ngIf="!isEdit">Segurança</div>
+
+    <div class="grid form-grid" *ngIf="!isEdit">
+
+      <div class="col-6">
+        <span class="p-float-label">
+          <p-password formControlName="senha" [toggleMask]="true" [feedback]="false" styleClass="w-full"></p-password>
+          <label>Senha</label>
+        </span>
+        <small class="field-error" *ngIf="hasError('senha')">{{ errorMessage('senha') }}</small>
+      </div>
+
+      <div class="col-6 checkbox-box">
+        <p-checkbox
+          formControlName="senhaInicial"
+          [binary]="true"
+          label="Forçar troca no primeiro login"
+        ></p-checkbox>
+      </div>
+
+    </div>
+
+  </form>
+
+  <!-- FOOTER -->
+  <div class="dialog-footer">
+    <button
+      pButton
+      label="Cancelar"
+      class="p-button-text"
+      (click)="fechar()"
+    ></button>
+
+    <button
+      pButton
+      label="Salvar"
+      icon="pi pi-save"
+      (click)="salvar()"
+      [loading]="loading"
+    ></button>
+  </div>
+
+</div>

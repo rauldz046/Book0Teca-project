@@ -14,7 +14,7 @@
   <div class="search-container mb-4">
     <div class="p-input-icon-left w-full">
       <i class="pi pi-search"></i>
-      <input type="text" pInputText placeholder="Buscar por NomeFornec ou matrícula..." 
+      <input type="text" pInputText placeholder="Buscar por nome ou matrícula..."
              [(ngModel)]="filtroTexto" (input)="aplicarFiltro()" class="w-full">
     </div>
   </div>
@@ -28,6 +28,7 @@
           <th>Matrícula</th>
           <th>CPF</th>
           <th>Região</th>
+          <th>Perfil</th>
           <th>Status</th>
           <th class="text-right">Ações</th>
         </tr>
@@ -46,9 +47,10 @@
           <td><code>{{ func.MatriculaFunc }}</code></td>
           <td>{{ func.CPFFunc }}</td>
           <td><span class="region-badge">{{ func.RegiaoFunc }}</span></td>
+          <td>{{ getPerfilLabel(func.idPerfilFuncionarios) }}</td>
           <td>
-            <span class="badge" [ngClass]="func.Status ? 'active' : 'inactive'">
-              {{ func.Status ? 'Ativo' : 'Inativo' }}
+            <span class="badge" [ngClass]="func.Status === 1 ? 'active' : 'inactive'">
+              {{ func.Status === 1 ? 'Ativo' : 'Inativo' }}
             </span>
           </td>
           <td class="text-right actions">
@@ -71,62 +73,75 @@
   </div>
 </div>
 
-<!-- MODAL COM GRID -->
-<div class="modal-overlay" *ngIf="isModalOpen">
-  <div class="modal-content">
+<!-- MODAL -->
+<div class="modal-overlay" *ngIf="isModalOpen" (click)="fecharModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3>{{ isEditMode ? 'Editar Funcionário' : 'Novo Cadastro' }}</h3>
+      <div>
+        <h3>{{ isEditMode ? 'Editar Funcionário' : 'Novo Cadastro' }}</h3>
+        <small class="text-muted">Preencha as informações do colaborador</small>
+      </div>
       <button class="close-btn" (click)="fecharModal()">&times;</button>
     </div>
 
-    <div class="modal-body">
+    <form [formGroup]="form" class="modal-body">
+      <div class="section-title">Dados Pessoais</div>
+
       <div class="form-grid">
-        <!-- Dados Básicos -->
         <div class="form-group">
-          <label>Matrícula</label>
-          <input type="text" [(ngModel)]="funcionarioSelecionado.matricula" placeholder="Ex: FUNC001">
+          <label>Matrícula *</label>
+          <input type="text" formControlName="MatriculaFunc" placeholder="Ex: FUNC001"
+                 [class.input-invalid]="hasError('MatriculaFunc')">
+          <small class="field-error" *ngIf="hasError('MatriculaFunc')">{{ errorMessage('MatriculaFunc') }}</small>
         </div>
 
         <div class="form-group">
-          <label>NomeFornec Completo</label>
-          <input type="text" [(ngModel)]="funcionarioSelecionado.NomeFornec" placeholder="NomeFornec do funcionário">
+          <label>Nome Completo *</label>
+          <input type="text" formControlName="NomeFunc" placeholder="Nome do funcionário"
+                 [class.input-invalid]="hasError('NomeFunc')">
+          <small class="field-error" *ngIf="hasError('NomeFunc')">{{ errorMessage('NomeFunc') }}</small>
         </div>
 
         <div class="form-group">
-          <label>CPF</label>
-          <input type="text" [(ngModel)]="funcionarioSelecionado.cpf" placeholder="000.000.000-00">
+          <label>CPF *</label>
+          <input type="text" formControlName="CPFFunc" placeholder="000.000.000-00"
+                 [class.input-invalid]="hasError('CPFFunc')">
+          <small class="field-error" *ngIf="hasError('CPFFunc')">{{ errorMessage('CPFFunc') }}</small>
         </div>
 
         <div class="form-group">
-          <label>E-mail Corporativo</label>
-          <input type="email" [(ngModel)]="funcionarioSelecionado.email" placeholder="email@empresa.com">
+          <label>E-mail Corporativo *</label>
+          <input type="email" formControlName="EmailFunc" placeholder="email@empresa.com"
+                 [class.input-invalid]="hasError('EmailFunc')">
+          <small class="field-error" *ngIf="hasError('EmailFunc')">{{ errorMessage('EmailFunc') }}</small>
         </div>
 
         <div class="form-group">
-          <label>Região (UF)</label>
-          <input type="text" maxlength="2" [(ngModel)]="funcionarioSelecionado.regiao" placeholder="Ex: MG">
+          <label>Região (UF) *</label>
+          <input type="text" maxlength="2" formControlName="RegiaoFunc" placeholder="Ex: MG"
+                 [class.input-invalid]="hasError('RegiaoFunc')">
+          <small class="field-error" *ngIf="hasError('RegiaoFunc')">{{ errorMessage('RegiaoFunc') }}</small>
         </div>
 
         <div class="form-group">
-          <label>Perfil de Acesso</label>
-          <select [(ngModel)]="funcionarioSelecionado.perfil">
-            <option value="1">Administrador</option>
-            <option value="2">Bibliotecário</option>
-            <option value="3">Atendente</option>
+          <label>Perfil de Acesso *</label>
+          <select formControlName="idPerfilFuncionarios">
+            <option *ngFor="let p of perfisDisponiveis" [value]="p.value">{{ p.label }}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Status de Atividade</label>
-          <select [(ngModel)]="funcionarioSelecionado.ativo">
-            <option [ngValue]="true">Ativo</option>
-            <option [ngValue]="false">Inativo</option>
+          <label>Status *</label>
+          <select formControlName="Status">
+            <option *ngFor="let s of statusOptions" [ngValue]="s.value">{{ s.label }}</option>
           </select>
         </div>
 
         <div class="form-group" *ngIf="!isEditMode">
-          <label>Senha Inicial</label>
-          <input type="password" [(ngModel)]="funcionarioSelecionado.senha" placeholder="********">
+          <label>Senha Inicial *</label>
+          <input type="password" formControlName="SenhaFunc" placeholder="********"
+                 [class.input-invalid]="hasError('SenhaFunc')">
+          <small class="field-error" *ngIf="hasError('SenhaFunc')">{{ errorMessage('SenhaFunc') }}</small>
         </div>
       </div>
 
@@ -134,18 +149,19 @@
       <div class="form-grid mt-2">
         <div class="form-group">
           <label>ID Info Bancária</label>
-          <input type="number" [(ngModel)]="funcionarioSelecionado.bancoId">
+          <input type="number" formControlName="InfoBancario_IdInfoBancario">
         </div>
         <div class="form-group">
           <label>ID Endereço</label>
-          <input type="number" [(ngModel)]="funcionarioSelecionado.enderecoId">
+          <input type="number" formControlName="InfoEndereco_idInfoEnd">
         </div>
       </div>
-    </div>
+    </form>
 
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="fecharModal()">Cancelar</button>
-      <button class="btn btn-primary px-5" (click)="salvar()">
+      <button class="btn btn-primary px-5" (click)="salvar()" [disabled]="saving">
+        <i class="pi pi-save mr-2"></i>
         {{ isEditMode ? 'Atualizar Dados' : 'Finalizar Cadastro' }}
       </button>
     </div>

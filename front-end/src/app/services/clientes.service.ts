@@ -1,51 +1,48 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UsuariosLogados } from '../models/clientes.model';
+import { ApiService } from './core/api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClientesService {
-  private http = inject(HttpClient);
-  private readonly BASE_URL = 'http://localhost:4000/usuarios';
+  private api = inject(ApiService);
+  private readonly ROOT = '/usuarios';
 
   BuscarUsuarios(): Observable<UsuariosLogados[]> {
-    return this.http.get<UsuariosLogados[]>(`${this.BASE_URL}/findAll`);
+    return this.api.get<UsuariosLogados[]>(`${this.ROOT}/findAll`);
   }
 
   BuscarUsuarioPorId(id: number): Observable<UsuariosLogados> {
-    return this.http.get<UsuariosLogados>(`${this.BASE_URL}/${id}`);
+    return this.api.get<UsuariosLogados>(`${this.ROOT}/${id}`);
   }
 
-  // CORRIGIDO: era 'cretateUser' (typo)
   CriarUsuario(data: {
     payloadUser: any;
     payloadBanco: any;
     payloadEndereco: any;
   }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/createUser`, data);
+    return this.api.post<any>(`${this.ROOT}/createUser`, data);
   }
 
   LoginValidation(data: { email: string; senha: string }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/login`, data);
+    return this.api.post<any>(`${this.ROOT}/login`, data);
   }
 
   UpdateUsuario(data: Partial<UsuariosLogados> & { idUsuario: number }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/updateUser`, data);
+    return this.api.post<any>(`${this.ROOT}/updateUser`, data);
   }
 
   UpdateSenhaUsuario(data: { idUsuario: number; Senha: string }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/updatePassword`, data);
+    return this.api.post<any>(`${this.ROOT}/updatePassword`, data);
   }
 
-  // CORRIGIDO: antes passava string; agora espera { idUsuario, idStatus }
   UpdateStatusUsuario(data: { idUsuario: number; idStatus: number }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/updateStatus`, data);
+    return this.api.post<any>(`${this.ROOT}/updateStatus`, data);
   }
 
-  // CORRIGIDO: antes passava id direto; agora passa { idUsuario }
   DeleteUsuario(idUsuario: number): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/deleteUser`, { idUsuario });
+    return this.api.post<any>(`${this.ROOT}/deleteUser`, { idUsuario });
   }
 }

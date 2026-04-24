@@ -1,46 +1,44 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FuncionariosLogados } from '../models/funcionarios.model';
+import { ApiService } from './core/api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FuncionariosService {
-  private http = inject(HttpClient);
-  private readonly BASE_URL = 'http://localhost:4000/funcionarios';
+  private api = inject(ApiService);
+  private readonly ROOT = '/funcionarios';
 
   BuscarFuncionarios(): Observable<FuncionariosLogados[]> {
-    return this.http.get<FuncionariosLogados[]>(`${this.BASE_URL}/findAll`);
+    return this.api.get<FuncionariosLogados[]>(`${this.ROOT}/findAll`);
   }
 
   BuscarFuncionarioPorId(id: number): Observable<FuncionariosLogados> {
-    return this.http.get<FuncionariosLogados>(`${this.BASE_URL}/${id}`);
+    return this.api.get<FuncionariosLogados>(`${this.ROOT}/${id}`);
   }
 
   CriarFuncionario(data: any): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/create`, data);
+    return this.api.post<any>(`${this.ROOT}/create`, data);
   }
 
   LoginValidation(data: { email: string; senha: string }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/login`, data);
+    return this.api.post<any>(`${this.ROOT}/login`, data);
   }
 
-  // CORRIGIDO: era '/funcionarios/updateUser' — rota não existia
   UpdateFuncionario(data: Partial<FuncionariosLogados> & { idFuncionario: number }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/update`, data);
+    return this.api.post<any>(`${this.ROOT}/update`, data);
   }
 
   UpdateSenhaFuncionario(data: { idFuncionario: number; SenhaFunc: string }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/updatePassword`, data);
+    return this.api.post<any>(`${this.ROOT}/updatePassword`, data);
   }
 
   UpdateStatusFuncionario(data: { idFuncionario: number; idStatus: number }): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/updateStatus`, data);
+    return this.api.post<any>(`${this.ROOT}/updateStatus`, data);
   }
 
-  // CORRIGIDO: era '/funcionarios/deleteUser' — rota não existia
   DeleteFuncionario(idFuncionario: number): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/delete`, { idFuncionario });
+    return this.api.post<any>(`${this.ROOT}/delete`, { idFuncionario });
   }
 }

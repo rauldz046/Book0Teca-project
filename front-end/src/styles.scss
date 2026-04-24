@@ -3,6 +3,28 @@
 @import "primeicons/primeicons.css";
 @import "@angular/material/prebuilt-themes/indigo-pink.css";
 
+/* ─── SweetAlert2 sempre à frente de qualquer overlay (MatDialog, p-dialog, cdk, etc.) ─── */
+.swal2-container {
+  z-index: 2147483000 !important;
+}
+.swal2-popup {
+  z-index: 2147483001 !important;
+}
+.swal2-backdrop-show {
+  z-index: 2147482999 !important;
+}
+
+/* Classes customClass aplicadas pelo AlertService como reforço */
+.swal2-container.swal-on-top {
+  z-index: 2147483000 !important;
+}
+.swal2-popup.swal-on-top-popup {
+  z-index: 2147483001 !important;
+}
+.swal2-container.swal-on-top-backdrop {
+  z-index: 2147482999 !important;
+}
+
 
 
 body {

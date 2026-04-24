@@ -1,20 +1,28 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Emprestimo } from 'src/app/models/emprestimos';
+
+type StatusFiltro = 'TODOS' | 'ATIVO' | 'ATRASADO' | 'DEVOLVIDO';
 
 @Component({
   selector: 'app-emprestimos-ativos',
   templateUrl: './emprestimos-ativos.component.html',
   styleUrls: ['./emprestimos-ativos.component.scss'],
 })
-export class EmprestimosAtivosComponent {
+export class EmprestimosAtivosComponent implements OnInit {
   emprestimos: Emprestimo[] = [];
-  filtroStatus: string = 'TODOS';
-  loading: boolean = false;
-  displayNovoEmprestimo: boolean = false;
+  emprestimosFiltrados: Emprestimo[] = [];
 
-  messageService = inject(MessageService);
-  confirmationService = inject(ConfirmationService);
+  filtroStatus: StatusFiltro = 'TODOS';
+  filtroTexto = '';
+  loading = false;
+  displayNovoEmprestimo = false;
+
+  readonly LIMITE_RENOVACOES = 3;
+  readonly PRAZO_RENOVACAO_DIAS = 7;
+
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
 
   ngOnInit() {
     this.carregarEmprestimos();
@@ -53,59 +61,114 @@ export class EmprestimosAtivosComponent {
         status: 'DEVOLVIDO',
       },
     ];
+    this.aplicarFiltros();
   }
 
-  getSeverity(status: string) {
+  // ─── filtros ───────────────────────────────────────────────────────
+  aplicarFiltros() {
+    const txt = this.filtroTexto.trim().toLowerCase();
+    this.emprestimosFiltrados = this.emprestimos.filter((e) => {
+      const bateStatus = this.filtroStatus === 'TODOS' || e.status === this.filtroStatus;
+      const bateTexto =
+        !txt ||
+        e.leitor.toLowerCase().includes(txt) ||
+        e.matricula.toLowerCase().includes(txt) ||
+        e.livroTitulo.toLowerCase().includes(txt);
+      return bateStatus && bateTexto;
+    });
+  }
+
+  limparFiltros() {
+    this.filtroTexto = '';
+    this.filtroStatus = 'TODOS';
+    this.aplicarFiltros();
+  }
+
+  // ─── KPIs dinâmicos ────────────────────────────────────────────────
+  get kpiAtivos(): number {
+    return this.emprestimos.filter((e) => e.status === 'ATIVO').length;
+  }
+
+  get kpiAtrasados(): number {
+    return this.emprestimos.filter((e) => e.status === 'ATRASADO').length;
+  }
+
+  get kpiDevolvidos(): number {
+    return this.emprestimos.filter((e) => e.status === 'DEVOLVIDO').length;
+  }
+
+  // ─── helpers ───────────────────────────────────────────────────────
+  getSeverity(status: string): 'success' | 'info' | 'danger' | 'warning' {
     switch (status) {
-      case 'ATIVO':
-        return 'info';
-      case 'ATRASADO':
-        return 'danger';
-      case 'DEVOLVIDO':
-        return 'success';
-      case 'RESERVADO':
-        return 'warning';
-      default:
-        return 'info';
+      case 'ATIVO':     return 'info';
+      case 'ATRASADO':  return 'danger';
+      case 'DEVOLVIDO': return 'success';
+      default:          return 'warning';
     }
   }
 
+  /** Dias restantes para devolução (negativo = atraso). */
+  getDiasRestantes(emp: Emprestimo): number {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const prazo = new Date(emp.dataPrevisaoDevolucao);
+    prazo.setHours(0, 0, 0, 0);
+    return Math.round((prazo.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+  }
+
+  getPrazoLabel(emp: Emprestimo): string {
+    if (emp.status === 'DEVOLVIDO') return 'Finalizado';
+    const dias = this.getDiasRestantes(emp);
+    if (dias < 0)  return `${Math.abs(dias)} ${Math.abs(dias) === 1 ? 'dia' : 'dias'} atrasado`;
+    if (dias === 0) return 'Vence hoje';
+    return `${dias} ${dias === 1 ? 'dia restante' : 'dias restantes'}`;
+  }
+
+  // ─── ações ─────────────────────────────────────────────────────────
   confirmarDevolucao(event: Event, emp: Emprestimo) {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
-      message: `Confirmar a devolução do livroTitulo "${emp.livroTitulo}"?`,
+      message: `Confirmar a devolução de "${emp.livroTitulo}"?`,
       icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Sim, Devolver',
+      acceptLabel: 'Sim, devolver',
       rejectLabel: 'Cancelar',
       accept: () => {
         emp.status = 'DEVOLVIDO';
+        this.aplicarFiltros();
         this.messageService.add({
           severity: 'success',
           summary: 'Devolvido',
-          detail: 'livroTitulo retornado ao estoque.',
+          detail: `"${emp.livroTitulo}" retornou ao estoque.`,
         });
       },
     });
   }
 
   renovar(emp: Emprestimo) {
-    if (emp.renovacoes >= 3) {
+    if (emp.renovacoes >= this.LIMITE_RENOVACOES) {
       this.messageService.add({
         severity: 'error',
-        summary: 'Limite Atingido',
-        detail: 'Este empréstimo já atingiu o máximo de renovações.',
+        summary: 'Limite atingido',
+        detail: `Este empréstimo já atingiu o máximo de ${this.LIMITE_RENOVACOES} renovações.`,
       });
       return;
     }
+
     emp.renovacoes++;
-    // Adiciona 7 dias à data prevista
     emp.dataPrevisaoDevolucao = new Date(
-      emp.dataPrevisaoDevolucao.getTime() + 7 * 24 * 60 * 60 * 1000,
+      emp.dataPrevisaoDevolucao.getTime() + this.PRAZO_RENOVACAO_DIAS * 24 * 60 * 60 * 1000,
     );
+
+    if (emp.status === 'ATRASADO' && this.getDiasRestantes(emp) >= 0) {
+      emp.status = 'ATIVO';
+    }
+
+    this.aplicarFiltros();
+
     this.messageService.add({
       severity: 'info',
       summary: 'Renovado',
-      detail: 'Prazo estendido por mais 7 dias.',
+      detail: `Prazo estendido por mais ${this.PRAZO_RENOVACAO_DIAS} dias.`,
     });
   }
 }

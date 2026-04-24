@@ -5,6 +5,9 @@
 .dialog-container {
   display: flex;
   flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 /* HEADER */
@@ -49,7 +52,7 @@
   letter-spacing: .5px;
 }
 
-/* GRID FIX */
+/* GRID */
 .form-grid {
   margin-bottom: 18px;
 }
@@ -65,7 +68,6 @@
   padding: 8px;
 }
 
-/* COLS */
 .col-12 { width: 100%; }
 .col-8 { width: 66.6667%; }
 .col-6 { width: 50%; }
@@ -79,8 +81,22 @@
 
 .p-float-label input,
 .p-dropdown,
-.p-password {
+.p-password,
+:host ::ng-deep .p-password input {
   width: 100%;
+}
+
+/* ERRORS */
+.field-error {
+  color: #dc2626;
+  font-size: 0.72rem;
+  margin-top: 4px;
+  display: block;
+}
+
+:host ::ng-deep .ng-invalid.ng-touched,
+:host ::ng-deep input.ng-invalid {
+  border-color: #dc2626 !important;
 }
 
 /* CHECKBOX */
@@ -106,12 +122,13 @@
 }
 
 /* FOOTER */
-:host ::ng-deep .p-dialog-footer {
+.dialog-footer {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   padding: 14px 20px;
   border-top: 1px solid #e5e7eb;
+  background: #f8fafc;
 }
 
 /* RESPONSIVO */

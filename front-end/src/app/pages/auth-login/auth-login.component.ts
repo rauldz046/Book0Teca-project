@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { AlertService } from 'src/app/utils/toast-alert-service.service';
 import { UsuariosLogados } from 'src/app/models/clientes.model';
 import { catchError, of, switchMap } from 'rxjs';
-import { NavComponent } from 'src/app/componentes/nav/nav.component';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-auth-login',
@@ -18,7 +18,7 @@ export class AuthLoginComponent implements OnInit {
   private clienteService = inject(ClientesService); // Corrigido para camelCase (padrão TS)
   private alert = inject(AlertService);
   private funcionarioService = inject(FuncionariosService);
-  private nav = inject(NavComponent);
+  private auth = inject(AuthService);
 
   sessaoUser!: UsuariosLogados;
   isLoading = false; // Adicionado para controle de loading no botão
@@ -55,7 +55,7 @@ submit() {
       this.isLoading = false;
       
       if (res && res.infoSessao) {
-        this.nav.infoAuthSessao(res.infoSessao);
+        this.auth.setSession(res.infoSessao);
         this.router.navigate(['/home']);
       } else {
         this.alert.error('Erro', 'Usuário ou senha inválidos');

@@ -3,6 +3,12 @@ import { LivrosService } from 'src/app/services/Livros.service';
 import { AlertService } from 'src/app/utils/toast-alert-service.service';
 import { Livro } from 'src/app/models/livros.model';
 
+interface Colecao {
+  titulo: string;
+  subtitulo: string;
+  livros: Livro[];
+}
+
 @Component({
   selector: 'app-catalogo',
   templateUrl: './catalogo.component.html',
@@ -14,20 +20,14 @@ export class CatalogoComponent implements OnInit {
 
   todosLivros: Livro[] = [];
   livrosFiltrados: Livro[] = [];
+  colecoes: Colecao[] = [];
   loading = true;
 
   filtroTexto = '';
   filtroTipo: 'todos' | 'fisico' | 'digital' = 'todos';
 
-  categorias: string[] = [];
-
-  fantasia: Livro[] = [];
-  programacao: Livro[] = [];
-  classicos: Livro[] = [];
-  ficcao: Livro[] = [];
-  suspense: Livro[] = [];
-  distopia: Livro[] = [];
-  historia: Livro[] = [];
+  readonly CAPA_PLACEHOLDER =
+    'https://via.placeholder.com/180x260/e2e8f0/64748b?text=Sem+Capa';
 
   responsiveOptions = [
     { breakpoint: '1400px', numVisible: 4, numScroll: 1 },
@@ -44,10 +44,9 @@ export class CatalogoComponent implements OnInit {
     this.loading = true;
     this.livrosService.FindAll().subscribe({
       next: (res) => {
-        this.todosLivros = res;
-        this.livrosFiltrados = res;
-        this.extrairCategorias();
-        this.preencherColecoes();
+        this.todosLivros = res || [];
+        this.livrosFiltrados = [...this.todosLivros];
+        this.montarColecoes();
         this.loading = false;
       },
       error: () => {
@@ -57,66 +56,67 @@ export class CatalogoComponent implements OnInit {
     });
   }
 
-  extrairCategorias(): void {
-    // Como o banco não tem campo Categoria ainda, agrupamos por autor
-    // TODO: adicionar campo Categoria na tabela LivrosCatalogo
-    const cats = new Set(
-      this.todosLivros.map((l) => l.autorInfo?.NomeAutor || 'Sem categoria'),
-    );
-    this.categorias = Array.from(cats);
-  }
+  /** Monta coleções agrupando por autor (fallback enquanto não há campo Categoria). */
+  montarColecoes(): void {
+    const porAutor = new Map<string, Livro[]>();
 
-  preencherColecoes(): void {
-    const livros = this.todosLivros;
-    this.fantasia = livros.slice(0, 8);
-    this.programacao = livros.slice(8, 16);
-    this.classicos = livros.slice(16, 24);
-    this.ficcao = livros.slice(24, 32);
-    this.suspense = livros.slice(32, 40);
-    this.distopia = livros.slice(40, 48);
-    this.historia = livros.slice(48, 56);
-  }
+    for (const livro of this.livrosFiltrados) {
+      const autor = livro.autorInfo?.NomeAutor || 'Outros títulos';
+      if (!porAutor.has(autor)) porAutor.set(autor, []);
+      porAutor.get(autor)!.push(livro);
+    }
 
-  formatarStatus(status: string | undefined): string {
-    if (!status) return 'INDISPONÍVEL';
-    return status === 'DISPONIVEL' ? 'INSTOCK' : status.toUpperCase();
-  }
-
-  toggleFavorito(livro: Livro): void {
-    livro.favorito = !livro.favorito;
-  }
-
-  adicionarCarrinho(livro: Livro): void {
-    this.alert.info('Carrinho', `"${livro.Titulo}" adicionado ao carrinho`);
+    this.colecoes = Array.from(porAutor.entries())
+      .filter(([, livros]) => livros.length > 0)
+      .map(([autor, livros]) => ({
+        titulo: autor,
+        subtitulo: `${livros.length} ${livros.length === 1 ? 'obra' : 'obras'} disponíveis`,
+        livros,
+      }));
   }
 
   aplicarFiltro(): void {
-    const txt = this.filtroTexto.toLowerCase();
+    const txt = this.filtroTexto.trim().toLowerCase();
+
     this.livrosFiltrados = this.todosLivros.filter((l) => {
-      const bateTitulo = l.Titulo?.toLowerCase().includes(txt);
-      const bateAutor = l.autorInfo?.NomeAutor?.toLowerCase().includes(txt);
+      const bateTexto =
+        !txt ||
+        l.Titulo?.toLowerCase().includes(txt) ||
+        l.autorInfo?.NomeAutor?.toLowerCase().includes(txt) ||
+        l.ISBN?.toLowerCase().includes(txt);
+
       const bateTipo =
         this.filtroTipo === 'todos'
           ? true
           : this.filtroTipo === 'fisico'
             ? l.LivroFisico === 1
             : l.LivroDigital === 1;
-      return (bateTitulo || bateAutor) && bateTipo;
+
+      return bateTexto && bateTipo;
     });
+
+    this.montarColecoes();
   }
 
-  getLivrosPorAutor(nomeAutor: string): Livro[] {
-    return this.livrosFiltrados.filter(
-      (l) => l.autorInfo?.NomeAutor === nomeAutor,
-    );
+  limparFiltros(): void {
+    this.filtroTexto = '';
+    this.filtroTipo = 'todos';
+    this.aplicarFiltro();
   }
 
-  temLivrosNoGrupo(nomeAutor: string): boolean {
-    return this.getLivrosPorAutor(nomeAutor).length > 0;
+  // ─── helpers de apresentação ─────────────────────────────────────────
+
+  getCapa(livro: Livro): string {
+    return livro.capa || this.CAPA_PLACEHOLDER;
+  }
+
+  getPreco(livro: Livro): number {
+    return livro.PrecoVenda || 0;
   }
 
   getStatusLabel(livro: Livro): string {
     if (!livro.QtdLivros || livro.QtdLivros <= 0) return 'Indisponível';
+    if (livro.QtdLivros <= 2) return 'Últimas unidades';
     return 'Disponível';
   }
 
@@ -130,5 +130,17 @@ export class CatalogoComponent implements OnInit {
     if (livro.LivroFisico && livro.LivroDigital) return 'Físico + Digital';
     if (livro.LivroDigital) return 'E-book';
     return 'Físico';
+  }
+
+  toggleFavorito(livro: Livro): void {
+    livro.favorito = !livro.favorito;
+  }
+
+  adicionarCarrinho(livro: Livro): void {
+    if (!livro.QtdLivros && !livro.LivroDigital) {
+      this.alert.error('Indisponível', `"${livro.Titulo}" está sem estoque.`);
+      return;
+    }
+    this.alert.info('Carrinho', `"${livro.Titulo}" adicionado ao carrinho`);
   }
 }

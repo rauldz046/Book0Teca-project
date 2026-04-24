@@ -1,53 +1,145 @@
 $primary-green: #22c55e;
-$text-dark: #1e293b; 
+$text-dark: #1e293b;
 $text-gray: #94a3b8;
+$surface: #ffffff;
+$border: #e2e8f0;
 
 .catalog-container {
-  background: #ffffff;
-  padding: 3rem 2rem;
+  background: $surface;
+  padding: 2rem 2.5rem;
   border-radius: 16px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+}
 
-  .section-header {
-    .title {
-      color: $text-dark;
-      font-size: 1.75rem;
-      font-weight: 800;
-      margin: 0;
-      letter-spacing: -0.5px;
-    }
-    .subtitle {
-      color: $text-gray;
-      font-size: 1rem;
-      margin-top: 6px;
+// ─── HEADER ──────────────────────────────────────────────────────────
+.catalog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid $border;
+  flex-wrap: wrap;
+
+  .page-title {
+    color: $text-dark;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+
+  .page-subtitle {
+    color: $text-gray;
+    font-size: 0.95rem;
+    margin: 4px 0 0;
+  }
+
+  .filter-bar {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .search-input {
+      input {
+        width: 280px;
+        padding-left: 2.5rem;
+        border-radius: 10px;
+        border: 1px solid $border;
+        &:focus {
+          border-color: $primary-green;
+          box-shadow: 0 0 0 3px rgba($primary-green, 0.15);
+        }
+      }
     }
   }
 }
 
+// ─── STATES ──────────────────────────────────────────────────────────
+.state-container {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: $text-gray;
+
+  i.pi-spinner {
+    font-size: 2.5rem;
+    color: $primary-green;
+  }
+
+  &.empty {
+    i {
+      font-size: 3.5rem;
+      color: $border;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    h3 {
+      color: $text-dark;
+      margin: 0.5rem 0;
+    }
+    p {
+      margin-bottom: 1.5rem;
+    }
+  }
+}
+
+// ─── COLEÇÕES ────────────────────────────────────────────────────────
+.collection-section {
+  margin-bottom: 3rem;
+
+  .section-header {
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+
+    .title {
+      color: $text-dark;
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -0.3px;
+    }
+    .subtitle {
+      color: $text-gray;
+      font-size: 0.875rem;
+      margin: 4px 0 0;
+    }
+  }
+}
+
+// ─── BOOK CARD ───────────────────────────────────────────────────────
 .book-card-v2 {
-  padding: 1.5rem 1rem;
+  padding: 1.25rem 0.75rem;
   text-align: center;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
   &:hover {
     transform: translateY(-8px);
+
+    .book-cover {
+      box-shadow:
+        0 25px 30px -5px rgba(0, 0, 0, 0.15),
+        0 15px 15px -5px rgba(0, 0, 0, 0.06);
+    }
   }
 
   .image-container {
     position: relative;
     display: inline-block;
-    margin-bottom: 1.25rem;
-    
+    margin-bottom: 1rem;
+
     .book-cover {
       width: 170px;
       height: 240px;
       object-fit: cover;
-      border-radius: 6px;
-      // Sombra complexa igual à de e-commerce premium
-      box-shadow: 
-        0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+      border-radius: 8px;
+      background: #f1f5f9;
+      box-shadow:
+        0 20px 25px -5px rgba(0, 0, 0, 0.1),
         0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      transition: box-shadow 0.3s ease;
     }
 
     .status-badge {
@@ -61,21 +153,37 @@ $text-gray: #94a3b8;
       border-radius: 4px;
       letter-spacing: 0.5px;
       z-index: 2;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-transform: uppercase;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
 
       &.success { background: $primary-green; }
-      &.danger { background: #ef4444; }
+      &.danger  { background: #ef4444; }
       &.warning { background: #f59e0b; }
+    }
+
+    .type-badge {
+      position: absolute;
+      top: 8px;
+      left: -8px;
+      padding: 4px 10px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: $text-dark;
+      background: #fff;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
     }
   }
 
   .book-info {
     .book-title {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
       color: $text-dark;
-      margin: 0.5rem 0;
-      height: 2.6rem; // Força altura para 2 linhas e mantém alinhamento
+      margin: 0.25rem 0;
+      height: 2.6rem;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -83,11 +191,18 @@ $text-gray: #94a3b8;
       line-height: 1.3;
     }
 
+    .book-author {
+      font-size: 0.8rem;
+      color: $text-gray;
+      margin: 0 0 0.5rem;
+      font-style: italic;
+    }
+
     .book-price {
       font-size: 1.25rem;
       color: $primary-green;
-      font-weight: 700;
-      margin-bottom: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
     }
 
     .book-actions {
@@ -100,13 +215,17 @@ $text-gray: #94a3b8;
         border: none;
         cursor: pointer;
         transition: all 0.3s ease;
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
       }
 
       .btn-fav {
         background: transparent;
         color: #cbd5e1;
         font-size: 1.4rem;
-        &:hover { color: #f43f5e; transform: scale(1.1); }
+        &:hover:not(:disabled) { color: #f43f5e; transform: scale(1.15); }
         &.active { color: #f43f5e; }
       }
 
@@ -121,22 +240,21 @@ $text-gray: #94a3b8;
         justify-content: center;
         font-size: 1.1rem;
         box-shadow: 0 10px 15px -3px rgba($primary-green, 0.4);
-        
-        &:hover { 
-          background: #16a34a; 
-          transform: rotate(15deg) scale(1.1);
+
+        &:hover:not(:disabled) {
+          background: #16a34a;
+          transform: rotate(10deg) scale(1.1);
         }
-        
-        &.in-cart {
-          background: #1e293b;
-          box-shadow: 0 10px 15px -3px rgba(30, 41, 59, 0.3);
+        &:disabled {
+          background: #cbd5e1;
+          box-shadow: none;
         }
       }
     }
   }
 }
 
-/* Ajustes Finais do Carousel PrimeNG */
+// ─── CAROUSEL OVERRIDES ──────────────────────────────────────────────
 ::ng-deep {
   .p-carousel-prev, .p-carousel-next {
     width: 3rem;
@@ -150,7 +268,7 @@ $text-gray: #94a3b8;
   }
 
   .p-carousel-indicators {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     .p-carousel-indicator {
       button {
         width: 24px;
@@ -160,12 +278,23 @@ $text-gray: #94a3b8;
         transition: all 0.3s ease;
       }
       &.p-highlight button {
-        background: #3b82f6; // Azul da barra de progresso da imagem
+        background: $primary-green;
         width: 40px;
       }
     }
   }
+
+  .p-selectbutton .p-button {
+    background: #fff;
+    border-color: $border;
+    color: #475569;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+
+    &.p-highlight {
+      background: $primary-green;
+      border-color: $primary-green;
+      color: #fff;
+    }
+  }
 }
-
-
-

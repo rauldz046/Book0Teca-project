@@ -5,7 +5,9 @@
   "scripts": {
     "nodemon": "node app.js",
     "dev": "nodemon app.js",
-    "nodemon:debug": "nodemon --inspect=9229 app.js"
+    "nodemon:debug": "nodemon --inspect=9229 app.js",
+    "mock": "node mock/server.js",
+    "mock:dev": "nodemon mock/server.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

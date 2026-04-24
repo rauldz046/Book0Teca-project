@@ -1,5 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   Solicitacao,
@@ -7,39 +6,40 @@ import {
   EtapaSolicitacao,
   CriarSolicitacaoPayload,
 } from '../models/solicitacoes.model';
+import { ApiService } from './core/api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SolicitacoesService {
-  private http = inject(HttpClient);
-  private readonly BASE_URL = 'http://localhost:4000/solicitacoes';
+  private api = inject(ApiService);
+  private readonly ROOT = '/solicitacoes';
 
   FindAll(): Observable<Solicitacao[]> {
-    return this.http.get<Solicitacao[]>(`${this.BASE_URL}/findAll`);
+    return this.api.get<Solicitacao[]>(`${this.ROOT}/findAll`);
   }
 
   FindById(id: number): Observable<Solicitacao> {
-    return this.http.get<Solicitacao>(`${this.BASE_URL}/${id}`);
+    return this.api.get<Solicitacao>(`${this.ROOT}/${id}`);
   }
 
   FindTipos(): Observable<TipoSolicitacao[]> {
-    return this.http.get<TipoSolicitacao[]>(`${this.BASE_URL}/tipos`);
+    return this.api.get<TipoSolicitacao[]>(`${this.ROOT}/tipos`);
   }
 
   FindEtapas(): Observable<EtapaSolicitacao[]> {
-    return this.http.get<EtapaSolicitacao[]>(`${this.BASE_URL}/etapas`);
+    return this.api.get<EtapaSolicitacao[]>(`${this.ROOT}/etapas`);
   }
 
   Criar(data: CriarSolicitacaoPayload): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/criar`, data);
+    return this.api.post<any>(`${this.ROOT}/criar`, data);
   }
 
   AvancarEtapa(idSolicitacao: number): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/avancar`, { idSolicitacao });
+    return this.api.post<any>(`${this.ROOT}/avancar`, { idSolicitacao });
   }
 
   Cancelar(idSolicitacao: number): Observable<any> {
-    return this.http.post<any>(`${this.BASE_URL}/cancelar`, { idSolicitacao });
+    return this.api.post<any>(`${this.ROOT}/cancelar`, { idSolicitacao });
   }
 }

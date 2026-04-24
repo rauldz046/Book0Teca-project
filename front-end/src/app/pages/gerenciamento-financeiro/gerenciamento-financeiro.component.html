@@ -1,104 +1,179 @@
-<div class="p-4">
+<div class="p-4 financeiro-page">
   <!-- HEADER -->
-  <div class="flex justify-content-between align-items-start mb-4">
+  <div class="page-header">
     <div>
-      <h1 class="text-3xl font-bold m-0 text-900">Gestão de Fluxo de Caixa</h1>
-      <p class="text-600 m-0">Monitoramento de receitas e despesas da biblioteca</p>
+      <h1 class="page-title">Gestão de Fluxo de Caixa</h1>
+      <p class="page-subtitle">Monitoramento de receitas e despesas da biblioteca</p>
     </div>
-    <div class="flex gap-2">
+    <div class="header-actions">
       <button pButton label="Novo Lançamento" icon="pi pi-plus" class="p-button-primary"></button>
       <button pButton label="Exportar Relatório" icon="pi pi-download" class="p-button-outlined"></button>
     </div>
   </div>
 
   <!-- KPIs -->
-  <div class="grid mb-4">
-    <div class="col-12 md:col-4">
-      <div class="surface-card p-4 shadow-1 border-round">
-        <div class="flex align-items-center justify-content-between mb-3">
-          <span class="text-500 font-medium">Total de Entradas</span>
-          <i class="pi pi-arrow-up-right text-green-500 text-2xl"></i>
-        </div>
-        <div class="text-900 font-bold text-3xl">{{totalEntradas | currency:'BRL'}}</div>
-        <div class="text-green-500 font-medium mt-2">↑ 12% <span class="text-500 font-normal">vs mês anterior</span></div>
+  <div class="kpi-grid">
+    <div class="kpi-card entrada">
+      <div class="kpi-head">
+        <span class="kpi-label">Total de Entradas</span>
+        <div class="kpi-icon"><i class="pi pi-arrow-up-right"></i></div>
+      </div>
+      <div class="kpi-value">{{ totalEntradas | currency: 'BRL' }}</div>
+      <div class="kpi-foot">
+        <i class="pi pi-arrow-up"></i>
+        <span>12% vs mês anterior</span>
       </div>
     </div>
-    <div class="col-12 md:col-4">
-      <div class="surface-card p-4 shadow-1 border-round">
-        <div class="flex align-items-center justify-content-between mb-3">
-          <span class="text-500 font-medium">Total de Saídas</span>
-          <i class="pi pi-arrow-down-right text-red-500 text-2xl"></i>
-        </div>
-        <div class="text-900 font-bold text-3xl">{{totalSaidas | currency:'BRL'}}</div>
-        <div class="text-red-500 font-medium mt-2">↓ 5% <span class="text-500 font-normal">vs mês anterior</span></div>
+
+    <div class="kpi-card saida">
+      <div class="kpi-head">
+        <span class="kpi-label">Total de Saídas</span>
+        <div class="kpi-icon"><i class="pi pi-arrow-down-right"></i></div>
+      </div>
+      <div class="kpi-value">{{ totalSaidas | currency: 'BRL' }}</div>
+      <div class="kpi-foot">
+        <i class="pi pi-arrow-down"></i>
+        <span>5% vs mês anterior</span>
       </div>
     </div>
-    <div class="col-12 md:col-4">
-      <div class="surface-card p-4 shadow-1 border-round bg-blue-50">
-        <div class="flex align-items-center justify-content-between mb-3">
-          <span class="text-700 font-bold">Saldo Líquido</span>
-          <i class="pi pi-wallet text-blue-500 text-2xl"></i>
-        </div>
-        <div class="text-900 font-bold text-3xl" [class.text-red-600]="saldoGeral < 0">
-            {{saldoGeral | currency:'BRL'}}
-        </div>
-        <div class="text-700 font-medium mt-2">Disponível para reinvestimento</div>
+
+    <div class="kpi-card saldo" [class.negativo]="saldoGeral < 0">
+      <div class="kpi-head">
+        <span class="kpi-label">Saldo Líquido</span>
+        <div class="kpi-icon"><i class="pi pi-wallet"></i></div>
+      </div>
+      <div class="kpi-value">{{ saldoGeral | currency: 'BRL' }}</div>
+      <div class="kpi-foot">
+        <span>Disponível para reinvestimento</span>
+      </div>
+    </div>
+
+    <div class="kpi-card neutro">
+      <div class="kpi-head">
+        <span class="kpi-label">Ticket Médio</span>
+        <div class="kpi-icon"><i class="pi pi-chart-line"></i></div>
+      </div>
+      <div class="kpi-value">{{ ticketMedio | currency: 'BRL' }}</div>
+      <div class="kpi-foot">
+        <span>{{ qtdTransacoes }} lançamentos · {{ qtdPendentes }} pendente(s)</span>
       </div>
     </div>
   </div>
 
-  <div class="grid">
+  <div class="content-grid">
     <!-- GRÁFICO -->
-    <div class="col-12 lg:col-4">
-      <div class="surface-card p-4 shadow-1 border-round h-full">
-        <span class="text-xl font-bold block mb-4">Comparativo Semanal</span>
-        <p-chart type="bar" [data]="chartData" [options]="chartOptions" height="300px"></p-chart>
+    <div class="card chart-card">
+      <div class="card-header">
+        <div>
+          <span class="card-title">Comparativo Semanal</span>
+          <p class="card-subtitle">Entradas vs Saídas</p>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <p-chart type="bar" [data]="chartData" [options]="chartOptions"></p-chart>
       </div>
     </div>
 
-    <!-- TABELA DETALHADA -->
-    <div class="col-12 lg:col-8">
-      <div class="surface-card p-4 shadow-1 border-round h-full">
-        <div class="flex justify-content-between align-items-center mb-4">
-            <span class="text-xl font-bold">Últimas Movimentações</span>
-            <span class="p-input-icon-left">
-                <i class="pi pi-search"></i>
-                <input pInputText type="text" placeholder="Filtrar descrição..." class="p-inputtext-sm" />
-            </span>
+    <!-- TABELA -->
+    <div class="card table-card">
+      <div class="card-header">
+        <div>
+          <span class="card-title">Últimas Movimentações</span>
+          <p class="card-subtitle">{{ transacoesFiltradas.length }} de {{ transacoes.length }} lançamentos</p>
         </div>
 
-        <p-table [value]="transacoes" [rows]="5" [paginator]="true" responsiveLayout="scroll" styleClass="p-datatable-sm">
-          <ng-template pTemplate="header">
-            <tr>
-              <th>Data</th>
-              <th>Descrição</th>
-              <th>Categoria</th>
-              <th>Método</th>
-              <th>Valor</th>
-              <th>Status</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-t>
-            <tr>
-              <td class="text-sm">{{t.data | date:'dd/MM/yy'}}</td>
-              <td>
-                <div class="flex flex-column">
-                    <span class="font-bold">{{t.descricao}}</span>
-                    <small class="text-500">{{t.tipo}}</small>
-                </div>
-              </td>
-              <td><p-tag [value]="t.categoria" severity="info" [rounded]="true"></p-tag></td>
-              <td><i class="pi pi-credit-card mr-2 text-400"></i>{{t.metodoPagamento}}</td>
-              <td class="font-bold" [ngClass]="t.tipo === 'ENTRADA' ? 'text-green-600' : 'text-red-600'">
-                {{t.tipo === 'SAIDA' ? '-' : '+'}} {{t.valor | currency:'BRL'}}
-              </td>
-              <td>
-                <p-tag [value]="t.status" [severity]="getSeverity(t.status)"></p-tag>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
+        <div class="table-filters">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              type="text"
+              placeholder="Filtrar descrição, categoria..."
+              class="p-inputtext-sm"
+              [(ngModel)]="filtroTexto"
+              (input)="aplicarFiltros()"
+            />
+          </span>
+
+          <p-selectButton
+            [options]="[
+              { label: 'Todos', value: 'TODOS' },
+              { label: 'Entradas', value: 'ENTRADA' },
+              { label: 'Saídas', value: 'SAIDA' }
+            ]"
+            [(ngModel)]="filtroTipo"
+            optionLabel="label"
+            optionValue="value"
+            (onChange)="aplicarFiltros()"
+          ></p-selectButton>
+
+          <button
+            *ngIf="filtroTexto || filtroTipo !== 'TODOS'"
+            pButton
+            icon="pi pi-filter-slash"
+            class="p-button-text p-button-sm"
+            (click)="limparFiltros()"
+            title="Limpar filtros"
+          ></button>
+        </div>
       </div>
+
+      <p-table
+        [value]="transacoesFiltradas"
+        [rows]="5"
+        [paginator]="transacoesFiltradas.length > 5"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-sm financeiro-table"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Método</th>
+            <th class="text-right">Valor</th>
+            <th>Status</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-t>
+          <tr>
+            <td class="text-sm">{{ t.data | date: 'dd/MM/yy' }}</td>
+            <td>
+              <div class="descricao-cell">
+                <span class="descricao-text">{{ t.descricao }}</span>
+                <small [ngClass]="t.tipo === 'ENTRADA' ? 'tag-entrada' : 'tag-saida'">
+                  {{ t.tipo === 'ENTRADA' ? '↑ Entrada' : '↓ Saída' }}
+                </small>
+              </div>
+            </td>
+            <td>
+              <span class="cat-pill" [ngClass]="getCategoriaCor(t.categoria)">
+                {{ t.categoria }}
+              </span>
+            </td>
+            <td>
+              <i [class]="getIconeMetodo(t.metodoPagamento)" class="metodo-ico"></i>
+              {{ t.metodoPagamento }}
+            </td>
+            <td class="text-right font-bold" [ngClass]="t.tipo === 'ENTRADA' ? 'valor-entrada' : 'valor-saida'">
+              {{ t.tipo === 'SAIDA' ? '-' : '+' }} {{ t.valor | currency: 'BRL' }}
+            </td>
+            <td>
+              <p-tag [value]="t.status" [severity]="getSeverity(t.status)"></p-tag>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="empty-state">
+              <i class="pi pi-inbox"></i>
+              <p>Nenhum lançamento encontrado.</p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
   </div>
 </div>

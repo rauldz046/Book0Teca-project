@@ -5,7 +5,14 @@ import Swal, { SweetAlertIcon, SweetAlertResult } from 'sweetalert2';
   providedIn: 'root',
 })
 export class AlertService {
-  
+
+  // Garante que qualquer Swal abra acima de MatDialog / p-dialog / cdk-overlay
+  private readonly Z_CLASS = {
+    container: 'swal-on-top',
+    popup:     'swal-on-top-popup',
+    backdrop:  'swal-on-top-backdrop',
+  };
+
   // Configuração padrão para Toasts
   private toastConfig = Swal.mixin({
     toast: true,
@@ -13,6 +20,7 @@ export class AlertService {
     showConfirmButton: false,
     timer: 3000,
     timerProgressBar: true,
+    customClass: this.Z_CLASS,
     didOpen: (toast) => {
       toast.addEventListener('mouseenter', Swal.stopTimer);
       toast.addEventListener('mouseleave', Swal.resumeTimer);
@@ -40,8 +48,9 @@ export class AlertService {
       cancelButtonText: cancelButtonText,
       confirmButtonColor: this.getColor(type),
       cancelButtonColor: '#6e7881',
-      reverseButtons: true, // Botão de confirmar à direita
-      allowOutsideClick: () => !Swal.isLoading() // Bloqueia fechar se estiver carregando
+      reverseButtons: true,
+      customClass: this.Z_CLASS,
+      allowOutsideClick: () => !Swal.isLoading()
     });
 
     return result.isConfirmed;
@@ -62,6 +71,7 @@ export class AlertService {
       confirmButtonText: 'Sim, prosseguir',
       cancelButtonText: 'Cancelar',
       confirmButtonColor: this.getColor(type),
+      customClass: this.Z_CLASS,
       showLoaderOnConfirm: true,
       preConfirm: async () => {
         try {
@@ -81,7 +91,8 @@ export class AlertService {
       text: message,
       icon: type as SweetAlertIcon,
       confirmButtonColor: this.getColor(type),
-      confirmButtonText: 'OK'
+      confirmButtonText: 'OK',
+      customClass: this.Z_CLASS,
     });
   }
 

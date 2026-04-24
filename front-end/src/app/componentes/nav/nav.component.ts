@@ -1,14 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { MenuItem, PrimeIcons } from 'primeng/api';
-import { Router, RouterModule } from '@angular/router';
+import { MenuItem } from 'primeng/api';
+import { Router } from '@angular/router';
 import { SidebarService } from '../sidebar.service';
-import { BehaviorSubject, debounceTime, from } from 'rxjs';
-type UserProfile =
-  | 'LEITOR'
-  | 'BIBLIOTECARIO'
-  | 'FINANCEIRO'
-  | 'ESTOQUE'
-  | 'ADMINISTRADOR';
+import { AuthService, UserProfile } from '../../services/auth.service';
 
 @Component({
   selector: 'app-nav',
@@ -16,14 +10,15 @@ type UserProfile =
   styleUrls: ['./nav.component.scss'],
 })
 export class NavComponent implements OnInit {
-  infoSessao = new BehaviorSubject<any>('');
   items: MenuItem[] = [];
   collapsed = false;
-  userNome: string = 'raul.7lmg';
-  currentUserProfile: UserProfile = 'ADMINISTRADOR';
+  userNome: string = '';
+  currentUserProfile: UserProfile | null = null;
   OptionSelected!: string;
+
   private readonly router = inject(Router);
   sidebarService = inject(SidebarService);
+  private auth = inject(AuthService);
 
   usersDropdown = [
     { name: 'Perfil', code: '/config/perfil' },
@@ -35,21 +30,24 @@ export class NavComponent implements OnInit {
   toggleSidebar() {
     this.sidebarService.toggle();
   }
-  infoAuthSessao(info: any) {
-    // 1. Atualiza o BehaviorSubject (para os componentes ativos verem a mudança agora)
-    this.infoSessao.next(info);
 
-    // 2. Transforma o objeto 'info' em uma string JSON e salva
-    localStorage.setItem('infoSessao', JSON.stringify(info));
+  /**
+   * Persiste a sessão do usuário logado (chamado pelo login).
+   * Dispara rebuild do menu automaticamente via AuthService.profile$.
+   */
+  infoAuthSessao(info: any) {
+    this.auth.setSession(info);
   }
+
   get filteredDropdown() {
     return this.usersDropdown.filter((user) => user.name !== this.userNome);
   }
 
   navigateOut(route: any): void {
-    if (route.code === '/') {
-      localStorage.removeItem('infoSessao');
+    if (route.name === 'Logout' || route.code === '/') {
+      this.auth.logout();
       this.router.navigate(['/auth/log-in']);
+      return;
     }
     this.router.navigate([route.code]).then(() => {
       if (this.OptionSelected) {
@@ -59,14 +57,23 @@ export class NavComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(localStorage.getItem('infoSessao'));
-    if (!localStorage.getItem('infoSessao')) {
+    if (!this.auth.isLogged) {
       this.router.navigate(['/auth/log-in']);
+      return;
     }
-    this.items = this.sidebarService.generateMenu();
+
+    // Reage a mudanças de perfil (login/logout) regerando o menu
+    this.auth.profile$.subscribe((perfil) => {
+      this.currentUserProfile = perfil;
+      const sess = this.auth.session;
+      this.userNome = sess?.NomeFunc || sess?.Nome || sess?.Email || '';
+      this.usersDropdown = [
+        { name: 'Perfil', code: '/config/perfil' },
+        { name: 'Configurações', code: '/config/perfil' },
+        { name: 'Logout', code: '/' },
+        { name: this.userNome, code: '' },
+      ];
+      this.items = this.sidebarService.generateMenu();
+    });
   }
-
- 
-
-
 }

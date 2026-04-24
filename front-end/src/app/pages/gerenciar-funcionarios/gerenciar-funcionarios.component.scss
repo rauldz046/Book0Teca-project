@@ -185,10 +185,112 @@ header {
     border: 1px solid $border-color;
     border-radius: 6px;
     font-size: 0.9rem;
+    background: $white;
     &:focus {
       outline: none;
       border-color: $primary;
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
     }
+    &.input-invalid {
+      border-color: $danger;
+      &:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
+    }
+  }
+
+  .field-error {
+    color: $danger;
+    font-size: 0.72rem;
+    margin-top: 2px;
+  }
+}
+
+// Section title dentro do modal
+.section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px dashed $border-color;
+}
+
+// Avatar iniciais
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $primary, $primary-dark);
+  color: $white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+// Region badge
+.region-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #e0f2fe;
+  color: #0369a1;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+// Close button
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.75rem;
+  color: $text-muted;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 6px;
+  border-radius: 6px;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #f1f5f9;
+    color: $text-main;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+
+  small {
+    color: $text-muted;
+    font-size: 0.78rem;
+    display: block;
+    margin-top: 2px;
+  }
+}
+
+// Empty state
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #94a3b8;
+
+  i {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+  p { margin: 0; }
+}
+
+@media (max-width: 640px) {
+  .modal-overlay .modal-content .modal-body .form-grid {
+    grid-template-columns: 1fr !important;
   }
 }

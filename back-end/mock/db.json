@@ -1,0 +1,516 @@
+{
+  "statusAtividadeGeral": [
+    {
+      "idStatus": 1,
+      "Descricao": "Ativo"
+    },
+    {
+      "idStatus": 2,
+      "Descricao": "Inativo"
+    },
+    {
+      "idStatus": 3,
+      "Descricao": "Bloqueado"
+    },
+    {
+      "idStatus": 4,
+      "Descricao": "Pendente"
+    },
+    {
+      "idStatus": 5,
+      "Descricao": "Suspenso"
+    }
+  ],
+  "perfilFuncionarios": [
+    {
+      "idPerfil": 1,
+      "Descricao": "Administrador"
+    },
+    {
+      "idPerfil": 2,
+      "Descricao": "Bibliotecario"
+    },
+    {
+      "idPerfil": 3,
+      "Descricao": "Financeiro"
+    },
+    {
+      "idPerfil": 4,
+      "Descricao": "Estoque"
+    },
+    {
+      "idPerfil": 5,
+      "Descricao": "Usuario"
+    }
+  ],
+  "compraStatus": [
+    {
+      "id": 1,
+      "Descricao": "Pendente",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 2,
+      "Descricao": "Pago",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 3,
+      "Descricao": "Cancelado",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 4,
+      "Descricao": "Aguardando",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 5,
+      "Descricao": "Reembolsado",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    }
+  ],
+  "tiposSolicitacao": [
+    {
+      "id": 1,
+      "Descricao": "Suporte",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 2,
+      "Descricao": "Financeiro",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 3,
+      "Descricao": "Emprestimo",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 4,
+      "Descricao": "Compra",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 5,
+      "Descricao": "Cadastro",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    }
+  ],
+  "etapasTipoSolicitacao": [
+    {
+      "id": 1,
+      "Descricao": "Aberto",
+      "Ordem": 1,
+      "Final": 0,
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 2,
+      "Descricao": "Em análise",
+      "Ordem": 2,
+      "Final": 0,
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 3,
+      "Descricao": "Aprovado",
+      "Ordem": 3,
+      "Final": 0,
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 4,
+      "Descricao": "Finalizado",
+      "Ordem": 4,
+      "Final": 1,
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "id": 5,
+      "Descricao": "Cancelado",
+      "Ordem": 5,
+      "Final": 1,
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    }
+  ],
+  "infoEndereco": [
+    {
+      "idInfoEnd": 1,
+      "Logradouro": "Rua das Flores",
+      "Bairro": "Centro",
+      "Numero": 100,
+      "Cidade": "São Paulo",
+      "Estado": "SP",
+      "Nacionalidade": "Brasileira",
+      "CEP": "01310-100",
+      "Complemento": "Apto 10",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "idInfoEnd": 2,
+      "Logradouro": "Av. Paulista",
+      "Bairro": "Bela Vista",
+      "Numero": 1000,
+      "Cidade": "São Paulo",
+      "Estado": "SP",
+      "Nacionalidade": "Brasileira",
+      "CEP": "01310-200",
+      "Complemento": "",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    }
+  ],
+  "infoBancario": [
+    {
+      "IdInfoBancario": 1,
+      "NomeBanco": "Banco do Brasil",
+      "CodigoBanco": 1,
+      "TipoConta": "Corrente",
+      "NumeroAgencia": 1234,
+      "DigitoAgencia": 5,
+      "NumeroConta": 98765,
+      "DigitoConta": 4,
+      "CodigosPix": "admin@bookoteca.com",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "IdInfoBancario": 2,
+      "NomeBanco": "Caixa Econômica",
+      "CodigoBanco": 104,
+      "TipoConta": "Poupança",
+      "NumeroAgencia": 5678,
+      "DigitoAgencia": 3,
+      "NumeroConta": 12345,
+      "DigitoConta": 6,
+      "CodigosPix": "usuario@bookoteca.com",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    }
+  ],
+  "autores": [
+    {
+      "id": 1,
+      "NomeAutor": "Machado de Assis",
+      "SobreAutor": "Escritor brasileiro, fundador da Academia Brasileira de Letras.",
+      "PalavrasChave": [
+        "realismo",
+        "literatura brasileira",
+        "romance"
+      ]
+    },
+    {
+      "id": 2,
+      "NomeAutor": "Clarice Lispector",
+      "SobreAutor": "Escritora e jornalista brasileira, considerada a maior escritora brasileira do século XX.",
+      "PalavrasChave": [
+        "modernismo",
+        "introspecção",
+        "conto"
+      ]
+    },
+    {
+      "id": 3,
+      "NomeAutor": "J.K. Rowling",
+      "SobreAutor": "Escritora britânica, autora da série Harry Potter.",
+      "PalavrasChave": [
+        "fantasia",
+        "magia",
+        "jovem adulto"
+      ]
+    }
+  ],
+  "funcionarios": [
+    {
+      "idFuncionario": 1,
+      "MatriculaFunc": "FUNC001",
+      "NomeFunc": "Admin Sistema",
+      "CPFFunc": "111.111.111-11",
+      "EmailFunc": "admin@bookoteca.com",
+      "RegiaoFunc": "SP",
+      "SenhaFunc": "$2b$10$wu0971TopfFKGhmHBrGahO7yL3zuROQZNQVEgsQ4AMAbF7ZmynW4u",
+      "SenhaInicialFunc": 0,
+      "CadastradoPor": 1,
+      "idPerfilFuncionarios": 1,
+      "StatusAtividadeGeral_idStatus": 1,
+      "InfoBancario_IdInfoBancario": 1,
+      "InfoEndereco_idInfoEnd": 1,
+      "created_date": "2024-01-01",
+      "update_date": "2024-01-01",
+      "deleted_date": null
+    },
+    {
+      "idFuncionario": 2,
+      "MatriculaFunc": "FUNC002",
+      "NomeFunc": "Maria Bibliotecária",
+      "CPFFunc": "222.222.222-22",
+      "EmailFunc": "maria@bookoteca.com",
+      "RegiaoFunc": "SP",
+      "SenhaFunc": "$2b$10$KBUcfLyLTwdOfbkoPA99W.0LbWggogXZz8yfaaOCd27x11fiCIo6u",
+      "SenhaInicialFunc": 0,
+      "CadastradoPor": 1,
+      "idPerfilFuncionarios": 2,
+      "StatusAtividadeGeral_idStatus": 1,
+      "InfoBancario_IdInfoBancario": 1,
+      "InfoEndereco_idInfoEnd": 1,
+      "created_date": "2024-01-01",
+      "update_date": "2024-01-01",
+      "deleted_date": null
+    }
+  ],
+  "usuarios": [
+    {
+      "idUsuario": 1,
+      "Nome": "João Silva",
+      "CPF": "333.333.333-33",
+      "Telefone": "(11) 99999-0001",
+      "Senha": "$2b$10$/ME5XfIicbdbtrlNkiBwwuT5AqnngKeen.3VlGE4j2gRet2vpxG1G",
+      "Email": "joao@email.com",
+      "SenhaInicial": 0,
+      "Status": 1,
+      "InfoEndereco": 2,
+      "InfoBancario": 2,
+      "fotoperfil": null,
+      "created_at": "2024-01-10",
+      "updated_at": "2026-04-24",
+      "deleted_at": null
+    },
+    {
+      "idUsuario": 2,
+      "Nome": "Ana Souza",
+      "CPF": "444.444.444-44",
+      "Telefone": "(11) 99999-0002",
+      "Senha": "$2b$10$kVc6XPIRMJeX3ly6X/67ruxTgq6GvK6BSi1Gzh1ocCTpjK3jqFNy6",
+      "Email": "ana@email.com",
+      "SenhaInicial": 0,
+      "Status": 1,
+      "InfoEndereco": 2,
+      "InfoBancario": 2,
+      "fotoperfil": null,
+      "created_at": "2024-02-01",
+      "updated_at": "2026-04-24",
+      "deleted_at": null
+    }
+  ],
+  "livros": [
+    {
+      "idLivro": 1,
+      "Titulo": "Dom Casmurro",
+      "ISBN": "978-85-359-0277-5",
+      "Autor": 1,
+      "LivroFisico": 1,
+      "LivroDigital": 0,
+      "QtdLivros": 5,
+      "PrecoCompra": 25,
+      "PrecoVenda": 45,
+      "PathDownload": null,
+      "PalavrasChave": [
+        "romance",
+        "realismo",
+        "ciúme"
+      ],
+      "Descricao": "Clássico da literatura brasileira de Machado de Assis.",
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    },
+    {
+      "idLivro": 2,
+      "Titulo": "A Hora da Estrela",
+      "ISBN": "978-85-359-0350-5",
+      "Autor": 2,
+      "LivroFisico": 1,
+      "LivroDigital": 1,
+      "QtdLivros": 3,
+      "PrecoCompra": 22,
+      "PrecoVenda": 38,
+      "PathDownload": "/downloads/hora-da-estrela.pdf",
+      "PalavrasChave": [
+        "existencialismo",
+        "nordeste",
+        "modernismo"
+      ],
+      "Descricao": "Obra-prima de Clarice Lispector.",
+      "created_at": "2024-01-05",
+      "updated_at": "2024-01-05",
+      "deleted_at": null
+    },
+    {
+      "idLivro": 3,
+      "Titulo": "Harry Potter e a Pedra Filosofal",
+      "ISBN": "978-85-325-1207-0",
+      "Autor": 3,
+      "LivroFisico": 1,
+      "LivroDigital": 1,
+      "QtdLivros": 8,
+      "PrecoCompra": 30,
+      "PrecoVenda": 55,
+      "PathDownload": "/downloads/hp1.pdf",
+      "PalavrasChave": [
+        "fantasia",
+        "magia",
+        "aventura"
+      ],
+      "Descricao": "Primeiro livro da série Harry Potter.",
+      "created_at": "2024-01-10",
+      "updated_at": "2024-01-10",
+      "deleted_at": null
+    },
+    {
+      "idLivro": 4,
+      "Titulo": "Memórias Póstumas de Brás Cubas",
+      "ISBN": "978-85-359-0001-6",
+      "Autor": 1,
+      "LivroFisico": 1,
+      "LivroDigital": 0,
+      "QtdLivros": 2,
+      "PrecoCompra": 20,
+      "PrecoVenda": 40,
+      "PathDownload": null,
+      "PalavrasChave": [
+        "romance",
+        "realismo",
+        "ironia"
+      ],
+      "Descricao": "Narrado por um defunto, obra inovadora de Machado de Assis.",
+      "created_at": "2024-02-01",
+      "updated_at": "2024-02-01",
+      "deleted_at": null
+    },
+    {
+      "idLivro": 5,
+      "Titulo": "Perto do Coração Selvagem",
+      "ISBN": "978-85-359-0502-8",
+      "Autor": 2,
+      "LivroFisico": 0,
+      "LivroDigital": 1,
+      "QtdLivros": 0,
+      "PrecoCompra": 18,
+      "PrecoVenda": 32,
+      "PathDownload": "/downloads/perto-coracao-selvagem.pdf",
+      "PalavrasChave": [
+        "modernismo",
+        "stream of consciousness"
+      ],
+      "Descricao": "Primeiro romance de Clarice Lispector.",
+      "created_at": "2024-02-15",
+      "updated_at": "2024-02-15",
+      "deleted_at": null
+    }
+  ],
+  "lvistoriasEmprestimos": [
+    {
+      "id": 1,
+      "VistoriadoPor": 2,
+      "created_at": "2024-03-01",
+      "updated_at": "2024-03-01",
+      "deleted_at": null
+    }
+  ],
+  "livrosEmprestimos": [
+    {
+      "id": 1,
+      "AutorizadoPor": 2,
+      "idLivro": 1,
+      "idUser": 1,
+      "IdVistoria": 1,
+      "created_at": "2024-03-01",
+      "updated_at": "2024-03-01",
+      "deleted_at": null
+    }
+  ],
+  "lvendasNotasFiscais": [
+    {
+      "id": 1,
+      "Livro": 3,
+      "idUsuario": 1,
+      "FuncionarioResponsavel": 2,
+      "CompraStatus": 2,
+      "ValorCompra": 55,
+      "ValorPago": 55,
+      "DataCompra": "2024-03-10",
+      "created_at": "2024-03-10",
+      "updated_at": "2024-03-10",
+      "deleted_at": null
+    },
+    {
+      "id": 2,
+      "Livro": 2,
+      "idUsuario": 2,
+      "FuncionarioResponsavel": 2,
+      "CompraStatus": 1,
+      "ValorCompra": 38,
+      "ValorPago": 0,
+      "DataCompra": "2024-03-15",
+      "created_at": "2024-03-15",
+      "updated_at": "2024-03-15",
+      "deleted_at": null
+    }
+  ],
+  "formularioSolicitacao": [
+    {
+      "id": 1,
+      "FormularioJSON": {
+        "campos": [
+          {
+            "nome": "descricao",
+            "tipo": "texto",
+            "obrigatorio": true
+          }
+        ]
+      },
+      "created_at": "2024-01-01",
+      "updated_at": "2024-01-01",
+      "deleted_at": null
+    }
+  ],
+  "controleSolicitacoes": [
+    {
+      "Id": 1,
+      "Descricao": "Solicitação de empréstimo do livro Dom Casmurro",
+      "CriadaPor": 1,
+      "FormularioId": 1,
+      "TiposSolicitacao": 3,
+      "Etapas": 2,
+      "created_at": "2024-03-20",
+      "updated_at": "2024-03-20",
+      "deleted_at": null
+    }
+  ]
+}
