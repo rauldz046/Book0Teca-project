@@ -1,0 +1,252 @@
+<div class="detalhe-container">
+  <p-toast></p-toast>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <p-progressSpinner [style]="{'width':'60px','height':'60px'}"></p-progressSpinner>
+    <p>Carregando livro...</p>
+  </div>
+
+  <!-- Conteúdo principal -->
+  <ng-container *ngIf="!loading && livro">
+
+    <button pButton icon="pi pi-arrow-left" label="Voltar ao Catálogo"
+            class="p-button-text voltar-btn" (click)="voltar()"></button>
+
+    <div class="livro-grid">
+
+      <!-- Capa -->
+      <div class="capa-wrapper">
+        <img [src]="getCapa()" [alt]="livro.Titulo" class="book-cover"
+             loading="lazy" (error)="onCoverError($event)" />
+        <p-tag [value]="getStatusLabel()" [severity]="getSeverity()" class="status-tag"></p-tag>
+      </div>
+
+      <!-- Informações -->
+      <div class="livro-info">
+        <h1 class="titulo">{{ livro.Titulo }}</h1>
+        <p class="autor">{{ livro.autorInfo?.NomeAutor || 'Autor desconhecido' }}</p>
+
+        <p class="preco">{{ livro.PrecoVenda | currency:'BRL' }}</p>
+
+        <p class="descricao" *ngIf="livro.Descricao">{{ livro.Descricao }}</p>
+
+        <div class="tipos">
+          <p-tag *ngIf="livro.LivroFisico" value="Físico" severity="info" icon="pi pi-box"></p-tag>
+          <p-tag *ngIf="livro.LivroDigital" value="E-book / Digital" severity="success" icon="pi pi-tablet"></p-tag>
+        </div>
+
+        <p class="disponibilidade" *ngIf="livro.LivroFisico">
+          <i class="pi pi-box"></i>
+          <span *ngIf="(livro.QtdLivros ?? 0) > 0">
+            {{ livro.QtdLivros }} unidade{{ (livro.QtdLivros ?? 0) > 1 ? 's' : '' }} disponível{{ (livro.QtdLivros ?? 0) > 1 ? 'is' : '' }}
+          </span>
+          <span *ngIf="(livro.QtdLivros ?? 0) <= 0" class="text-red-500">Sem estoque físico</span>
+        </p>
+
+        <!-- Ações — visíveis apenas para LEITOR -->
+        <div class="acoes" *ngIf="isLeitor">
+          <button pButton label="Comprar" icon="pi pi-shopping-cart"
+                  class="p-button-success"
+                  [disabled]="!podeComprar()"
+                  (click)="abrirDialogCompra()"></button>
+
+          <button pButton label="Solicitar Empréstimo" icon="pi pi-book"
+                  class="p-button-outlined p-button-info"
+                  [disabled]="!livro.LivroFisico"
+                  [title]="!livro.LivroFisico ? 'Empréstimo disponível apenas para livros físicos' : ''"
+                  (click)="abrirDialogEmprestimo()"></button>
+        </div>
+
+        <p *ngIf="!isLeitor" class="perfil-aviso">
+          <i class="pi pi-info-circle mr-2"></i>
+          Ações de compra e empréstimo estão disponíveis para leitores cadastrados.
+        </p>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     DIALOG — FLUXO DE COMPRA
+     ═══════════════════════════════════════════════════════ -->
+<p-dialog header="Finalizar Compra" [(visible)]="dialogCompra"
+          [modal]="true" [style]="{width:'640px'}"
+          [closable]="activeStep < 3" [draggable]="false">
+
+  <p-steps [model]="stepsCompra" [activeIndex]="activeStep" [readonly]="true"
+           styleClass="mb-4"></p-steps>
+
+  <!-- Step 0 — Resumo do pedido -->
+  <div *ngIf="activeStep === 0" class="step-content">
+    <div class="resumo-item">
+      <img [src]="getCapa()" class="resumo-capa" [alt]="livro?.Titulo"
+           (error)="onCoverError($event)" />
+      <div>
+        <h3 class="mb-1">{{ livro?.Titulo }}</h3>
+        <p class="text-color-secondary mb-2">{{ livro?.autorInfo?.NomeAutor }}</p>
+        <p-tag *ngIf="livro?.LivroFisico" value="Físico" severity="info" styleClass="mr-2"></p-tag>
+        <p-tag *ngIf="livro?.LivroDigital" value="E-book" severity="success"></p-tag>
+      </div>
+    </div>
+    <p-divider></p-divider>
+    <div class="total-linha">
+      <span class="text-color-secondary">Total a pagar</span>
+      <span class="total-valor">{{ livro?.PrecoVenda | currency:'BRL' }}</span>
+    </div>
+    <div class="step-buttons">
+      <button pButton label="Continuar" icon="pi pi-arrow-right" iconPos="right"
+              (click)="nextStep()"></button>
+    </div>
+  </div>
+
+  <!-- Step 1 — Confirmar dados do usuário -->
+  <div *ngIf="activeStep === 1" class="step-content">
+    <h3 class="mb-3">Confirme seus dados</h3>
+    <div class="dados-grid">
+      <div class="campo">
+        <label>Nome</label>
+        <p>{{ dadosUsuario?.Nome || '—' }}</p>
+      </div>
+      <div class="campo">
+        <label>CPF</label>
+        <p>{{ dadosUsuario?.CPF || '—' }}</p>
+      </div>
+      <div class="campo">
+        <label>E-mail</label>
+        <p>{{ dadosUsuario?.Email || '—' }}</p>
+      </div>
+      <div class="campo">
+        <label>Telefone</label>
+        <p>{{ dadosUsuario?.Telefone || '—' }}</p>
+      </div>
+    </div>
+    <div class="step-buttons">
+      <button pButton label="Voltar" icon="pi pi-arrow-left" class="p-button-text"
+              (click)="prevStep()"></button>
+      <button pButton label="Continuar" icon="pi pi-arrow-right" iconPos="right"
+              (click)="nextStep()"></button>
+    </div>
+  </div>
+
+  <!-- Step 2 — Forma de pagamento -->
+  <div *ngIf="activeStep === 2" class="step-content">
+    <h3 class="mb-3">Escolha a forma de pagamento</h3>
+    <div class="pagamento-opcoes">
+      <div *ngFor="let m of metodosPagamento"
+           class="pagamento-opcao"
+           [class.selecionado]="metodoPagamentoSelecionado === m.value"
+           (click)="metodoPagamentoSelecionado = m.value">
+        <i [class]="m.icon + ' metodo-icon'"></i>
+        <span>{{ m.label }}</span>
+      </div>
+    </div>
+    <div class="step-buttons">
+      <button pButton label="Voltar" icon="pi pi-arrow-left" class="p-button-text"
+              (click)="prevStep()"></button>
+      <button pButton label="Confirmar Pedido" icon="pi pi-check" class="p-button-success"
+              [disabled]="!metodoPagamentoSelecionado"
+              [loading]="loadingCompra"
+              (click)="confirmarCompra()"></button>
+    </div>
+  </div>
+
+  <!-- Step 3 — Nota fiscal / Confirmação -->
+  <div *ngIf="activeStep === 3" class="step-content nota-fiscal">
+    <div class="nf-header">
+      <i class="pi pi-check-circle text-green-500" style="font-size:3.5rem"></i>
+      <h2>Compra Realizada!</h2>
+      <p class="text-color-secondary">Seu pedido foi confirmado com sucesso.</p>
+    </div>
+
+    <p-divider></p-divider>
+
+    <div class="nf-corpo">
+      <div class="nf-linha">
+        <span>Nº do Pedido</span>
+        <span class="font-bold">#{{ vendaConfirmada?.id }}</span>
+      </div>
+      <div class="nf-linha">
+        <span>Data</span>
+        <span>{{ hoje | date:'dd/MM/yyyy  HH:mm' }}</span>
+      </div>
+      <div class="nf-linha">
+        <span>Livro</span>
+        <span>{{ livro?.Titulo }}</span>
+      </div>
+      <div class="nf-linha">
+        <span>Comprador</span>
+        <span>{{ dadosUsuario?.Nome }}</span>
+      </div>
+      <div class="nf-linha">
+        <span>CPF</span>
+        <span>{{ dadosUsuario?.CPF }}</span>
+      </div>
+      <div class="nf-linha">
+        <span>Pagamento</span>
+        <span>{{ metodoPagamentoSelecionado }}</span>
+      </div>
+      <p-divider></p-divider>
+      <div class="nf-linha total">
+        <span>Total Pago</span>
+        <span>{{ livro?.PrecoVenda | currency:'BRL' }}</span>
+      </div>
+    </div>
+
+    <div class="step-buttons">
+      <button pButton label="Imprimir Nota" icon="pi pi-print" class="p-button-outlined"
+              (click)="imprimirNota()"></button>
+      <button pButton label="Voltar ao Catálogo" icon="pi pi-book"
+              (click)="fecharEVoltar()"></button>
+    </div>
+  </div>
+</p-dialog>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     DIALOG — SOLICITAR EMPRÉSTIMO
+     ═══════════════════════════════════════════════════════ -->
+<p-dialog header="Solicitar Empréstimo" [(visible)]="dialogEmprestimo"
+          [modal]="true" [style]="{width:'480px'}" [draggable]="false">
+
+  <div class="emprestimo-content">
+
+    <!-- Disponível -->
+    <div *ngIf="livroDisponivel" class="emprestimo-msg">
+      <i class="pi pi-check-circle msg-icon text-green-500"></i>
+      <h3>Livro Disponível!</h3>
+      <p>{{ livro?.QtdLivros }} unidade{{ (livro?.QtdLivros ?? 0) > 1 ? 's' : '' }} disponível{{ (livro?.QtdLivros ?? 0) > 1 ? 'is' : '' }} para retirada.</p>
+      <p class="text-color-secondary">
+        Ao confirmar, um pedido de retirada será gerado.<br>
+        Retire o livro pessoalmente na biblioteca com seu documento de identificação.
+      </p>
+      <div class="emprestimo-acoes">
+        <button pButton label="Cancelar" class="p-button-text"
+                (click)="dialogEmprestimo = false"></button>
+        <button pButton label="Solicitar Retirada" icon="pi pi-check" class="p-button-success"
+                [loading]="loadingEmprestimo"
+                (click)="confirmarSolicitacaoEmprestimo()"></button>
+      </div>
+    </div>
+
+    <!-- Indisponível -->
+    <div *ngIf="!livroDisponivel" class="emprestimo-msg">
+      <i class="pi pi-exclamation-triangle msg-icon text-orange-500"></i>
+      <h3>Livro Indisponível</h3>
+      <p>Todas as cópias estão emprestadas no momento.</p>
+      <p class="text-color-secondary">
+        Entre na lista de espera e você será notificado assim que uma cópia estiver disponível.
+        O bibliotecário gerenciará a solicitação.
+      </p>
+      <div class="emprestimo-acoes">
+        <button pButton label="Cancelar" class="p-button-text"
+                (click)="dialogEmprestimo = false"></button>
+        <button pButton label="Entrar na Fila de Espera" icon="pi pi-clock" class="p-button-warning"
+                [loading]="loadingEmprestimo"
+                (click)="entrarFilaEspera()"></button>
+      </div>
+    </div>
+
+  </div>
+</p-dialog>

@@ -4,8 +4,8 @@
   <h2 class="ml-3"><i class="pi pi-money-bill mr-2"></i>Sistema de Multas</h2>
 
   <p-tabView>
-    <!-- VISÃO DO USUÁRIO -->
-    <p-tabPanel header="Minhas Multas" leftIcon="pi pi-user">
+    <!-- VISÃO DO USUÁRIO: apenas LEITOR (e ADMINISTRADOR via hasProfile) -->
+    <p-tabPanel *ngIf="isLeitor" header="Minhas Multas" leftIcon="pi pi-user">
       <p-table [value]="multasUsuario" [responsiveLayout]="'scroll'" styleClass="p-datatable-sm">
         <ng-template pTemplate="header">
           <tr>
@@ -33,8 +33,8 @@
       </p-table>
     </p-tabPanel>
 
-    <!-- VISÃO DO FINANCEIRO -->
-    <p-tabPanel header="Gestão Financeira (Adm)" leftIcon="pi pi-cog">
+    <!-- VISÃO DO FINANCEIRO: apenas FINANCEIRO (e ADMINISTRADOR via hasProfile) -->
+    <p-tabPanel *ngIf="isFinanceiro" header="Gestão Financeira" leftIcon="pi pi-cog">
       <p-table #dt [value]="multas" [rows]="10" [paginator]="true" 
                [globalFilterFields]="['usuario','livro']" [loading]="loading"
                styleClass="p-datatable-gridlines p-datatable-striped">

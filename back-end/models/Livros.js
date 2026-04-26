@@ -11,6 +11,7 @@ const Livro = sequelize.define(
     Autor: DataTypes.INTEGER,
     LivroFisico: DataTypes.TINYINT,
     LivroDigital: DataTypes.TINYINT,
+    Capa: DataTypes.STRING(1000),
     QtdLivros: DataTypes.INTEGER,
     PrecoCompra: DataTypes.FLOAT,
     PrecoVenda: DataTypes.FLOAT,

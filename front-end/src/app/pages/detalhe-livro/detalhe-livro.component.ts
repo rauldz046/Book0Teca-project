@@ -1,0 +1,234 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { LivrosService } from 'src/app/services/Livros.service';
+import { VendasService } from 'src/app/services/Vendas.service';
+import { EmprestimosService } from 'src/app/services/Emprestimos.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { Livro } from 'src/app/models/livros.model';
+
+@Component({
+  selector: 'app-detalhe-livro',
+  templateUrl: './detalhe-livro.component.html',
+  styleUrls: ['./detalhe-livro.component.scss'],
+})
+export class DetalheLivroComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private livrosService = inject(LivrosService);
+  private vendasService = inject(VendasService);
+  private emprestimosService = inject(EmprestimosService);
+  private authService = inject(AuthService);
+  private messageService = inject(MessageService);
+
+  livro: Livro | null = null;
+  loading = true;
+  hoje = new Date();
+
+  // ── Compra ──────────────────────────────────────────────
+  dialogCompra = false;
+  activeStep = 0;
+  stepsCompra = [
+    { label: 'Resumo' },
+    { label: 'Seus Dados' },
+    { label: 'Pagamento' },
+    { label: 'Confirmação' },
+  ];
+  metodosPagamento = [
+    { label: 'PIX',           value: 'PIX',          icon: 'pi pi-qrcode' },
+    { label: 'Boleto',        value: 'BOLETO',        icon: 'pi pi-file-pdf' },
+    { label: 'Cartão',        value: 'CARTÃO',        icon: 'pi pi-credit-card' },
+    { label: 'Dinheiro',      value: 'DINHEIRO',      icon: 'pi pi-money-bill' },
+    { label: 'Transferência', value: 'TRANSFERÊNCIA', icon: 'pi pi-send' },
+  ];
+  metodoPagamentoSelecionado = '';
+  loadingCompra = false;
+  vendaConfirmada: any = null;
+
+  // ── Empréstimo ───────────────────────────────────────────
+  dialogEmprestimo = false;
+  livroDisponivel = false;
+  loadingEmprestimo = false;
+
+  readonly CAPA_PLACEHOLDER =
+    'https://via.placeholder.com/300x420/e2e8f0/64748b?text=Sem+Capa';
+
+  get dadosUsuario() {
+    return this.authService.session;
+  }
+
+  get isLeitor(): boolean {
+    return this.authService.hasProfile(['LEITOR']);
+  }
+
+  ngOnInit(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (!id) {
+      this.router.navigate(['/acervo/livros']);
+      return;
+    }
+    this.livrosService.FindById(id).subscribe({
+      next: (livro) => {
+        this.livro = livro;
+        this.loading = false;
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Livro não encontrado.',
+        });
+        this.router.navigate(['/acervo/livros']);
+      },
+    });
+  }
+
+  getCapa(): string {
+    return this.livro?.Capa || this.livro?.capa || this.CAPA_PLACEHOLDER;
+  }
+
+  getStatusLabel(): string {
+    if (!this.livro) return '';
+    if (!this.livro.LivroDigital && (this.livro.QtdLivros ?? 0) <= 0)
+      return 'Indisponível';
+    if (this.livro.LivroFisico && (this.livro.QtdLivros ?? 0) <= 2)
+      return 'Últimas unidades';
+    return 'Disponível';
+  }
+
+  getSeverity(): 'success' | 'warning' | 'danger' {
+    if (!this.livro) return 'danger';
+    if (!this.livro.LivroDigital && (this.livro.QtdLivros ?? 0) <= 0)
+      return 'danger';
+    if (this.livro.LivroFisico && (this.livro.QtdLivros ?? 0) <= 2)
+      return 'warning';
+    return 'success';
+  }
+
+  podeComprar(): boolean {
+    if (!this.livro) return false;
+    if (this.livro.LivroDigital) return true;
+    return (this.livro.QtdLivros ?? 0) > 0;
+  }
+
+  onCoverError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img) img.src = this.CAPA_PLACEHOLDER;
+  }
+
+  voltar(): void {
+    this.router.navigate(['/acervo/livros']);
+  }
+
+  // ── Fluxo de compra ──────────────────────────────────────
+  abrirDialogCompra(): void {
+    this.activeStep = 0;
+    this.metodoPagamentoSelecionado = '';
+    this.vendaConfirmada = null;
+    this.hoje = new Date();
+    this.dialogCompra = true;
+  }
+
+  nextStep(): void { this.activeStep++; }
+  prevStep(): void { this.activeStep--; }
+
+  confirmarCompra(): void {
+    if (!this.livro || !this.dadosUsuario) return;
+    this.loadingCompra = true;
+
+    this.vendasService.Registrar({
+      idLivro: this.livro.idLivro,
+      idUsuario: this.dadosUsuario.idUsuario,
+      ValorPago: this.livro.PrecoVenda,
+    }).subscribe({
+      next: (res) => {
+        this.vendaConfirmada = res.venda;
+        this.vendasService.ConfirmarPagamento({
+          idVenda: res.venda.id,
+          ValorPago: this.livro!.PrecoVenda,
+        }).subscribe({
+          next: () => {
+            this.loadingCompra = false;
+            this.activeStep = 3;
+          },
+          error: () => {
+            this.loadingCompra = false;
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro',
+              detail: 'Falha ao confirmar o pagamento.',
+            });
+          },
+        });
+      },
+      error: (err) => {
+        this.loadingCompra = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro na compra',
+          detail: err?.error?.message || 'Não foi possível registrar a compra.',
+        });
+      },
+    });
+  }
+
+  imprimirNota(): void {
+    window.print();
+  }
+
+  fecharEVoltar(): void {
+    this.dialogCompra = false;
+    this.router.navigate(['/acervo/livros']);
+  }
+
+  // ── Fluxo de empréstimo ──────────────────────────────────
+  abrirDialogEmprestimo(): void {
+    this.livroDisponivel = (this.livro?.QtdLivros ?? 0) > 0;
+    this.dialogEmprestimo = true;
+  }
+
+  confirmarSolicitacaoEmprestimo(): void {
+    if (!this.livro || !this.dadosUsuario) return;
+    this.loadingEmprestimo = true;
+
+    this.emprestimosService.Solicitar({
+      idLivro: this.livro.idLivro,
+      idUser: this.dadosUsuario.idUsuario,
+    }).subscribe({
+      next: () => {
+        this.loadingEmprestimo = false;
+        this.dialogEmprestimo = false;
+        if (this.livro) this.livro.QtdLivros = (this.livro.QtdLivros ?? 1) - 1;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Pedido Registrado!',
+          detail: 'Seu pedido de retirada foi enviado. Retire o livro na biblioteca.',
+          life: 6000,
+        });
+      },
+      error: (err) => {
+        this.loadingEmprestimo = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: err?.error?.message || 'Falha ao registrar a solicitação.',
+        });
+      },
+    });
+  }
+
+  entrarFilaEspera(): void {
+    this.loadingEmprestimo = true;
+    setTimeout(() => {
+      this.loadingEmprestimo = false;
+      this.dialogEmprestimo = false;
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Lista de Espera',
+        detail:
+          'Você foi adicionado à lista de espera. Será notificado quando o livro estiver disponível.',
+        life: 7000,
+      });
+    }, 600);
+  }
+}

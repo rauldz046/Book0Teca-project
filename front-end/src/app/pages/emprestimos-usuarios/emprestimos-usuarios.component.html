@@ -1,93 +1,191 @@
 <div class="card">
-    <p-toast></p-toast>
-    <p-confirmDialog></p-confirmDialog>
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
 
-    <p-toolbar styleClass="mb-4 gap-2">
+  <h2 class="ml-3 mb-4"><i class="pi pi-book mr-2"></i>Empréstimos</h2>
+
+  <p-tabView>
+
+    <!-- ══════════════════════════════════════════════
+         TAB LEITOR — Meus Empréstimos
+         ══════════════════════════════════════════════ -->
+    <p-tabPanel *ngIf="isLeitor" header="Meus Empréstimos" leftIcon="pi pi-user">
+
+      <!-- Loading -->
+      <div *ngIf="loading" class="state-container">
+        <p-progressSpinner [style]="{'width':'50px','height':'50px'}"></p-progressSpinner>
+        <p>Carregando...</p>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="!loading && meusEmprestimos.length === 0" class="state-container empty">
+        <i class="pi pi-inbox state-icon"></i>
+        <h3>Nenhum empréstimo ativo</h3>
+        <p>Você não possui livros emprestados no momento.<br>
+           Acesse o catálogo para solicitar um empréstimo.</p>
+      </div>
+
+      <!-- Cards dos empréstimos -->
+      <div *ngIf="!loading && meusEmprestimos.length > 0" class="emprestimos-grid">
+        <div *ngFor="let emp of meusEmprestimos"
+             class="emprestimo-card"
+             [class.card-pendente]="!emp.AutorizadoPor"
+             [class.card-ativo]="emp.AutorizadoPor">
+
+          <div class="ec-header">
+            <div class="ec-icon-wrap" [class.pendente]="!emp.AutorizadoPor">
+              <i class="pi" [ngClass]="emp.AutorizadoPor ? 'pi-book' : 'pi-clock'"></i>
+            </div>
+            <p-tag [value]="getStatusLabel(emp)"
+                   [severity]="getStatusSeverity(emp)"></p-tag>
+          </div>
+
+          <div class="ec-body">
+            <h3 class="ec-titulo">{{ emp.livro?.Titulo || '—' }}</h3>
+            <p class="ec-isbn" *ngIf="emp.livro?.ISBN">
+              <i class="pi pi-hashtag"></i>&nbsp;{{ emp.livro?.ISBN }}
+            </p>
+          </div>
+
+          <div class="ec-footer">
+            <span class="ec-data">
+              <i class="pi pi-calendar"></i>
+              {{ formatarData(emp.created_at) }}
+            </span>
+          </div>
+
+          <!-- Aviso de retirada pendente -->
+          <div *ngIf="!emp.AutorizadoPor" class="ec-aviso">
+            <i class="pi pi-info-circle"></i>
+            Pedido registrado. Retire o livro pessoalmente na biblioteca.
+          </div>
+        </div>
+      </div>
+
+    </p-tabPanel>
+
+
+    <!-- ══════════════════════════════════════════════
+         TAB BIBLIOTECÁRIO — Gestão de Empréstimos
+         ══════════════════════════════════════════════ -->
+    <p-tabPanel *ngIf="isBibliotecario" header="Gestão de Empréstimos" leftIcon="pi pi-cog">
+
+      <p-toolbar styleClass="mb-4">
         <ng-template pTemplate="left">
-            <h2 class="m-0">Gerenciamento de Empréstimos</h2>
+          <span class="text-color-secondary text-sm">
+            {{ emprestimos.length }} empréstimo(s) registrado(s)
+          </span>
         </ng-template>
         <ng-template pTemplate="right">
-            <button pButton pRipple label="Novo Empréstimo" icon="pi pi-plus" class="p-button-success" (click)="abrirNovo()"></button>
+          <button pButton label="Novo Empréstimo" icon="pi pi-plus"
+                  class="p-button-success" (click)="abrirNovo()"></button>
         </ng-template>
-    </p-toolbar>
+      </p-toolbar>
 
-    <p-table [value]="emprestimos" [rows]="10" [paginator]="true" [filterDelay]="0" 
-             [globalFilterFields]="['livroTitulo', 'usuarioNome']"  class="p-datatable-striped">
+      <p-table [value]="emprestimos" [rows]="10" [paginator]="true"
+               [loading]="loading"
+               styleClass="p-datatable-striped p-datatable-gridlines">
+
         <ng-template pTemplate="header">
-            <tr>
-                <th>Livro</th>
-                <th>Usuário</th>
-                <th>Data Empréstimo</th>
-                <th>Previsão Devolução</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
+          <tr>
+            <th pSortableColumn="livro.Titulo">
+              Livro <p-sortIcon field="livro.Titulo"></p-sortIcon>
+            </th>
+            <th>Usuário</th>
+            <th>Data do Pedido</th>
+            <th>Status</th>
+            <th style="width:160px">Ações</th>
+          </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-emprestimo>
-            <tr>
-                <td>{{emprestimo.livroTitulo}}</td>
-                <td>{{emprestimo.usuarioNome}}</td>
-                <td>{{emprestimo.dataEmprestimo | date: 'dd/MM/yyyy'}}</td>
-                <td>{{emprestimo.dataPrevisaoDevolucao | date: 'dd/MM/yyyy'}}</td>
-                <td>
-                    <p-tag [value]="emprestimo.status"></p-tag>
-                </td>
-                <td>
-                    <button pButton pRipple icon="pi pi-check-square" class="p-button-rounded p-button-success mr-2" 
-                            (click)="devolverLivro(emprestimo)" pTooltip="Devolver" [disabled]="emprestimo.status === 'DEVOLVIDO'"></button>
-                    <button pButton pRipple icon="pi pi-refresh" class="p-button-rounded p-button-warning" 
-                            (click)="renovarEmprestimo(emprestimo)" pTooltip="Renovar" [disabled]="emprestimo.status === 'DEVOLVIDO'"></button>
-                </td>
-            </tr>
+
+        <ng-template pTemplate="body" let-emp>
+          <tr>
+            <td><span class="font-semibold">{{ emp.livro?.Titulo || '—' }}</span></td>
+            <td>{{ emp.usuario?.Nome || '—' }}</td>
+            <td>{{ formatarData(emp.created_at) }}</td>
+            <td>
+              <p-tag [value]="getStatusLabel(emp)"
+                     [severity]="getStatusSeverity(emp)"></p-tag>
+            </td>
+            <td>
+              <div class="flex gap-2">
+                <!-- Autorizar retirada (pedidos sem AutorizadoPor) -->
+                <button *ngIf="!emp.AutorizadoPor"
+                        pButton icon="pi pi-key"
+                        class="p-button-rounded p-button-info"
+                        pTooltip="Autorizar Retirada"
+                        tooltipPosition="top"
+                        (click)="autorizarRetirada(emp)"></button>
+
+                <!-- Registrar devolução (empréstimos ativos) -->
+                <button *ngIf="emp.AutorizadoPor"
+                        pButton icon="pi pi-check-square"
+                        class="p-button-rounded p-button-success"
+                        pTooltip="Registrar Devolução"
+                        tooltipPosition="top"
+                        (click)="devolverLivro(emp)"></button>
+
+                <!-- Renovar -->
+                <button pButton icon="pi pi-refresh"
+                        class="p-button-rounded p-button-warning"
+                        pTooltip="Renovar"
+                        tooltipPosition="top"
+                        [disabled]="!emp.AutorizadoPor"
+                        (click)="renovarEmprestimo(emp)"></button>
+              </div>
+            </td>
+          </tr>
         </ng-template>
-    </p-table>
+
+        <ng-template pTemplate="emptymessage">
+          <tr><td colspan="5" class="text-center py-4">Nenhum empréstimo registrado.</td></tr>
+        </ng-template>
+
+      </p-table>
+    </p-tabPanel>
+
+  </p-tabView>
 </div>
 
-<!-- Modal Novo Empréstimo -->
-<p-dialog [(visible)]="emprestimoDialog" [style]="{width: '450px'}" 
-          header="Novo Empréstimo" [modal]="true" styleClass="p-fluid">
 
-    <ng-template pTemplate="content">
+<!-- ══════════════════════════════════════════════
+     DIALOG — Novo Empréstimo (bibliotecário)
+     ══════════════════════════════════════════════ -->
+<p-dialog [(visible)]="emprestimoDialog" [style]="{width:'460px'}"
+          header="Novo Empréstimo" [modal]="true" [draggable]="false"
+          styleClass="p-fluid">
 
-        <!-- Usuário -->
-        <div class="field mb-3">
-            <label for="usuario">Usuário</label>
-            <p-dropdown 
-                [options]="usuarios"
-                [(ngModel)]="novoEmprestimo.usuario"
-                placeholder="Selecione o Usuário"
-                optionLabel="nome">
-            </p-dropdown>
-        </div>
+  <ng-template pTemplate="content">
 
-        <!-- Livro -->
-        <div class="field mb-3">
-            <label for="livro">Livro</label>
-            <p-dropdown 
-                [options]="livrosDisponiveis"
-                [(ngModel)]="novoEmprestimo.livro"
-                placeholder="Selecione o Livro"
-                optionLabel="titulo">
-            </p-dropdown>
-        </div>
+    <div class="field mb-3">
+      <label>Usuário</label>
+      <p-dropdown [options]="usuarios"
+                  [(ngModel)]="novoEmprestimo.usuario"
+                  placeholder="Selecione o Usuário"
+                  optionLabel="Nome"
+                  [filter]="true"
+                  filterBy="Nome">
+      </p-dropdown>
+    </div>
 
-        <!-- Data -->
-        <div class="field mb-3">
-            <label for="dataDevolucao">Previsão de Devolução</label>
-            <p-calendar 
-                [(ngModel)]="novoEmprestimo.dataPrevisaoDevolucao"
-                dateFormat="dd/mm/yy">
-            </p-calendar>
-        </div>
+    <div class="field mb-3">
+      <label>Livro</label>
+      <p-dropdown [options]="livrosDisponiveis"
+                  [(ngModel)]="novoEmprestimo.livro"
+                  placeholder="Selecione o Livro"
+                  optionLabel="Titulo"
+                  [filter]="true"
+                  filterBy="Titulo">
+      </p-dropdown>
+    </div>
 
-    </ng-template>
+  </ng-template>
 
-    <ng-template pTemplate="footer">
-        <button pButton label="Cancelar" icon="pi pi-times" class="p-button-text"
-                (click)="fecharDialog()"></button>
-
-        <button pButton label="Confirmar" icon="pi pi-check" class="p-button-success"
-                (click)="salvarEmprestimo()"></button>
-    </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton label="Cancelar" icon="pi pi-times" class="p-button-text"
+            (click)="fecharDialog()"></button>
+    <button pButton label="Registrar Empréstimo" icon="pi pi-check" class="p-button-success"
+            (click)="salvarEmprestimo()"></button>
+  </ng-template>
 
 </p-dialog>

@@ -229,31 +229,19 @@
       "id": 1,
       "NomeAutor": "Machado de Assis",
       "SobreAutor": "Escritor brasileiro, fundador da Academia Brasileira de Letras.",
-      "PalavrasChave": [
-        "realismo",
-        "literatura brasileira",
-        "romance"
-      ]
+      "PalavrasChave": ["realismo", "literatura brasileira", "romance"]
     },
     {
       "id": 2,
       "NomeAutor": "Clarice Lispector",
       "SobreAutor": "Escritora e jornalista brasileira, considerada a maior escritora brasileira do século XX.",
-      "PalavrasChave": [
-        "modernismo",
-        "introspecção",
-        "conto"
-      ]
+      "PalavrasChave": ["modernismo", "introspecção", "conto"]
     },
     {
       "id": 3,
       "NomeAutor": "J.K. Rowling",
       "SobreAutor": "Escritora britânica, autora da série Harry Potter.",
-      "PalavrasChave": [
-        "fantasia",
-        "magia",
-        "jovem adulto"
-      ]
+      "PalavrasChave": ["fantasia", "magia", "jovem adulto"]
     },
     {
       "id": 4,
@@ -360,11 +348,7 @@
       "PathDownload": null,
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535902778-L.jpg",
       "Ano": 1899,
-      "PalavrasChave": [
-        "romance",
-        "realismo",
-        "ciúme"
-      ],
+      "PalavrasChave": ["romance", "realismo", "ciúme"],
       "Descricao": "Clássico da literatura brasileira de Machado de Assis.",
       "created_at": "2024-01-01",
       "updated_at": "2024-01-01",
@@ -383,11 +367,7 @@
       "PathDownload": "/downloads/hora-da-estrela.pdf",
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535903508-L.jpg",
       "Ano": 1977,
-      "PalavrasChave": [
-        "existencialismo",
-        "nordeste",
-        "modernismo"
-      ],
+      "PalavrasChave": ["existencialismo", "nordeste", "modernismo"],
       "Descricao": "Obra-prima de Clarice Lispector.",
       "created_at": "2024-01-05",
       "updated_at": "2024-01-05",
@@ -406,11 +386,7 @@
       "PathDownload": "/downloads/hp1.pdf",
       "Capa": "https://covers.openlibrary.org/b/isbn/9788532512079-L.jpg",
       "Ano": 1997,
-      "PalavrasChave": [
-        "fantasia",
-        "magia",
-        "aventura"
-      ],
+      "PalavrasChave": ["fantasia", "magia", "aventura"],
       "Descricao": "Primeiro livro da série Harry Potter.",
       "created_at": "2024-01-10",
       "updated_at": "2024-01-10",
@@ -429,11 +405,7 @@
       "PathDownload": null,
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535900019-L.jpg",
       "Ano": 1881,
-      "PalavrasChave": [
-        "romance",
-        "realismo",
-        "ironia"
-      ],
+      "PalavrasChave": ["romance", "realismo", "ironia"],
       "Descricao": "Narrado por um defunto, obra inovadora de Machado de Assis.",
       "created_at": "2024-02-01",
       "updated_at": "2024-02-01",
@@ -452,10 +424,7 @@
       "PathDownload": "/downloads/perto-coracao-selvagem.pdf",
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535905021-L.jpg",
       "Ano": 1943,
-      "PalavrasChave": [
-        "modernismo",
-        "stream of consciousness"
-      ],
+      "PalavrasChave": ["modernismo", "stream of consciousness"],
       "Descricao": "Primeiro romance de Clarice Lispector.",
       "created_at": "2024-02-15",
       "updated_at": "2024-02-15",

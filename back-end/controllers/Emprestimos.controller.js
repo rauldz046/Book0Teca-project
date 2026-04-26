@@ -147,4 +147,86 @@ controller.confirmarDevolucao = async (req, res) => {
   }
 };
 
+/* AUTORIZAR RETIRADA — bibliotecário confirma um pedido criado pelo usuário */
+controller.autorizarEmprestimo = async (req, res) => {
+  const { idEmprestimo, AutorizadoPor } = req.body;
+  const t = await sequelize.transaction();
+  try {
+    const emp = await Emprestimo.findByPk(idEmprestimo);
+    if (!emp) {
+      await t.rollback();
+      return res.status(404).json({ message: "Empréstimo não encontrado" });
+    }
+    if (emp.AutorizadoPor !== null) {
+      await t.rollback();
+      return res.status(400).json({ message: "Empréstimo já autorizado" });
+    }
+
+    const vistoria = await Vistoria.create(
+      { VistoriadoPor: AutorizadoPor, created_at: new Date(), updated_at: new Date() },
+      { transaction: t }
+    );
+
+    await Emprestimo.update(
+      { AutorizadoPor, IdVistoria: vistoria.id, updated_at: new Date() },
+      { where: { id: idEmprestimo }, transaction: t }
+    );
+
+    await t.commit();
+    return res.status(200).json({ message: "Retirada autorizada com sucesso" });
+  } catch (err) {
+    await t.rollback();
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+/* SOLICITAR EMPRÉSTIMO — iniciado pelo próprio usuário (RF12 parcial)
+   Cria o registro sem vistoria; bibliotecário confirma a retirada presencialmente */
+controller.solicitarEmprestimo = async (req, res) => {
+  const { idLivro, idUser } = req.body;
+  const t = await sequelize.transaction();
+  try {
+    const livro = await Livro.findByPk(idLivro);
+    if (!livro) {
+      await t.rollback();
+      return res.status(404).json({ message: "Livro não encontrado" });
+    }
+
+    if (livro.QtdLivros <= 0) {
+      await t.rollback();
+      return res.status(400).json({
+        disponivel: false,
+        message: "Livro sem estoque. Entre na lista de espera.",
+      });
+    }
+
+    const emprestimo = await Emprestimo.create(
+      {
+        AutorizadoPor: null,
+        idLivro,
+        idUser,
+        IdVistoria: null,
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      { transaction: t }
+    );
+
+    await Livro.update(
+      { QtdLivros: livro.QtdLivros - 1, updated_at: new Date() },
+      { where: { idLivro }, transaction: t }
+    );
+
+    await t.commit();
+    return res.status(201).json({
+      disponivel: true,
+      message: "Pedido de retirada registrado. Retire o livro na biblioteca.",
+      emprestimo,
+    });
+  } catch (err) {
+    await t.rollback();
+    return res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = controller;

@@ -3,6 +3,7 @@ import { Multa } from 'src/app/models/multas.model';
 import { MessageService } from 'primeng/api';
 import { ConfirmationService } from 'primeng/api';
 import { AlertService } from 'src/app/utils/toast-alert-service.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 
 @Component({
@@ -14,6 +15,7 @@ export class GerenciarMultasUsuariosComponent {
   MessageService = inject(MessageService);
   ConfirmationService = inject(ConfirmationService);
   AlertService = inject(AlertService);
+  private authService = inject(AuthService);
 
   multas: Multa[] = [];
   multasUsuario: Multa[] = [];
@@ -21,7 +23,13 @@ export class GerenciarMultasUsuariosComponent {
   displayDialog: boolean = false;
   loading: boolean = true;
 
+  get isLeitor(): boolean {
+    return this.authService.hasProfile(['LEITOR']);
+  }
 
+  get isFinanceiro(): boolean {
+    return this.authService.hasProfile(['FINANCEIRO']);
+  }
 
   ngOnInit() {
     // Simulando dados vindo de uma API
@@ -55,8 +63,8 @@ export class GerenciarMultasUsuariosComponent {
       },
     ];
 
-    // Filtro para o usuário logado (exemplo)
-    this.multasUsuario = this.multas.filter((m) => m.usuario === 'João Silva');
+    const nomeUsuario: string = this.authService.session?.nome ?? 'João Silva';
+    this.multasUsuario = this.multas.filter((m) => m.usuario === nomeUsuario);
     this.loading = false;
   }
 

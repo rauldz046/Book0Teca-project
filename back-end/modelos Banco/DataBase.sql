@@ -158,6 +158,7 @@ CREATE TABLE LivrosCatalogo (
   Autor INT,
   LivroFisico TINYINT,
   LivroDigital TINYINT,
+  Capa VARCHAR(1000),
   QtdLivros INT,
   PrecoCompra FLOAT,
   PrecoVenda FLOAT,

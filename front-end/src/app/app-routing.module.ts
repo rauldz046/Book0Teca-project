@@ -17,6 +17,7 @@ import { GerenciarPermissoesComponent } from './pages/gerenciar-permissoes/geren
 import { PreferenciasComponent } from './pages/preferencias/preferencias.component';
 import { AuthLoginComponent } from './pages/auth-login/auth-login.component';
 import { SignInFormUserComponent } from './pages/auth-login/sign-in-form-user/sign-in-form-user.component';
+import { DetalheLivroComponent } from './pages/detalhe-livro/detalhe-livro.component';
 import { authGuard, permissionGuard } from './services/permission.guard';
 
 const routes: Routes = [
@@ -57,6 +58,12 @@ const routes: Routes = [
     component: CatalogoComponent,
     canActivate: [authGuard],
     data: { titulo: 'Catalogo de Livros' },
+  },
+  {
+    path: 'acervo/livro/:id',
+    component: DetalheLivroComponent,
+    canActivate: [authGuard],
+    data: { titulo: 'Detalhe do Livro' },
   },
   {
     path: 'emprestimos/ativos',

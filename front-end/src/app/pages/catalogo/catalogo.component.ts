@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { LivrosService } from 'src/app/services/Livros.service';
 import { AlertService } from 'src/app/utils/toast-alert-service.service';
 import { Livro } from 'src/app/models/livros.model';
@@ -17,6 +18,7 @@ interface Colecao {
 export class CatalogoComponent implements OnInit {
   private livrosService = inject(LivrosService);
   private alert = inject(AlertService);
+  private router = inject(Router);
 
   todosLivros: Livro[] = [];
   livrosFiltrados: Livro[] = [];
@@ -44,6 +46,7 @@ export class CatalogoComponent implements OnInit {
     this.loading = true;
     this.livrosService.FindAll().subscribe({
       next: (res) => {
+        console.log('res: ', res);
         this.todosLivros = res || [];
         this.livrosFiltrados = [...this.todosLivros];
         this.montarColecoes();
@@ -107,7 +110,7 @@ export class CatalogoComponent implements OnInit {
   // ─── helpers de apresentação ─────────────────────────────────────────
 
   getCapa(livro: Livro): string {
-    return livro.capa || livro.Capa || this.CAPA_PLACEHOLDER;
+    return livro.capa || livro.Capa || " ";
   }
 
   getPreco(livro: Livro): number {
@@ -144,11 +147,12 @@ export class CatalogoComponent implements OnInit {
     }
   }
 
-  adicionarCarrinho(livro: Livro): void {
-    if (!livro.QtdLivros && !livro.LivroDigital) {
-      this.alert.error('Indisponível', `"${livro.Titulo}" está sem estoque.`);
-      return;
-    }
-    this.alert.info('Carrinho', `"${livro.Titulo}" adicionado ao carrinho`);
+  verDetalhes(livro: Livro): void {
+    this.router.navigate(['/acervo/livro', livro.idLivro]);
+  }
+
+  adicionarCarrinho(event: Event, livro: Livro): void {
+    event.stopPropagation();
+    this.router.navigate(['/acervo/livro', livro.idLivro]);
   }
 }

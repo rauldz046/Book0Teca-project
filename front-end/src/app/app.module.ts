@@ -71,6 +71,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { DetalheLivroComponent } from './pages/detalhe-livro/detalhe-livro.component';
 
 
 
@@ -102,6 +103,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
     AuthLoginComponent,
     ModalEditClienteComponent,
     SignInFormUserComponent,
+    DetalheLivroComponent,
   ],
   imports: [
     HttpClientModule,

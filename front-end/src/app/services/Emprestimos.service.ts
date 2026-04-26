@@ -22,6 +22,14 @@ export class EmprestimosService {
     return this.api.post<any>(`${this.ROOT}/registrar`, data);
   }
 
+  Solicitar(data: { idLivro: number; idUser: number }): Observable<any> {
+    return this.api.post<any>(`${this.ROOT}/solicitar`, data);
+  }
+
+  Autorizar(data: { idEmprestimo: number; AutorizadoPor: number }): Observable<any> {
+    return this.api.post<any>(`${this.ROOT}/autorizar`, data);
+  }
+
   ConfirmarDevolucao(data: ConfirmarDevolucaoPayload): Observable<RespostaDevolucao> {
     return this.api.post<RespostaDevolucao>(`${this.ROOT}/devolver`, data);
   }

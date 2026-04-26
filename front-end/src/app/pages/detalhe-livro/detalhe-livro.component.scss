@@ -1,0 +1,311 @@
+.detalhe-container {
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.voltar-btn {
+  margin-bottom: 1.5rem;
+}
+
+// ── Layout principal ──────────────────────────────────────
+.livro-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Capa ─────────────────────────────────────────────────
+.capa-wrapper {
+  position: relative;
+
+  .book-cover {
+    width: 100%;
+    max-width: 280px;
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+    display: block;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+  }
+
+  .status-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+  }
+}
+
+// ── Informações do livro ──────────────────────────────────
+.livro-info {
+  .titulo {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.4rem;
+    line-height: 1.2;
+    color: var(--text-color, #1e293b);
+  }
+
+  .autor {
+    font-size: 1.1rem;
+    color: var(--text-color-secondary, #64748b);
+    margin: 0 0 1rem;
+  }
+
+  .preco {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #10b981;
+    margin: 0 0 1.25rem;
+  }
+
+  .descricao {
+    color: var(--text-color-secondary, #475569);
+    line-height: 1.7;
+    margin-bottom: 1.25rem;
+    max-width: 600px;
+  }
+
+  .tipos {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .disponibilidade {
+    color: var(--text-color-secondary, #64748b);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+
+    i { margin-right: 0.4rem; }
+  }
+
+  .acoes {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .perfil-aviso {
+    color: var(--text-color-secondary, #94a3b8);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+}
+
+// ── Loading ───────────────────────────────────────────────
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+  color: var(--text-color-secondary);
+}
+
+// ── Stepper content ───────────────────────────────────────
+.step-content {
+  padding: 1.25rem 0;
+  min-height: 220px;
+}
+
+// Step 0 — Resumo
+.resumo-item {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+
+  .resumo-capa {
+    width: 72px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+  }
+}
+
+.total-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.05rem;
+  padding: 0.25rem 0;
+
+  .total-valor {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #10b981;
+  }
+}
+
+// Step 1 — Dados
+.dados-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+
+  .campo {
+    label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-color-secondary, #94a3b8);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    p {
+      font-weight: 600;
+      margin: 0;
+      font-size: 0.97rem;
+      color: var(--text-color, #1e293b);
+    }
+  }
+}
+
+// Step 2 — Pagamento
+.pagamento-opcoes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pagamento-opcao {
+    border: 2px solid var(--surface-border, #e2e8f0);
+    border-radius: 10px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    user-select: none;
+
+    .metodo-icon {
+      font-size: 1.6rem;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    &:hover {
+      border-color: #3b82f6;
+      background: #f0f7ff;
+    }
+
+    &.selecionado {
+      border-color: #3b82f6;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-weight: 600;
+    }
+  }
+}
+
+// Step 3 — Nota fiscal
+.nota-fiscal {
+  .nf-header {
+    text-align: center;
+    padding-bottom: 1rem;
+
+    h2 {
+      margin: 0.5rem 0 0.2rem;
+      font-size: 1.5rem;
+    }
+  }
+
+  .nf-corpo {
+    .nf-linha {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--surface-border, #f1f5f9);
+      font-size: 0.95rem;
+
+      span:first-child {
+        color: var(--text-color-secondary, #64748b);
+      }
+
+      &.total {
+        border-bottom: none;
+        font-size: 1.1rem;
+        margin-top: 0.25rem;
+
+        span:last-child {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #10b981;
+        }
+      }
+    }
+  }
+}
+
+// ── Botões dos steps ──────────────────────────────────────
+.step-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--surface-border, #f1f5f9);
+}
+
+// ── Dialog Empréstimo ─────────────────────────────────────
+.emprestimo-content {
+  padding: 0.5rem 0;
+}
+
+.emprestimo-msg {
+  text-align: center;
+
+  .msg-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  p {
+    margin: 0.3rem 0;
+    line-height: 1.6;
+  }
+
+  .emprestimo-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--surface-border, #f1f5f9);
+  }
+}
+
+// ── Print ─────────────────────────────────────────────────
+@media print {
+  .detalhe-container { display: none; }
+
+  .nota-fiscal .nf-corpo {
+    .nf-linha { border-bottom: 1px solid #ccc; }
+  }
+
+  .step-buttons { display: none; }
+}

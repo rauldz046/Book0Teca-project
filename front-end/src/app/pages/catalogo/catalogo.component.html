@@ -75,7 +75,7 @@
         [responsiveOptions]="responsiveOptions"
       >
         <ng-template let-livro pTemplate="item">
-          <div class="book-card-v2">
+          <div class="book-card-v2" (click)="verDetalhes(livro)" style="cursor:pointer" title="Ver detalhes">
             <div class="image-container">
               <img
                 [src]="getCapa(livro)"
@@ -100,7 +100,7 @@
               <div class="book-actions">
                 <button
                   class="btn-fav"
-                  (click)="toggleFavorito(livro)"
+                  (click)="toggleFavorito(livro); $event.stopPropagation()"
                   [class.active]="livro.favorito"
                   [title]="livro.favorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'"
                 >
@@ -109,9 +109,9 @@
 
                 <button
                   class="btn-cart"
-                  (click)="adicionarCarrinho(livro)"
+                  (click)="adicionarCarrinho($event, livro)"
                   [disabled]="getSeverity(livro) === 'danger'"
-                  title="Adicionar ao carrinho"
+                  title="Ver livro e comprar"
                 >
                   <i class="pi pi-shopping-cart"></i>
                 </button>
