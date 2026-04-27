@@ -35,9 +35,119 @@ function today() {
 app.get("/", (_, res) =>
   res.json({
     status: "Mock server rodando",
-    rotas: ["/usuarios", "/funcionarios", "/livros", "/autores", "/emprestimos", "/vendas", "/solicitacoes"],
+    rotas: ["/usuarios", "/funcionarios", "/livros", "/autores", "/emprestimos", "/vendas", "/solicitacoes", "/enderecos", "/bancos"],
   })
 );
+
+// ─── HELPERS p/ ENDEREÇO + BANCÁRIO ──────────────────────────────────────────
+function isEnderecoPreenchido(p) {
+  if (!p || typeof p !== "object") return false;
+  return Object.values(p).some((v) => v !== null && v !== undefined && v !== "");
+}
+function isBancoPreenchido(p) {
+  if (!p || typeof p !== "object") return false;
+  return Object.values(p).some((v) => v !== null && v !== undefined && v !== "");
+}
+function criarEndereco(db, payload) {
+  const novo = {
+    idInfoEnd: nextId(db.infoEndereco, "idInfoEnd"),
+    Logradouro: payload.Logradouro || "",
+    Bairro: payload.Bairro || "",
+    Numero: payload.Numero ?? null,
+    Cidade: payload.Cidade || "",
+    Estado: payload.Estado || "",
+    Nacionalidade: payload.Nacionalidade || "Brasileira",
+    CEP: payload.CEP || "",
+    Complemento: payload.Complemento || "",
+    created_at: today(),
+    updated_at: today(),
+    deleted_at: null,
+  };
+  db.infoEndereco.push(novo);
+  return novo;
+}
+function criarBanco(db, payload) {
+  const novo = {
+    IdInfoBancario: nextId(db.infoBancario, "IdInfoBancario"),
+    NomeBanco: payload.NomeBanco || "",
+    CodigoBanco: payload.CodigoBanco ?? null,
+    TipoConta: payload.TipoConta || "Corrente",
+    NumeroAgencia: payload.NumeroAgencia ?? null,
+    DigitoAgencia: payload.DigitoAgencia ?? null,
+    NumeroConta: payload.NumeroConta ?? null,
+    DigitoConta: payload.DigitoConta ?? null,
+    CodigosPix: payload.CodigosPix || "",
+    created_at: today(),
+    updated_at: today(),
+    deleted_at: null,
+  };
+  db.infoBancario.push(novo);
+  return novo;
+}
+function atualizarEndereco(db, id, payload) {
+  const idx = db.infoEndereco.findIndex((e) => e.idInfoEnd == id);
+  if (idx === -1) return null;
+  db.infoEndereco[idx] = { ...db.infoEndereco[idx], ...payload, updated_at: today() };
+  return db.infoEndereco[idx];
+}
+function atualizarBanco(db, id, payload) {
+  const idx = db.infoBancario.findIndex((b) => b.IdInfoBancario == id);
+  if (idx === -1) return null;
+  db.infoBancario[idx] = { ...db.infoBancario[idx], ...payload, updated_at: today() };
+  return db.infoBancario[idx];
+}
+
+// ─── ENDEREÇOS ────────────────────────────────────────────────────────────────
+app.get("/enderecos/findAll", (_, res) => {
+  const db = loadDB();
+  res.json(db.infoEndereco.filter((e) => !e.deleted_at));
+});
+app.get("/enderecos/:id", (req, res) => {
+  const db = loadDB();
+  const e = db.infoEndereco.find((x) => x.idInfoEnd == req.params.id && !x.deleted_at);
+  if (!e) return res.status(404).json({ message: "Endereço não encontrado" });
+  res.json(e);
+});
+app.post("/enderecos/create", (req, res) => {
+  const db = loadDB();
+  const novo = criarEndereco(db, req.body || {});
+  saveDB(db);
+  res.status(201).json(novo);
+});
+app.post("/enderecos/update", (req, res) => {
+  const { idInfoEnd, ...dados } = req.body;
+  const db = loadDB();
+  const upd = atualizarEndereco(db, idInfoEnd, dados);
+  if (!upd) return res.status(404).json({ message: "Endereço não encontrado" });
+  saveDB(db);
+  res.json(upd);
+});
+
+// ─── BANCO ────────────────────────────────────────────────────────────────────
+app.get("/bancos/findAll", (_, res) => {
+  const db = loadDB();
+  res.json(db.infoBancario.filter((b) => !b.deleted_at));
+});
+app.get("/bancos/:id", (req, res) => {
+  const db = loadDB();
+  const b = db.infoBancario.find((x) => x.IdInfoBancario == req.params.id && !x.deleted_at);
+  if (!b) return res.status(404).json({ message: "Banco não encontrado" });
+  res.json(b);
+});
+app.post("/bancos/create", (req, res) => {
+  const db = loadDB();
+  const novo = criarBanco(db, req.body || {});
+  saveDB(db);
+  res.status(201).json(novo);
+});
+app.post("/bancos/update", (req, res) => {
+  const { IdInfoBancario, ...dados } = req.body;
+  const db = loadDB();
+  const upd = atualizarBanco(db, IdInfoBancario, dados);
+  if (!upd) return res.status(404).json({ message: "Banco não encontrado" });
+  saveDB(db);
+  res.json(upd);
+});
 
 // ─── USUARIOS ─────────────────────────────────────────────────────────────────
 
@@ -74,18 +184,48 @@ app.post("/usuarios/login", async (req, res) => {
   if (!u) return res.status(401).json({ message: "Usuário não encontrado" });
   const ok = await bcrypt.compare(senha, u.Senha);
   if (!ok) return res.status(401).json({ message: "Senha incorreta" });
-  const { Senha, ...infoSessao } = u;
+  const { Senha, ...rest } = u;
+  const infoSessao = {
+    ...rest,
+    endereco: db.infoEndereco.find((e) => e.idInfoEnd === u.InfoEndereco) || null,
+    banco: db.infoBancario.find((b) => b.IdInfoBancario === u.InfoBancario) || null,
+  };
   res.json({ message: "sucesso", infoSessao });
 });
 
 app.post("/usuarios/createUser", async (req, res) => {
   const db = loadDB();
-  const senhaHash = req.body.Senha ? await bcrypt.hash(req.body.Senha, 10) : null;
+
+  // Aceita formato { payloadUser, payloadEndereco, payloadBanco } ou flat
+  const body = req.body || {};
+  const payloadUser = body.payloadUser || body;
+  const payloadEndereco = body.payloadEndereco;
+  const payloadBanco = body.payloadBanco;
+
+  let idEndereco = payloadUser.InfoEndereco ?? null;
+  if (isEnderecoPreenchido(payloadEndereco)) {
+    const e = criarEndereco(db, payloadEndereco);
+    idEndereco = e.idInfoEnd;
+  }
+
+  let idBanco = payloadUser.InfoBancario ?? null;
+  if (isBancoPreenchido(payloadBanco)) {
+    const b = criarBanco(db, payloadBanco);
+    idBanco = b.IdInfoBancario;
+  }
+
+  const senhaHash = payloadUser.Senha ? await bcrypt.hash(payloadUser.Senha, 10) : null;
+
+  const { Senha: _s, InfoEndereco: _ie, InfoBancario: _ib, ...rest } = payloadUser;
   const newUser = {
     idUsuario: nextId(db.usuarios, "idUsuario"),
-    ...req.body,
+    ...rest,
     Senha: senhaHash,
-    SenhaInicial: 1,
+    SenhaInicial: payloadUser.SenhaInicial ?? 1,
+    Status: payloadUser.Status ?? 1,
+    fotoperfil: payloadUser.fotoperfil ?? null,
+    InfoEndereco: idEndereco,
+    InfoBancario: idBanco,
     created_at: today(),
     updated_at: today(),
     deleted_at: null,
@@ -93,17 +233,48 @@ app.post("/usuarios/createUser", async (req, res) => {
   db.usuarios.push(newUser);
   saveDB(db);
   const { Senha, ...result } = newUser;
-  res.status(201).json(result);
+  res.status(201).json({
+    ...result,
+    endereco: db.infoEndereco.find((e) => e.idInfoEnd === idEndereco) || null,
+    banco: db.infoBancario.find((b) => b.IdInfoBancario === idBanco) || null,
+  });
 });
 
 app.post("/usuarios/updateUser", (req, res) => {
-  const { idUsuario, ...dados } = req.body;
+  const body = req.body || {};
+  const dados = body.payloadUser || body;
+  const idUsuario = dados.idUsuario;
   const db = loadDB();
   const idx = db.usuarios.findIndex((u) => u.idUsuario == idUsuario);
   if (idx === -1) return res.status(404).json({ message: "Usuário não encontrado" });
-  db.usuarios[idx] = { ...db.usuarios[idx], ...dados, updated_at: today() };
+
+  // endereço aninhado
+  if (body.payloadEndereco && isEnderecoPreenchido(body.payloadEndereco)) {
+    if (db.usuarios[idx].InfoEndereco) {
+      atualizarEndereco(db, db.usuarios[idx].InfoEndereco, body.payloadEndereco);
+    } else {
+      const novo = criarEndereco(db, body.payloadEndereco);
+      db.usuarios[idx].InfoEndereco = novo.idInfoEnd;
+    }
+  }
+
+  // bancário aninhado
+  if (body.payloadBanco && isBancoPreenchido(body.payloadBanco)) {
+    if (db.usuarios[idx].InfoBancario) {
+      atualizarBanco(db, db.usuarios[idx].InfoBancario, body.payloadBanco);
+    } else {
+      const novo = criarBanco(db, body.payloadBanco);
+      db.usuarios[idx].InfoBancario = novo.IdInfoBancario;
+    }
+  }
+
+  const { idUsuario: _x, payloadEndereco: _pe, payloadBanco: _pb, payloadUser: _pu, ...patch } = body;
+  const merge = body.payloadUser ? { ...dados } : patch;
+  delete merge.idUsuario;
+
+  db.usuarios[idx] = { ...db.usuarios[idx], ...merge, updated_at: today() };
   saveDB(db);
-  res.json({ message: "Atualizado" });
+  res.json({ message: "Atualizado", usuario: { ...db.usuarios[idx], Senha: undefined } });
 });
 
 app.post("/usuarios/updateStatus", (req, res) => {
@@ -164,6 +335,8 @@ app.get("/funcionarios/:id", (req, res) => {
     ...rest,
     statusInfo: db.statusAtividadeGeral.find((s) => s.idStatus === f.StatusAtividadeGeral_idStatus) || null,
     perfil: db.perfilFuncionarios.find((p) => p.idPerfil === f.idPerfilFuncionarios) || null,
+    endereco: db.infoEndereco.find((e) => e.idInfoEnd === f.InfoEndereco_idInfoEnd) || null,
+    banco: db.infoBancario.find((b) => b.IdInfoBancario === f.InfoBancario_IdInfoBancario) || null,
   });
 });
 
@@ -174,19 +347,59 @@ app.post("/funcionarios/login", async (req, res) => {
   if (!f) return res.status(401).json({ message: "Funcionário não encontrado" });
   const ok = await bcrypt.compare(senha, f.SenhaFunc);
   if (!ok) return res.status(401).json({ message: "Senha incorreta" });
-  const { SenhaFunc, ...infoSessao } = f;
+  const { SenhaFunc, ...rest } = f;
+  const infoSessao = {
+    ...rest,
+    endereco: db.infoEndereco.find((e) => e.idInfoEnd === f.InfoEndereco_idInfoEnd) || null,
+    banco: db.infoBancario.find((b) => b.IdInfoBancario === f.InfoBancario_IdInfoBancario) || null,
+  };
   res.json({ message: "sucesso", infoSessao });
 });
 
 app.post("/funcionarios/create", async (req, res) => {
   const db = loadDB();
-  const senhaHash = req.body.SenhaFunc ? await bcrypt.hash(req.body.SenhaFunc, 10) : null;
+  const body = req.body || {};
+  const payloadFunc = body.payloadFuncionario || body;
+  const payloadEndereco = body.payloadEndereco;
+  const payloadBanco = body.payloadBanco;
+
+  let idEndereco = payloadFunc.InfoEndereco_idInfoEnd ?? null;
+  if (isEnderecoPreenchido(payloadEndereco)) {
+    const e = criarEndereco(db, payloadEndereco);
+    idEndereco = e.idInfoEnd;
+  }
+
+  let idBanco = payloadFunc.InfoBancario_IdInfoBancario ?? null;
+  if (isBancoPreenchido(payloadBanco)) {
+    const b = criarBanco(db, payloadBanco);
+    idBanco = b.IdInfoBancario;
+  }
+
+  const senhaHash = payloadFunc.SenhaFunc ? await bcrypt.hash(payloadFunc.SenhaFunc, 10) : null;
+
+  // mapeamento Status/idPerfil — front pode usar 'Status' como alias
+  const statusId =
+    payloadFunc.StatusAtividadeGeral_idStatus ||
+    payloadFunc.Status ||
+    1;
+
+  const {
+    SenhaFunc: _s,
+    Status: _st,
+    StatusAtividadeGeral_idStatus: _st2,
+    InfoEndereco_idInfoEnd: _ie,
+    InfoBancario_IdInfoBancario: _ib,
+    ...rest
+  } = payloadFunc;
+
   const newFunc = {
     idFuncionario: nextId(db.funcionarios, "idFuncionario"),
-    ...req.body,
+    ...rest,
     SenhaFunc: senhaHash,
-    SenhaInicialFunc: 1,
-    StatusAtividadeGeral_idStatus: req.body.StatusAtividadeGeral_idStatus || 1,
+    SenhaInicialFunc: payloadFunc.SenhaInicialFunc ?? 1,
+    StatusAtividadeGeral_idStatus: statusId,
+    InfoEndereco_idInfoEnd: idEndereco,
+    InfoBancario_IdInfoBancario: idBanco,
     created_date: today(),
     update_date: today(),
     deleted_date: null,
@@ -194,17 +407,52 @@ app.post("/funcionarios/create", async (req, res) => {
   db.funcionarios.push(newFunc);
   saveDB(db);
   const { SenhaFunc, ...result } = newFunc;
-  res.status(201).json(result);
+  res.status(201).json({
+    ...result,
+    endereco: db.infoEndereco.find((e) => e.idInfoEnd === idEndereco) || null,
+    banco: db.infoBancario.find((b) => b.IdInfoBancario === idBanco) || null,
+  });
 });
 
 app.post("/funcionarios/update", (req, res) => {
-  const { idFuncionario, ...dados } = req.body;
+  const body = req.body || {};
+  const dados = body.payloadFuncionario || body;
+  const idFuncionario = dados.idFuncionario;
   const db = loadDB();
   const idx = db.funcionarios.findIndex((f) => f.idFuncionario == idFuncionario);
   if (idx === -1) return res.status(404).json({ message: "Funcionário não encontrado" });
-  db.funcionarios[idx] = { ...db.funcionarios[idx], ...dados, update_date: today() };
+
+  if (body.payloadEndereco && isEnderecoPreenchido(body.payloadEndereco)) {
+    if (db.funcionarios[idx].InfoEndereco_idInfoEnd) {
+      atualizarEndereco(db, db.funcionarios[idx].InfoEndereco_idInfoEnd, body.payloadEndereco);
+    } else {
+      const novo = criarEndereco(db, body.payloadEndereco);
+      db.funcionarios[idx].InfoEndereco_idInfoEnd = novo.idInfoEnd;
+    }
+  }
+  if (body.payloadBanco && isBancoPreenchido(body.payloadBanco)) {
+    if (db.funcionarios[idx].InfoBancario_IdInfoBancario) {
+      atualizarBanco(db, db.funcionarios[idx].InfoBancario_IdInfoBancario, body.payloadBanco);
+    } else {
+      const novo = criarBanco(db, body.payloadBanco);
+      db.funcionarios[idx].InfoBancario_IdInfoBancario = novo.IdInfoBancario;
+    }
+  }
+
+  const merge = body.payloadFuncionario ? { ...dados } : { ...body };
+  delete merge.idFuncionario;
+  delete merge.payloadEndereco;
+  delete merge.payloadBanco;
+  delete merge.payloadFuncionario;
+  // alias Status -> StatusAtividadeGeral_idStatus
+  if (merge.Status != null && merge.StatusAtividadeGeral_idStatus == null) {
+    merge.StatusAtividadeGeral_idStatus = merge.Status;
+  }
+  delete merge.Status;
+
+  db.funcionarios[idx] = { ...db.funcionarios[idx], ...merge, update_date: today() };
   saveDB(db);
-  res.json({ message: "Atualizado" });
+  res.json({ message: "Atualizado", funcionario: { ...db.funcionarios[idx], SenhaFunc: undefined } });
 });
 
 app.post("/funcionarios/updateStatus", (req, res) => {
@@ -442,12 +690,24 @@ app.post("/emprestimos/devolver", (req, res) => {
 // ─── VENDAS ───────────────────────────────────────────────────────────────────
 
 function enrichVenda(v, db) {
+  const usuario = (() => {
+    const u = db.usuarios.find((u) => u.idUsuario === v.idUsuario);
+    if (!u) return null;
+    const { Senha, ...r } = u;
+    return {
+      ...r,
+      endereco: db.infoEndereco.find((e) => e.idInfoEnd === u.InfoEndereco) || null,
+      banco: db.infoBancario.find((b) => b.IdInfoBancario === u.InfoBancario) || null,
+    };
+  })();
   return {
     ...v,
     livro: db.livros.find((l) => l.idLivro === v.Livro) || null,
-    usuario: (() => { const u = db.usuarios.find((u) => u.idUsuario === v.idUsuario); if (!u) return null; const { Senha, ...r } = u; return r; })(),
+    usuario,
     funcionario: (() => { const f = db.funcionarios.find((f) => f.idFuncionario === v.FuncionarioResponsavel); if (!f) return null; const { SenhaFunc, ...r } = f; return r; })(),
     status: db.compraStatus.find((s) => s.id === v.CompraStatus) || null,
+    enderecoEntrega: usuario?.endereco || null,
+    formaPagamento: usuario?.banco || null,
   };
 }
 

@@ -1,3 +1,5 @@
+import { InfoBancario, InfoEndereco } from './endereco-banco.model';
+
 export interface UsuariosLogados {
   idUsuario: number;
   Nome: string;
@@ -10,6 +12,8 @@ export interface UsuariosLogados {
   fotoperfil?: string;
   InfoEndereco: number;
   InfoBancario: number;
+  endereco?: InfoEndereco | null;
+  banco?: InfoBancario | null;
   created_at: Date;
   updated_at: Date;
 }

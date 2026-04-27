@@ -45,6 +45,12 @@
         <button [class.active]="activeTab === 'dados'" (click)="changeTab('dados')">
           <i class="pi pi-user"></i> Dados Pessoais
         </button>
+        <button [class.active]="activeTab === 'endereco'" (click)="changeTab('endereco')">
+          <i class="pi pi-map-marker"></i> Endereço
+        </button>
+        <button [class.active]="activeTab === 'banco'" (click)="changeTab('banco')">
+          <i class="pi pi-credit-card"></i> Bancário
+        </button>
         <button [class.active]="activeTab === 'seguranca'" (click)="changeTab('seguranca')">
           <i class="pi pi-lock"></i> Segurança
         </button>
@@ -152,6 +158,131 @@
             </form>
           </div>
         </ng-container>
+
+        <!-- ============ ABA: ENDEREÇO ============ -->
+        <div class="card" *ngIf="activeTab === 'endereco'">
+          <div class="card-header">
+            <div>
+              <h3>Endereço</h3>
+              <small>Endereço de cobrança e entrega de pedidos</small>
+            </div>
+          </div>
+
+          <form [formGroup]="enderecoForm" class="profile-form">
+            <div class="form-row">
+              <div class="form-group" style="max-width: 180px;">
+                <label>CEP</label>
+                <input type="text" formControlName="CEP" placeholder="00000-000">
+              </div>
+              <div class="form-group">
+                <label>Logradouro</label>
+                <input type="text" formControlName="Logradouro" placeholder="Rua / Avenida">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group" style="max-width: 140px;">
+                <label>Número</label>
+                <input type="number" formControlName="Numero">
+              </div>
+              <div class="form-group">
+                <label>Complemento</label>
+                <input type="text" formControlName="Complemento" placeholder="Apto / Bloco">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Bairro</label>
+                <input type="text" formControlName="Bairro">
+              </div>
+              <div class="form-group">
+                <label>Cidade</label>
+                <input type="text" formControlName="Cidade">
+              </div>
+              <div class="form-group" style="max-width: 110px;">
+                <label>UF</label>
+                <select formControlName="Estado">
+                  <option value="">—</option>
+                  <option *ngFor="let uf of estadosBR" [value]="uf">{{ uf }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nacionalidade</label>
+                <input type="text" formControlName="Nacionalidade">
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-save" (click)="saveEndereco()" [disabled]="savingEndereco">
+                <i class="pi pi-save"></i>
+                {{ savingEndereco ? 'Salvando...' : 'Salvar Endereço' }}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- ============ ABA: BANCÁRIO ============ -->
+        <div class="card" *ngIf="activeTab === 'banco'">
+          <div class="card-header">
+            <div>
+              <h3>Dados Bancários</h3>
+              <small>Conta usada para reembolsos e pagamentos. Os dados são armazenados de forma segura.</small>
+            </div>
+          </div>
+
+          <form [formGroup]="bancoForm" class="profile-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Banco</label>
+                <input type="text" formControlName="NomeBanco" placeholder="Banco do Brasil">
+              </div>
+              <div class="form-group" style="max-width: 140px;">
+                <label>Código</label>
+                <input type="number" formControlName="CodigoBanco" placeholder="001">
+              </div>
+              <div class="form-group" style="max-width: 200px;">
+                <label>Tipo de Conta</label>
+                <select formControlName="TipoConta">
+                  <option value="Corrente">Corrente</option>
+                  <option value="Poupança">Poupança</option>
+                  <option value="Salário">Salário</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Agência</label>
+                <input type="number" formControlName="NumeroAgencia">
+              </div>
+              <div class="form-group" style="max-width: 110px;">
+                <label>Dígito</label>
+                <input type="number" formControlName="DigitoAgencia">
+              </div>
+              <div class="form-group">
+                <label>Conta</label>
+                <input type="number" formControlName="NumeroConta">
+              </div>
+              <div class="form-group" style="max-width: 110px;">
+                <label>Dígito</label>
+                <input type="number" formControlName="DigitoConta">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Chave PIX</label>
+                <input type="text" formControlName="CodigosPix" placeholder="email / CPF / chave aleatória">
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-save" (click)="saveBanco()" [disabled]="savingBanco">
+                <i class="pi pi-save"></i>
+                {{ savingBanco ? 'Salvando...' : 'Salvar Conta' }}
+              </button>
+            </div>
+          </form>
+        </div>
 
         <!-- ============ ABA: SEGURANÇA ============ -->
         <div class="card" *ngIf="activeTab === 'seguranca'">

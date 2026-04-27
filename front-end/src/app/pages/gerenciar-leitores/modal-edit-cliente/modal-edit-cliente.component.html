@@ -4,128 +4,222 @@
   <div class="custom-modal-header">
     <div class="title-group">
       <div class="avatar-preview" *ngIf="isEdit">
-        <img
-          [src]="form.get('fotoperfil')?.value || 'assets/img/default-avatar.png'"
-        />
+        <img [src]="pessoalForm.get('fotoperfil')?.value || 'assets/img/default-avatar.png'" />
       </div>
-
       <i class="pi pi-user-plus" *ngIf="!isEdit"></i>
 
       <div>
         <h2>
-          {{
-            isEdit
-              ? form.get("nomeCompleto")?.value || "Editar Usuário"
-              : "Novo Usuário"
-          }}
+          {{ isEdit ? (pessoalForm.get('nomeCompleto')?.value || 'Editar Leitor') : 'Novo Leitor' }}
         </h2>
-        <small>Gerencie as informações do usuário</small>
+        <small>Dados pessoais, endereço, conta bancária e acesso</small>
       </div>
     </div>
 
-    <button
-      pButton
-      icon="pi pi-times"
-      class="p-button-rounded p-button-text"
-      (click)="fechar()"
-    ></button>
+    <button pButton icon="pi pi-times" class="p-button-rounded p-button-text" (click)="fechar()"></button>
   </div>
 
-  <!-- FORM -->
-  <form [formGroup]="form" class="form-container">
+  <!-- STEPS -->
+  <div class="step-tabs">
+    <button [class.active]="activeStep === 'pessoal'"  (click)="setStep('pessoal')">
+      <i class="pi pi-user"></i> Pessoal
+    </button>
+    <button [class.active]="activeStep === 'endereco'" (click)="setStep('endereco')">
+      <i class="pi pi-map-marker"></i> Endereço
+    </button>
+    <button [class.active]="activeStep === 'banco'"    (click)="setStep('banco')">
+      <i class="pi pi-credit-card"></i> Bancário
+    </button>
+    <button [class.active]="activeStep === 'acesso'"   (click)="setStep('acesso')">
+      <i class="pi pi-key"></i> Acesso
+    </button>
+  </div>
 
-    <!-- SEÇÃO: DADOS PESSOAIS -->
-    <div class="section-title">Dados Pessoais</div>
+  <div class="form-container">
 
-    <div class="grid form-grid">
-
-      <div class="col-8">
+    <!-- ─── PESSOAL ─── -->
+    <form *ngIf="activeStep === 'pessoal'" [formGroup]="pessoalForm" class="grid form-grid">
+      <div class="col-12">
         <span class="p-float-label">
-          <input pInputText formControlName="nomeCompleto" [class.ng-invalid]="hasError('nomeCompleto')" />
-          <label>Nome Completo</label>
+          <input pInputText formControlName="nomeCompleto" [class.ng-invalid]="hasError(pessoalForm, 'nomeCompleto')" />
+          <label>Nome Completo *</label>
         </span>
-        <small class="field-error" *ngIf="hasError('nomeCompleto')">{{ errorMessage('nomeCompleto') }}</small>
+        <small class="field-error" *ngIf="hasError(pessoalForm, 'nomeCompleto')">{{ errorMessage(pessoalForm, 'nomeCompleto') }}</small>
       </div>
 
+      <div class="col-6">
+        <span class="p-float-label">
+          <input pInputText formControlName="email" [class.ng-invalid]="hasError(pessoalForm, 'email')" />
+          <label>E-mail *</label>
+        </span>
+        <small class="field-error" *ngIf="hasError(pessoalForm, 'email')">{{ errorMessage(pessoalForm, 'email') }}</small>
+      </div>
+
+      <div class="col-3">
+        <span class="p-float-label">
+          <input pInputText formControlName="telefone" [class.ng-invalid]="hasError(pessoalForm, 'telefone')" />
+          <label>Telefone *</label>
+        </span>
+        <small class="field-error" *ngIf="hasError(pessoalForm, 'telefone')">{{ errorMessage(pessoalForm, 'telefone') }}</small>
+      </div>
+
+      <div class="col-3">
+        <span class="p-float-label">
+          <input pInputText formControlName="cpf" [class.ng-invalid]="hasError(pessoalForm, 'cpf')" />
+          <label>CPF *</label>
+        </span>
+        <small class="field-error" *ngIf="hasError(pessoalForm, 'cpf')">{{ errorMessage(pessoalForm, 'cpf') }}</small>
+      </div>
+
+      <div class="col-12">
+        <span class="p-float-label">
+          <input pInputText formControlName="fotoperfil" />
+          <label>URL da Foto (opcional)</label>
+        </span>
+      </div>
+    </form>
+
+    <!-- ─── ENDEREÇO ─── -->
+    <form *ngIf="activeStep === 'endereco'" [formGroup]="enderecoForm" class="grid form-grid">
+      <div class="col-3">
+        <span class="p-float-label">
+          <input pInputText formControlName="CEP" />
+          <label>CEP</label>
+        </span>
+      </div>
+      <div class="col-9">
+        <span class="p-float-label">
+          <input pInputText formControlName="Logradouro" />
+          <label>Logradouro</label>
+        </span>
+      </div>
+      <div class="col-3">
+        <span class="p-float-label">
+          <input pInputText type="number" formControlName="Numero" />
+          <label>Número</label>
+        </span>
+      </div>
+      <div class="col-9">
+        <span class="p-float-label">
+          <input pInputText formControlName="Complemento" />
+          <label>Complemento</label>
+        </span>
+      </div>
+      <div class="col-5">
+        <span class="p-float-label">
+          <input pInputText formControlName="Bairro" />
+          <label>Bairro</label>
+        </span>
+      </div>
+      <div class="col-5">
+        <span class="p-float-label">
+          <input pInputText formControlName="Cidade" />
+          <label>Cidade</label>
+        </span>
+      </div>
+      <div class="col-2">
+        <span class="p-float-label">
+          <select formControlName="Estado" class="native-select">
+            <option value="">—</option>
+            <option *ngFor="let uf of estadosBR" [value]="uf">{{ uf }}</option>
+          </select>
+          <label>UF</label>
+        </span>
+      </div>
+      <div class="col-12">
+        <span class="p-float-label">
+          <input pInputText formControlName="Nacionalidade" />
+          <label>Nacionalidade</label>
+        </span>
+      </div>
+    </form>
+
+    <!-- ─── BANCO ─── -->
+    <form *ngIf="activeStep === 'banco'" [formGroup]="bancoForm" class="grid form-grid">
+      <div class="col-7">
+        <span class="p-float-label">
+          <input pInputText formControlName="NomeBanco" />
+          <label>Banco</label>
+        </span>
+      </div>
+      <div class="col-2">
+        <span class="p-float-label">
+          <input pInputText type="number" formControlName="CodigoBanco" />
+          <label>Código</label>
+        </span>
+      </div>
+      <div class="col-3">
+        <span class="p-float-label">
+          <select formControlName="TipoConta" class="native-select">
+            <option *ngFor="let t of tiposConta" [value]="t.value">{{ t.label }}</option>
+          </select>
+          <label>Tipo</label>
+        </span>
+      </div>
+      <div class="col-3">
+        <span class="p-float-label">
+          <input pInputText type="number" formControlName="NumeroAgencia" />
+          <label>Agência</label>
+        </span>
+      </div>
+      <div class="col-1">
+        <span class="p-float-label">
+          <input pInputText type="number" formControlName="DigitoAgencia" />
+          <label>Díg</label>
+        </span>
+      </div>
+      <div class="col-3">
+        <span class="p-float-label">
+          <input pInputText type="number" formControlName="NumeroConta" />
+          <label>Conta</label>
+        </span>
+      </div>
+      <div class="col-1">
+        <span class="p-float-label">
+          <input pInputText type="number" formControlName="DigitoConta" />
+          <label>Díg</label>
+        </span>
+      </div>
       <div class="col-4">
+        <span class="p-float-label">
+          <input pInputText formControlName="CodigosPix" />
+          <label>Chave PIX</label>
+        </span>
+      </div>
+    </form>
+
+    <!-- ─── ACESSO ─── -->
+    <form *ngIf="activeStep === 'acesso'" [formGroup]="acessoForm" class="grid form-grid">
+      <div class="col-6">
         <span class="p-float-label">
           <p-dropdown
             [options]="statusOptions"
             formControlName="status"
             optionLabel="label"
             optionValue="value"
+            appendTo="body"
           ></p-dropdown>
           <label>Status</label>
         </span>
       </div>
 
-      <div class="col-6">
-        <span class="p-float-label">
-          <input pInputText formControlName="email" [class.ng-invalid]="hasError('email')" />
-          <label>Email</label>
-        </span>
-        <small class="field-error" *ngIf="hasError('email')">{{ errorMessage('email') }}</small>
-      </div>
-
-      <div class="col-3">
-        <span class="p-float-label">
-          <input pInputText formControlName="telefone" [class.ng-invalid]="hasError('telefone')" />
-          <label>Telefone</label>
-        </span>
-        <small class="field-error" *ngIf="hasError('telefone')">{{ errorMessage('telefone') }}</small>
-      </div>
-
-      <div class="col-3">
-        <span class="p-float-label">
-          <input pInputText formControlName="cpf" [class.ng-invalid]="hasError('cpf')" />
-          <label>CPF</label>
-        </span>
-        <small class="field-error" *ngIf="hasError('cpf')">{{ errorMessage('cpf') }}</small>
-      </div>
-
-    </div>
-
-    <!-- SEÇÃO: SEGURANÇA -->
-    <div class="section-title" *ngIf="!isEdit">Segurança</div>
-
-    <div class="grid form-grid" *ngIf="!isEdit">
-
-      <div class="col-6">
+      <div class="col-6" *ngIf="!isEdit">
         <span class="p-float-label">
           <p-password formControlName="senha" [toggleMask]="true" [feedback]="false" styleClass="w-full"></p-password>
-          <label>Senha</label>
+          <label>Senha *</label>
         </span>
-        <small class="field-error" *ngIf="hasError('senha')">{{ errorMessage('senha') }}</small>
+        <small class="field-error" *ngIf="hasError(acessoForm, 'senha')">{{ errorMessage(acessoForm, 'senha') }}</small>
       </div>
 
-      <div class="col-6 checkbox-box">
-        <p-checkbox
-          formControlName="senhaInicial"
-          [binary]="true"
-          label="Forçar troca no primeiro login"
-        ></p-checkbox>
+      <div class="col-12 checkbox-box" *ngIf="!isEdit">
+        <p-checkbox formControlName="senhaInicial" [binary]="true" label="Forçar troca no primeiro login"></p-checkbox>
       </div>
-
-    </div>
-
-  </form>
+    </form>
+  </div>
 
   <!-- FOOTER -->
   <div class="dialog-footer">
-    <button
-      pButton
-      label="Cancelar"
-      class="p-button-text"
-      (click)="fechar()"
-    ></button>
-
-    <button
-      pButton
-      label="Salvar"
-      icon="pi pi-save"
-      (click)="salvar()"
-      [loading]="loading"
-    ></button>
+    <button pButton label="Cancelar" class="p-button-text" (click)="fechar()"></button>
+    <button pButton label="Salvar" icon="pi pi-save" (click)="salvar()" [loading]="loading"></button>
   </div>
-
 </div>

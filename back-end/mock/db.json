@@ -229,37 +229,61 @@
       "id": 1,
       "NomeAutor": "Machado de Assis",
       "SobreAutor": "Escritor brasileiro, fundador da Academia Brasileira de Letras.",
-      "PalavrasChave": ["realismo", "literatura brasileira", "romance"]
+      "PalavrasChave": [
+        "realismo",
+        "literatura brasileira",
+        "romance"
+      ]
     },
     {
       "id": 2,
       "NomeAutor": "Clarice Lispector",
       "SobreAutor": "Escritora e jornalista brasileira, considerada a maior escritora brasileira do século XX.",
-      "PalavrasChave": ["modernismo", "introspecção", "conto"]
+      "PalavrasChave": [
+        "modernismo",
+        "introspecção",
+        "conto"
+      ]
     },
     {
       "id": 3,
       "NomeAutor": "J.K. Rowling",
       "SobreAutor": "Escritora britânica, autora da série Harry Potter.",
-      "PalavrasChave": ["fantasia", "magia", "jovem adulto"]
+      "PalavrasChave": [
+        "fantasia",
+        "magia",
+        "jovem adulto"
+      ]
     },
     {
       "id": 4,
       "NomeAutor": "George Orwell",
       "SobreAutor": "Escritor britânico, autor de clássicos da distopia política.",
-      "PalavrasChave": ["distopia", "política", "ficção"]
+      "PalavrasChave": [
+        "distopia",
+        "política",
+        "ficção"
+      ]
     },
     {
       "id": 5,
       "NomeAutor": "Jorge Amado",
       "SobreAutor": "Escritor brasileiro baiano, um dos maiores autores da literatura nacional.",
-      "PalavrasChave": ["regionalismo", "bahia", "romance"]
+      "PalavrasChave": [
+        "regionalismo",
+        "bahia",
+        "romance"
+      ]
     },
     {
       "id": 6,
       "NomeAutor": "Paulo Coelho",
       "SobreAutor": "Romancista brasileiro, um dos autores mais lidos do mundo.",
-      "PalavrasChave": ["espiritualidade", "fábula", "best-seller"]
+      "PalavrasChave": [
+        "espiritualidade",
+        "fábula",
+        "best-seller"
+      ]
     }
   ],
   "funcionarios": [
@@ -332,6 +356,22 @@
       "created_at": "2024-02-01",
       "updated_at": "2026-04-24",
       "deleted_at": null
+    },
+    {
+      "idUsuario": 3,
+      "Nome": "Teste",
+      "CPF": "987987989879789798",
+      "Telefone": "606006600666",
+      "Email": "a@gmail.com",
+      "Senha": "opa123",
+      "SenhaInicial": 1,
+      "Status": 1,
+      "fotoperfil": null,
+      "InfoEndereco": 1,
+      "InfoBancario": 1,
+      "created_at": "2026-04-27",
+      "updated_at": "2026-04-27",
+      "deleted_at": "2026-04-27"
     }
   ],
   "livros": [
@@ -348,7 +388,11 @@
       "PathDownload": null,
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535902778-L.jpg",
       "Ano": 1899,
-      "PalavrasChave": ["romance", "realismo", "ciúme"],
+      "PalavrasChave": [
+        "romance",
+        "realismo",
+        "ciúme"
+      ],
       "Descricao": "Clássico da literatura brasileira de Machado de Assis.",
       "created_at": "2024-01-01",
       "updated_at": "2024-01-01",
@@ -367,7 +411,11 @@
       "PathDownload": "/downloads/hora-da-estrela.pdf",
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535903508-L.jpg",
       "Ano": 1977,
-      "PalavrasChave": ["existencialismo", "nordeste", "modernismo"],
+      "PalavrasChave": [
+        "existencialismo",
+        "nordeste",
+        "modernismo"
+      ],
       "Descricao": "Obra-prima de Clarice Lispector.",
       "created_at": "2024-01-05",
       "updated_at": "2024-01-05",
@@ -386,7 +434,11 @@
       "PathDownload": "/downloads/hp1.pdf",
       "Capa": "https://covers.openlibrary.org/b/isbn/9788532512079-L.jpg",
       "Ano": 1997,
-      "PalavrasChave": ["fantasia", "magia", "aventura"],
+      "PalavrasChave": [
+        "fantasia",
+        "magia",
+        "aventura"
+      ],
       "Descricao": "Primeiro livro da série Harry Potter.",
       "created_at": "2024-01-10",
       "updated_at": "2024-01-10",
@@ -405,7 +457,11 @@
       "PathDownload": null,
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535900019-L.jpg",
       "Ano": 1881,
-      "PalavrasChave": ["romance", "realismo", "ironia"],
+      "PalavrasChave": [
+        "romance",
+        "realismo",
+        "ironia"
+      ],
       "Descricao": "Narrado por um defunto, obra inovadora de Machado de Assis.",
       "created_at": "2024-02-01",
       "updated_at": "2024-02-01",
@@ -424,7 +480,10 @@
       "PathDownload": "/downloads/perto-coracao-selvagem.pdf",
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535905021-L.jpg",
       "Ano": 1943,
-      "PalavrasChave": ["modernismo", "stream of consciousness"],
+      "PalavrasChave": [
+        "modernismo",
+        "stream of consciousness"
+      ],
       "Descricao": "Primeiro romance de Clarice Lispector.",
       "created_at": "2024-02-15",
       "updated_at": "2024-02-15",
@@ -443,7 +502,11 @@
       "PathDownload": "/downloads/1984.pdf",
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535914849-L.jpg",
       "Ano": 1949,
-      "PalavrasChave": ["distopia", "totalitarismo", "vigilância"],
+      "PalavrasChave": [
+        "distopia",
+        "totalitarismo",
+        "vigilância"
+      ],
       "Descricao": "Romance distópico que retrata um regime totalitário de vigilância absoluta.",
       "created_at": "2024-03-01",
       "updated_at": "2024-03-01",
@@ -462,7 +525,11 @@
       "PathDownload": null,
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535909555-L.jpg",
       "Ano": 1945,
-      "PalavrasChave": ["fábula", "política", "sátira"],
+      "PalavrasChave": [
+        "fábula",
+        "política",
+        "sátira"
+      ],
       "Descricao": "Fábula política que satiriza os regimes autoritários.",
       "created_at": "2024-03-05",
       "updated_at": "2024-03-05",
@@ -481,7 +548,11 @@
       "PathDownload": "/downloads/capitaes-areia.pdf",
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535901153-L.jpg",
       "Ano": 1937,
-      "PalavrasChave": ["regionalismo", "bahia", "infância"],
+      "PalavrasChave": [
+        "regionalismo",
+        "bahia",
+        "infância"
+      ],
       "Descricao": "Retrato pungente de meninos de rua em Salvador.",
       "created_at": "2024-03-10",
       "updated_at": "2024-03-10",
@@ -500,7 +571,11 @@
       "PathDownload": null,
       "Capa": "https://covers.openlibrary.org/b/isbn/9788535900033-L.jpg",
       "Ano": 1958,
-      "PalavrasChave": ["romance", "bahia", "sensualidade"],
+      "PalavrasChave": [
+        "romance",
+        "bahia",
+        "sensualidade"
+      ],
       "Descricao": "Romance clássico ambientado em Ilhéus, interior da Bahia.",
       "created_at": "2024-03-12",
       "updated_at": "2024-03-12",
@@ -519,7 +594,11 @@
       "PathDownload": "/downloads/alquimista.pdf",
       "Capa": "https://covers.openlibrary.org/b/isbn/9788532526014-L.jpg",
       "Ano": 1988,
-      "PalavrasChave": ["fábula", "autoconhecimento", "viagem"],
+      "PalavrasChave": [
+        "fábula",
+        "autoconhecimento",
+        "viagem"
+      ],
       "Descricao": "Jornada de Santiago em busca de seu tesouro pessoal.",
       "created_at": "2024-03-15",
       "updated_at": "2024-03-15",
@@ -538,7 +617,11 @@
       "PathDownload": "/downloads/hp2.pdf",
       "Capa": "https://covers.openlibrary.org/b/isbn/9788532512086-L.jpg",
       "Ano": 1998,
-      "PalavrasChave": ["fantasia", "magia", "mistério"],
+      "PalavrasChave": [
+        "fantasia",
+        "magia",
+        "mistério"
+      ],
       "Descricao": "Segundo livro da série Harry Potter.",
       "created_at": "2024-03-18",
       "updated_at": "2024-03-18",

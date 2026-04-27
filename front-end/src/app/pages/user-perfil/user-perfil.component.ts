@@ -5,7 +5,7 @@ import { ClientesService } from 'src/app/services/Clientes.service';
 import { FuncionariosService } from 'src/app/services/Funcionarios.service';
 import { AlertService } from 'src/app/utils/toast-alert-service.service';
 
-type TabName = 'dados' | 'seguranca' | 'preferencias' | 'atividade';
+type TabName = 'dados' | 'endereco' | 'banco' | 'seguranca' | 'preferencias' | 'atividade';
 
 interface ViewUser {
   id: number;
@@ -55,6 +55,33 @@ export class UserPerfilComponent implements OnInit {
     confirmacao: new FormControl('', [Validators.required]),
   });
 
+  enderecoForm = new FormGroup({
+    CEP:           new FormControl(''),
+    Logradouro:    new FormControl(''),
+    Numero:        new FormControl<number | null>(null),
+    Bairro:        new FormControl(''),
+    Cidade:        new FormControl(''),
+    Estado:        new FormControl(''),
+    Nacionalidade: new FormControl('Brasileira'),
+    Complemento:   new FormControl(''),
+  });
+
+  bancoForm = new FormGroup({
+    NomeBanco:     new FormControl(''),
+    CodigoBanco:   new FormControl<number | null>(null),
+    TipoConta:     new FormControl('Corrente'),
+    NumeroAgencia: new FormControl<number | null>(null),
+    DigitoAgencia: new FormControl<number | null>(null),
+    NumeroConta:   new FormControl<number | null>(null),
+    DigitoConta:   new FormControl<number | null>(null),
+    CodigosPix:    new FormControl(''),
+  });
+
+  estadosBR = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+
+  savingEndereco = false;
+  savingBanco = false;
+
   preferencias = {
     notificacoesEmail: true,
     notificacoesWpp: false,
@@ -102,6 +129,82 @@ export class UserPerfilComponent implements OnInit {
         multasPendentes: 0,
       };
     }
+
+    // pré-preenche endereço e banco se a sessão trouxer
+    const end = this.sessionRaw?.endereco;
+    if (end) {
+      this.enderecoForm.patchValue({
+        CEP: end.CEP, Logradouro: end.Logradouro, Numero: end.Numero,
+        Bairro: end.Bairro, Cidade: end.Cidade, Estado: end.Estado,
+        Nacionalidade: end.Nacionalidade || 'Brasileira',
+        Complemento: end.Complemento || '',
+      });
+    }
+    const bk = this.sessionRaw?.banco;
+    if (bk) {
+      this.bancoForm.patchValue({
+        NomeBanco: bk.NomeBanco, CodigoBanco: bk.CodigoBanco,
+        TipoConta: bk.TipoConta, NumeroAgencia: bk.NumeroAgencia,
+        DigitoAgencia: bk.DigitoAgencia, NumeroConta: bk.NumeroConta,
+        DigitoConta: bk.DigitoConta, CodigosPix: bk.CodigosPix || '',
+      });
+    }
+  }
+
+  async saveEndereco(): Promise<void> {
+    const ok = await this.alert.confirm('Salvar endereço', 'Confirmar atualização do endereço?');
+    if (!ok) return;
+    const payloadEndereco = this.enderecoForm.getRawValue();
+    this.savingEndereco = true;
+
+    const req$ = this.user.isFuncionario
+      ? this.funcionarioService.UpdateFuncionario({
+          payloadFuncionario: { idFuncionario: this.user.id } as any,
+          payloadEndereco,
+        } as any)
+      : this.clienteService.UpdateUsuario({
+          payloadUser: { idUsuario: this.user.id } as any,
+          payloadEndereco,
+        } as any);
+
+    req$.subscribe({
+      next: () => {
+        this.savingEndereco = false;
+        const updated = { ...this.sessionRaw, endereco: { ...this.sessionRaw?.endereco, ...payloadEndereco } };
+        this.auth.setSession(updated);
+        this.sessionRaw = updated;
+        this.alert.toastSuccess('Endereço atualizado');
+      },
+      error: () => { this.savingEndereco = false; this.alert.error('Erro', 'Falha ao salvar endereço'); },
+    });
+  }
+
+  async saveBanco(): Promise<void> {
+    const ok = await this.alert.confirm('Salvar dados bancários', 'Confirmar atualização da conta?');
+    if (!ok) return;
+    const payloadBanco = this.bancoForm.getRawValue();
+    this.savingBanco = true;
+
+    const req$ = this.user.isFuncionario
+      ? this.funcionarioService.UpdateFuncionario({
+          payloadFuncionario: { idFuncionario: this.user.id } as any,
+          payloadBanco,
+        } as any)
+      : this.clienteService.UpdateUsuario({
+          payloadUser: { idUsuario: this.user.id } as any,
+          payloadBanco,
+        } as any);
+
+    req$.subscribe({
+      next: () => {
+        this.savingBanco = false;
+        const updated = { ...this.sessionRaw, banco: { ...this.sessionRaw?.banco, ...payloadBanco } };
+        this.auth.setSession(updated);
+        this.sessionRaw = updated;
+        this.alert.toastSuccess('Dados bancários atualizados');
+      },
+      error: () => { this.savingBanco = false; this.alert.error('Erro', 'Falha ao salvar dados bancários'); },
+    });
   }
 
   // ─── Mapping ──────────────────────────────────────────────────────

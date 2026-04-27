@@ -30,7 +30,11 @@ export class ClientesService {
     return this.api.post<any>(`${this.ROOT}/login`, data);
   }
 
-  UpdateUsuario(data: Partial<UsuariosLogados> & { idUsuario: number }): Observable<any> {
+  UpdateUsuario(
+    data:
+      | (Partial<UsuariosLogados> & { idUsuario: number })
+      | { payloadUser: Partial<UsuariosLogados> & { idUsuario: number }; payloadEndereco?: any; payloadBanco?: any }
+  ): Observable<any> {
     return this.api.post<any>(`${this.ROOT}/updateUser`, data);
   }
 

@@ -69,10 +69,63 @@
 }
 
 .col-12 { width: 100%; }
+.col-9 { width: 75%; }
 .col-8 { width: 66.6667%; }
+.col-7 { width: 58.3333%; }
 .col-6 { width: 50%; }
+.col-5 { width: 41.6667%; }
 .col-4 { width: 33.3333%; }
 .col-3 { width: 25%; }
+.col-2 { width: 16.6667%; }
+.col-1 { width: 8.3333%; }
+
+/* STEP TABS */
+.step-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 12px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+
+  button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 12px 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.18s;
+
+    i { font-size: 14px; }
+    &:hover { color: #1e293b; }
+    &.active {
+      color: #047857;
+      border-bottom-color: #10b981;
+      background: #fff;
+    }
+  }
+}
+
+.native-select {
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.9rem;
+  &:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  }
+}
 
 /* INPUTS */
 .p-float-label {
@@ -133,10 +186,9 @@
 
 /* RESPONSIVO */
 @media (max-width: 768px) {
-  .col-8,
-  .col-6,
-  .col-4,
-  .col-3 {
+  .col-9, .col-8, .col-7,
+  .col-6, .col-5, .col-4,
+  .col-3, .col-2, .col-1 {
     width: 100%;
   }
 }

@@ -26,7 +26,11 @@ export class FuncionariosService {
     return this.api.post<any>(`${this.ROOT}/login`, data);
   }
 
-  UpdateFuncionario(data: Partial<FuncionariosLogados> & { idFuncionario: number }): Observable<any> {
+  UpdateFuncionario(
+    data:
+      | (Partial<FuncionariosLogados> & { idFuncionario: number })
+      | { payloadFuncionario: Partial<FuncionariosLogados> & { idFuncionario: number }; payloadEndereco?: any; payloadBanco?: any }
+  ): Observable<any> {
     return this.api.post<any>(`${this.ROOT}/update`, data);
   }
 

@@ -1,3 +1,4 @@
+import { AuthService } from './../../services/auth.service';
 import { ThisReceiver } from '@angular/compiler';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
@@ -13,6 +14,7 @@ export class ComponenteTitleComponent implements OnInit {
 
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private AuthService = inject(AuthService);
   userNome: string = 'ra';
   urlAtiva: string = '';
 

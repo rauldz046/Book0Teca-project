@@ -122,6 +122,36 @@
         <p>{{ dadosUsuario?.Telefone || '—' }}</p>
       </div>
     </div>
+
+    <h4 class="mt-4 mb-2">Endereço de entrega</h4>
+    <div class="dados-grid" *ngIf="dadosUsuario?.endereco; else semEnd">
+      <div class="campo">
+        <label>Logradouro</label>
+        <p>{{ dadosUsuario?.endereco?.Logradouro }}, {{ dadosUsuario?.endereco?.Numero }}</p>
+      </div>
+      <div class="campo">
+        <label>Bairro</label>
+        <p>{{ dadosUsuario?.endereco?.Bairro || '—' }}</p>
+      </div>
+      <div class="campo">
+        <label>Cidade/UF</label>
+        <p>{{ dadosUsuario?.endereco?.Cidade }}/{{ dadosUsuario?.endereco?.Estado }}</p>
+      </div>
+      <div class="campo">
+        <label>CEP</label>
+        <p>{{ dadosUsuario?.endereco?.CEP || '—' }}</p>
+      </div>
+      <div class="campo" *ngIf="dadosUsuario?.endereco?.Complemento">
+        <label>Complemento</label>
+        <p>{{ dadosUsuario?.endereco?.Complemento }}</p>
+      </div>
+    </div>
+    <ng-template #semEnd>
+      <p class="text-color-secondary"><i class="pi pi-info-circle"></i>
+        Você ainda não tem um endereço cadastrado. <a routerLink="/config/perfil">Cadastre aqui</a>.
+      </p>
+    </ng-template>
+
     <div class="step-buttons">
       <button pButton label="Voltar" icon="pi pi-arrow-left" class="p-button-text"
               (click)="prevStep()"></button>
@@ -186,6 +216,14 @@
       <div class="nf-linha">
         <span>Pagamento</span>
         <span>{{ metodoPagamentoSelecionado }}</span>
+      </div>
+      <div class="nf-linha" *ngIf="dadosUsuario?.endereco">
+        <span>Entrega</span>
+        <span>{{ dadosUsuario?.endereco?.Logradouro }}, {{ dadosUsuario?.endereco?.Numero }} - {{ dadosUsuario?.endereco?.Cidade }}/{{ dadosUsuario?.endereco?.Estado }}</span>
+      </div>
+      <div class="nf-linha" *ngIf="metodoPagamentoSelecionado === 'PIX' && dadosUsuario?.banco?.CodigosPix">
+        <span>PIX</span>
+        <span>{{ dadosUsuario?.banco?.CodigosPix }}</span>
       </div>
       <p-divider></p-divider>
       <div class="nf-linha total">

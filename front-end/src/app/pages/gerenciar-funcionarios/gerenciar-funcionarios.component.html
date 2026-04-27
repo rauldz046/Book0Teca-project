@@ -14,12 +14,12 @@
   <div class="search-container mb-4">
     <div class="p-input-icon-left w-full">
       <i class="pi pi-search"></i>
-      <input type="text" pInputText placeholder="Buscar por nome ou matrícula..."
+      <input type="text" pInputText placeholder="Buscar por nome, matrícula ou e-mail..."
              [(ngModel)]="filtroTexto" (input)="aplicarFiltro()" class="w-full">
     </div>
   </div>
 
-  <!-- Tabela Profissional -->
+  <!-- Tabela -->
   <div class="card-table">
     <table>
       <thead>
@@ -27,7 +27,7 @@
           <th>Funcionário</th>
           <th>Matrícula</th>
           <th>CPF</th>
-          <th>Região</th>
+          <th>Cidade/UF</th>
           <th>Perfil</th>
           <th>Status</th>
           <th class="text-right">Ações</th>
@@ -46,18 +46,18 @@
           </td>
           <td><code>{{ func.MatriculaFunc }}</code></td>
           <td>{{ func.CPFFunc }}</td>
-          <td><span class="region-badge">{{ func.RegiaoFunc }}</span></td>
+          <td><span class="region-badge">{{ getCidadeUF(func) }}</span></td>
           <td>{{ getPerfilLabel(func.idPerfilFuncionarios) }}</td>
           <td>
-            <span class="badge" [ngClass]="func.Status === 1 ? 'active' : 'inactive'">
-              {{ func.Status === 1 ? 'Ativo' : 'Inativo' }}
+            <span class="badge" [ngClass]="(func.StatusAtividadeGeral_idStatus ?? func.Status) === 1 ? 'active' : 'inactive'">
+              {{ getStatusLabel(func.StatusAtividadeGeral_idStatus ?? func.Status) }}
             </span>
           </td>
           <td class="text-right actions">
             <button class="btn btn-edit" (click)="abrirModal(func)" title="Editar">
               <i class="pi pi-pencil"></i>
             </button>
-            <button class="btn btn-delete" (click)="excluir(func.id!)" title="Excluir">
+            <button class="btn btn-delete" (click)="excluir(func.id ?? func.idFuncionario!)" title="Excluir">
               <i class="pi pi-trash"></i>
             </button>
           </td>
@@ -65,8 +65,7 @@
       </tbody>
     </table>
 
-    <!-- Estado Vazio -->
-    <div *ngIf="funcionariosFiltrados.length === 0" class="empty-state">
+    <div *ngIf="funcionariosFiltrados.length === 0 && !loading" class="empty-state">
       <i class="pi pi-inbox"></i>
       <p>Nenhum funcionário encontrado.</p>
     </div>
@@ -75,88 +74,167 @@
 
 <!-- MODAL -->
 <div class="modal-overlay" *ngIf="isModalOpen" (click)="fecharModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
+  <div class="modal-content wide" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <div>
-        <h3>{{ isEditMode ? 'Editar Funcionário' : 'Novo Cadastro' }}</h3>
-        <small class="text-muted">Preencha as informações do colaborador</small>
+        <h3>{{ isEditMode ? 'Editar Funcionário' : 'Cadastro de Funcionário' }}</h3>
+        <small class="text-muted">Preencha os dados pessoais, endereço, conta bancária e acesso ao sistema</small>
       </div>
       <button class="close-btn" (click)="fecharModal()">&times;</button>
     </div>
 
-    <form [formGroup]="form" class="modal-body">
-      <div class="section-title">Dados Pessoais</div>
+    <!-- STEPS -->
+    <div class="step-tabs">
+      <button [class.active]="activeStep === 'pessoal'"  (click)="setStep('pessoal')">
+        <i class="pi pi-user"></i> Pessoal
+      </button>
+      <button [class.active]="activeStep === 'endereco'" (click)="setStep('endereco')">
+        <i class="pi pi-map-marker"></i> Endereço
+      </button>
+      <button [class.active]="activeStep === 'banco'"    (click)="setStep('banco')">
+        <i class="pi pi-credit-card"></i> Bancário
+      </button>
+      <button [class.active]="activeStep === 'acesso'"   (click)="setStep('acesso')">
+        <i class="pi pi-key"></i> Acesso
+      </button>
+    </div>
 
-      <div class="form-grid">
+    <div class="modal-body">
+
+      <!-- ─── PESSOAL ─── -->
+      <form *ngIf="activeStep === 'pessoal'" [formGroup]="pessoalForm" class="form-grid">
         <div class="form-group">
           <label>Matrícula *</label>
-          <input type="text" formControlName="MatriculaFunc" placeholder="Ex: FUNC001"
-                 [class.input-invalid]="hasError('MatriculaFunc')">
-          <small class="field-error" *ngIf="hasError('MatriculaFunc')">{{ errorMessage('MatriculaFunc') }}</small>
+          <input type="text" formControlName="MatriculaFunc" placeholder="FUNC001"
+                 [class.input-invalid]="hasError(pessoalForm, 'MatriculaFunc')">
+          <small class="field-error" *ngIf="hasError(pessoalForm, 'MatriculaFunc')">{{ errorMessage(pessoalForm, 'MatriculaFunc') }}</small>
         </div>
-
-        <div class="form-group">
+        <div class="form-group full">
           <label>Nome Completo *</label>
           <input type="text" formControlName="NomeFunc" placeholder="Nome do funcionário"
-                 [class.input-invalid]="hasError('NomeFunc')">
-          <small class="field-error" *ngIf="hasError('NomeFunc')">{{ errorMessage('NomeFunc') }}</small>
+                 [class.input-invalid]="hasError(pessoalForm, 'NomeFunc')">
+          <small class="field-error" *ngIf="hasError(pessoalForm, 'NomeFunc')">{{ errorMessage(pessoalForm, 'NomeFunc') }}</small>
         </div>
-
         <div class="form-group">
           <label>CPF *</label>
           <input type="text" formControlName="CPFFunc" placeholder="000.000.000-00"
-                 [class.input-invalid]="hasError('CPFFunc')">
-          <small class="field-error" *ngIf="hasError('CPFFunc')">{{ errorMessage('CPFFunc') }}</small>
+                 [class.input-invalid]="hasError(pessoalForm, 'CPFFunc')">
+          <small class="field-error" *ngIf="hasError(pessoalForm, 'CPFFunc')">{{ errorMessage(pessoalForm, 'CPFFunc') }}</small>
         </div>
-
         <div class="form-group">
           <label>E-mail Corporativo *</label>
-          <input type="email" formControlName="EmailFunc" placeholder="email@empresa.com"
-                 [class.input-invalid]="hasError('EmailFunc')">
-          <small class="field-error" *ngIf="hasError('EmailFunc')">{{ errorMessage('EmailFunc') }}</small>
+          <input type="email" formControlName="EmailFunc" placeholder="email@bookoteca.com"
+                 [class.input-invalid]="hasError(pessoalForm, 'EmailFunc')">
+          <small class="field-error" *ngIf="hasError(pessoalForm, 'EmailFunc')">{{ errorMessage(pessoalForm, 'EmailFunc') }}</small>
         </div>
-
         <div class="form-group">
           <label>Região (UF) *</label>
-          <input type="text" maxlength="2" formControlName="RegiaoFunc" placeholder="Ex: MG"
-                 [class.input-invalid]="hasError('RegiaoFunc')">
-          <small class="field-error" *ngIf="hasError('RegiaoFunc')">{{ errorMessage('RegiaoFunc') }}</small>
+          <input type="text" maxlength="2" formControlName="RegiaoFunc" placeholder="SP"
+                 [class.input-invalid]="hasError(pessoalForm, 'RegiaoFunc')">
+          <small class="field-error" *ngIf="hasError(pessoalForm, 'RegiaoFunc')">{{ errorMessage(pessoalForm, 'RegiaoFunc') }}</small>
         </div>
+      </form>
 
+      <!-- ─── ENDEREÇO ─── -->
+      <form *ngIf="activeStep === 'endereco'" [formGroup]="enderecoForm" class="form-grid">
+        <div class="form-group">
+          <label>CEP</label>
+          <input type="text" formControlName="CEP" placeholder="00000-000">
+        </div>
+        <div class="form-group full">
+          <label>Logradouro</label>
+          <input type="text" formControlName="Logradouro" placeholder="Rua das Flores">
+        </div>
+        <div class="form-group">
+          <label>Número</label>
+          <input type="number" formControlName="Numero" placeholder="100">
+        </div>
+        <div class="form-group">
+          <label>Complemento</label>
+          <input type="text" formControlName="Complemento" placeholder="Apto 10">
+        </div>
+        <div class="form-group">
+          <label>Bairro</label>
+          <input type="text" formControlName="Bairro" placeholder="Centro">
+        </div>
+        <div class="form-group">
+          <label>Cidade</label>
+          <input type="text" formControlName="Cidade" placeholder="São Paulo">
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select formControlName="Estado">
+            <option value="">—</option>
+            <option *ngFor="let uf of estadosBR" [value]="uf">{{ uf }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nacionalidade</label>
+          <input type="text" formControlName="Nacionalidade" placeholder="Brasileira">
+        </div>
+      </form>
+
+      <!-- ─── BANCO ─── -->
+      <form *ngIf="activeStep === 'banco'" [formGroup]="bancoForm" class="form-grid">
+        <div class="form-group">
+          <label>Banco</label>
+          <input type="text" formControlName="NomeBanco" placeholder="Banco do Brasil">
+        </div>
+        <div class="form-group">
+          <label>Código</label>
+          <input type="number" formControlName="CodigoBanco" placeholder="001">
+        </div>
+        <div class="form-group">
+          <label>Tipo de Conta</label>
+          <select formControlName="TipoConta">
+            <option *ngFor="let t of tiposConta" [value]="t.value">{{ t.label }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Agência</label>
+          <input type="number" formControlName="NumeroAgencia" placeholder="1234">
+        </div>
+        <div class="form-group">
+          <label>Dígito Agência</label>
+          <input type="number" formControlName="DigitoAgencia" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label>Conta</label>
+          <input type="number" formControlName="NumeroConta" placeholder="98765">
+        </div>
+        <div class="form-group">
+          <label>Dígito Conta</label>
+          <input type="number" formControlName="DigitoConta" placeholder="0">
+        </div>
+        <div class="form-group full">
+          <label>Chave PIX</label>
+          <input type="text" formControlName="CodigosPix" placeholder="email@dominio.com / CPF / aleatória">
+        </div>
+      </form>
+
+      <!-- ─── ACESSO ─── -->
+      <form *ngIf="activeStep === 'acesso'" [formGroup]="acessoForm" class="form-grid">
         <div class="form-group">
           <label>Perfil de Acesso *</label>
           <select formControlName="idPerfilFuncionarios">
             <option *ngFor="let p of perfisDisponiveis" [value]="p.value">{{ p.label }}</option>
           </select>
         </div>
-
         <div class="form-group">
           <label>Status *</label>
           <select formControlName="Status">
             <option *ngFor="let s of statusOptions" [ngValue]="s.value">{{ s.label }}</option>
           </select>
         </div>
-
-        <div class="form-group" *ngIf="!isEditMode">
+        <div class="form-group full" *ngIf="!isEditMode">
           <label>Senha Inicial *</label>
-          <input type="password" formControlName="SenhaFunc" placeholder="********"
-                 [class.input-invalid]="hasError('SenhaFunc')">
-          <small class="field-error" *ngIf="hasError('SenhaFunc')">{{ errorMessage('SenhaFunc') }}</small>
+          <input type="password" formControlName="SenhaFunc" placeholder="Mínimo 4 caracteres"
+                 [class.input-invalid]="hasError(acessoForm, 'SenhaFunc')">
+          <small class="field-error" *ngIf="hasError(acessoForm, 'SenhaFunc')">{{ errorMessage(acessoForm, 'SenhaFunc') }}</small>
+          <small class="hint">O funcionário será solicitado a trocar essa senha no primeiro acesso.</small>
         </div>
-      </div>
-
-      <div class="section-title mt-4">Informações Complementares</div>
-      <div class="form-grid mt-2">
-        <div class="form-group">
-          <label>ID Info Bancária</label>
-          <input type="number" formControlName="InfoBancario_IdInfoBancario">
-        </div>
-        <div class="form-group">
-          <label>ID Endereço</label>
-          <input type="number" formControlName="InfoEndereco_idInfoEnd">
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
 
     <div class="modal-footer">
       <button class="btn btn-secondary" (click)="fecharModal()">Cancelar</button>
