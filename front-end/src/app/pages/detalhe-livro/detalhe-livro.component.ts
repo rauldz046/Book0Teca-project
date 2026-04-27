@@ -45,6 +45,10 @@ export class DetalheLivroComponent implements OnInit {
   loadingCompra = false;
   vendaConfirmada: any = null;
 
+  // TC-COMP-06: quantidade selecionada na compra (default 1).
+  // O template prende min=1 e max=QtdLivros (físico) via p-inputNumber.
+  quantidade: number = 1;
+
   // ── Empréstimo ───────────────────────────────────────────
   dialogEmprestimo = false;
   livroDisponivel = false;
@@ -125,6 +129,7 @@ export class DetalheLivroComponent implements OnInit {
     this.activeStep = 0;
     this.metodoPagamentoSelecionado = '';
     this.vendaConfirmada = null;
+    this.quantidade = 1;
     this.hoje = new Date();
     this.dialogCompra = true;
   }
@@ -132,20 +137,60 @@ export class DetalheLivroComponent implements OnInit {
   nextStep(): void { this.activeStep++; }
   prevStep(): void { this.activeStep--; }
 
+  /**
+   * TC-COMP-06: validação client-side de quantidade.
+   * Retorna mensagem de erro ou null se válida.
+   */
+  private validarQuantidade(): string | null {
+    if (!this.livro) return 'Livro não carregado';
+    if (!Number.isInteger(this.quantidade) || this.quantidade < 1) {
+      return 'A quantidade deve ser pelo menos 1';
+    }
+    if (this.livro.LivroFisico) {
+      const estoque = this.livro.QtdLivros ?? 0;
+      if (this.quantidade > estoque) {
+        return `Quantidade (${this.quantidade}) excede o estoque (${estoque})`;
+      }
+    }
+    return null;
+  }
+
+  /** TC-COMP-04 / TC-COMP-06: total a pagar no template (preço × quantidade). */
+  get totalCompra(): number {
+    return (this.livro?.PrecoVenda ?? 0) * (this.quantidade || 0);
+  }
+
   confirmarCompra(): void {
     if (!this.livro || !this.dadosUsuario) return;
+
+    // TC-COMP-06: bloqueia antes de chamar API
+    const erroQtd = this.validarQuantidade();
+    if (erroQtd) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Quantidade inválida',
+        detail: erroQtd,
+      });
+      return;
+    }
+
     this.loadingCompra = true;
 
+    // TC-COMP-04: enviar enderecoEntrega + formaPagamento + Quantidade.
+    // O backend persiste o endereço como snapshot (JSON) — preserva histórico.
     this.vendasService.Registrar({
       idLivro: this.livro.idLivro,
       idUsuario: this.dadosUsuario.idUsuario,
-      ValorPago: this.livro.PrecoVenda,
+      ValorPago: this.totalCompra,
+      enderecoEntrega: this.dadosUsuario.endereco || null,
+      formaPagamento: this.metodoPagamentoSelecionado,
+      Quantidade: this.quantidade,
     }).subscribe({
       next: (res) => {
         this.vendaConfirmada = res.venda;
         this.vendasService.ConfirmarPagamento({
           idVenda: res.venda.id,
-          ValorPago: this.livro!.PrecoVenda,
+          ValorPago: this.totalCompra,
         }).subscribe({
           next: () => {
             this.loadingCompra = false;

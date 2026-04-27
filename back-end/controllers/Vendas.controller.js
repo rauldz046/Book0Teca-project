@@ -7,9 +7,27 @@ const CompraStatus = require("../models/CompraStatus");
 
 const controller = {};
 
-/* REGISTRAR VENDA — atende RF08, RF09, RF19 (baixa automática), RNF04 (ACID) */
+/* REGISTRAR VENDA — atende RF08, RF09, RF19 (baixa automática), RNF04 (ACID)
+ * TC-COMP-04: persiste enderecoEntrega + formaPagamento.
+ * TC-COMP-06: valida quantidade > 0 e <= estoque (se físico).
+ */
 controller.registrarVenda = async (req, res) => {
-  const { idLivro, idUsuario, FuncionarioResponsavel, ValorPago } = req.body;
+  const {
+    idLivro,
+    idUsuario,
+    FuncionarioResponsavel,
+    ValorPago,
+    enderecoEntrega,    // objeto ou null — será serializado abaixo
+    formaPagamento,     // string — PIX, BOLETO, CARTÃO, etc.
+    Quantidade,         // number — default 1
+  } = req.body;
+
+  // TC-COMP-06: quantidade default 1, mas valida > 0
+  const qtd = Number.isFinite(Quantidade) && Quantidade > 0 ? Math.floor(Quantidade) : 1;
+  if (Quantidade != null && qtd !== Quantidade) {
+    return res.status(400).json({ message: "Quantidade deve ser inteiro positivo" });
+  }
+
   const t = await sequelize.transaction();
 
   try {
@@ -25,14 +43,30 @@ controller.registrarVenda = async (req, res) => {
       return res.status(400).json({ message: "Livro físico sem estoque disponível" });
     }
 
+    // TC-COMP-06: bloqueia se quantidade desejada > estoque (físico)
+    if (livro.LivroFisico && qtd > livro.QtdLivros) {
+      await t.rollback();
+      return res.status(400).json({
+        message: `Quantidade solicitada (${qtd}) excede o estoque disponível (${livro.QtdLivros})`,
+      });
+    }
+
+    // ValorCompra = preço unitário * quantidade. Mantém ValorPago como veio
+    // do front (que pode embutir desconto/frete no futuro).
+    const valorCompra = livro.PrecoVenda * qtd;
+
     const venda = await Venda.create(
       {
         Livro: idLivro,
         idUsuario,
         FuncionarioResponsavel: FuncionarioResponsavel || null,
         CompraStatus: 1, // 1 = Pendente — aguarda confirmação de pagamento
-        ValorCompra: livro.PrecoVenda,
+        ValorCompra: valorCompra,
         ValorPago: ValorPago || 0,
+        Quantidade: qtd,
+        // TC-COMP-04: snapshot do endereço como JSON para preservar histórico.
+        enderecoEntrega: enderecoEntrega ? JSON.stringify(enderecoEntrega) : null,
+        formaPagamento: formaPagamento || null,
         DataCompra: new Date(),
         created_at: new Date(),
         updated_at: new Date(),
@@ -40,10 +74,10 @@ controller.registrarVenda = async (req, res) => {
       { transaction: t }
     );
 
-    // Baixa de estoque só pra livro físico — digital não reduz qtd (RF09)
+    // Baixa de estoque proporcional à quantidade — só físico (RF09)
     if (livro.LivroFisico) {
       await Livro.update(
-        { QtdLivros: livro.QtdLivros - 1, updated_at: new Date() },
+        { QtdLivros: livro.QtdLivros - qtd, updated_at: new Date() },
         { where: { idLivro }, transaction: t }
       );
     }
@@ -56,6 +90,17 @@ controller.registrarVenda = async (req, res) => {
   }
 };
 
+/* Helper: parse seguro do JSON de enderecoEntrega ao retornar venda. */
+function parseEnderecoEntrega(venda) {
+  if (!venda) return venda;
+  const v = venda.toJSON ? venda.toJSON() : venda;
+  if (v.enderecoEntrega && typeof v.enderecoEntrega === "string") {
+    try { v.enderecoEntrega = JSON.parse(v.enderecoEntrega); }
+    catch { /* deixa como string se não for JSON válido */ }
+  }
+  return v;
+}
+
 /* GET ALL */
 controller.findAll = async (req, res) => {
   try {
@@ -67,7 +112,7 @@ controller.findAll = async (req, res) => {
         { model: CompraStatus, as: "status", attributes: ["Descricao"] },
       ],
     });
-    return res.status(200).json(vendas);
+    return res.status(200).json(vendas.map(parseEnderecoEntrega));
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -84,7 +129,7 @@ controller.findById = async (req, res) => {
       ],
     });
     if (!venda) return res.status(404).json({ message: "Venda não encontrada" });
-    return res.status(200).json(venda);
+    return res.status(200).json(parseEnderecoEntrega(venda));
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

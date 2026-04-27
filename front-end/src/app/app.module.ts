@@ -23,6 +23,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { DropdownModule } from 'primeng/dropdown';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputNumberModule } from 'primeng/inputnumber'; // Bloco 4 (TC-COMP-06): quantidade na compra
 import { CarouselModule } from 'primeng/carousel';
 import { TagModule } from 'primeng/tag';
 import { GerenciarLeitoresComponent } from './pages/gerenciar-leitores/gerenciar-leitores.component';
@@ -121,6 +122,7 @@ import { DetalheLivroComponent } from './pages/detalhe-livro/detalhe-livro.compo
     InputSwitchModule,
     BrowserAnimationsModule,
     InputTextModule,
+    InputNumberModule,
     CarouselModule,
     TagModule,
     ReactiveFormsModule,

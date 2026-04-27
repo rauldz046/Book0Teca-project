@@ -176,7 +176,7 @@
       "CEP": "01310-100",
       "Complemento": "Apto 10",
       "created_at": "2024-01-01",
-      "updated_at": "2024-01-01",
+      "updated_at": "2026-04-27",
       "deleted_at": null
     },
     {
@@ -206,7 +206,7 @@
       "DigitoConta": 4,
       "CodigosPix": "admin@bookoteca.com",
       "created_at": "2024-01-01",
-      "updated_at": "2024-01-01",
+      "updated_at": "2026-04-27",
       "deleted_at": null
     },
     {
@@ -297,12 +297,12 @@
       "SenhaFunc": "$2b$10$wu0971TopfFKGhmHBrGahO7yL3zuROQZNQVEgsQ4AMAbF7ZmynW4u",
       "SenhaInicialFunc": 0,
       "CadastradoPor": 1,
-      "idPerfilFuncionarios": 1,
+      "idPerfilFuncionarios": "1",
       "StatusAtividadeGeral_idStatus": 1,
       "InfoBancario_IdInfoBancario": 1,
       "InfoEndereco_idInfoEnd": 1,
       "created_date": "2024-01-01",
-      "update_date": "2024-01-01",
+      "update_date": "2026-04-27",
       "deleted_date": null
     },
     {
@@ -315,12 +315,12 @@
       "SenhaFunc": "$2b$10$KBUcfLyLTwdOfbkoPA99W.0LbWggogXZz8yfaaOCd27x11fiCIo6u",
       "SenhaInicialFunc": 0,
       "CadastradoPor": 1,
-      "idPerfilFuncionarios": 2,
+      "idPerfilFuncionarios": "4",
       "StatusAtividadeGeral_idStatus": 1,
       "InfoBancario_IdInfoBancario": 1,
       "InfoEndereco_idInfoEnd": 1,
       "created_date": "2024-01-01",
-      "update_date": "2024-01-01",
+      "update_date": "2026-04-27",
       "deleted_date": null
     }
   ],

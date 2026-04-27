@@ -30,6 +30,11 @@ export class ClientesService {
     return this.api.post<any>(`${this.ROOT}/login`, data);
   }
 
+  /** TC-AUTH-06: solicita senha provisória por e-mail. */
+  ResetPassword(data: { email: string }): Observable<any> {
+    return this.api.post<any>(`${this.ROOT}/resetPassword`, data);
+  }
+
   UpdateUsuario(
     data:
       | (Partial<UsuariosLogados> & { idUsuario: number })

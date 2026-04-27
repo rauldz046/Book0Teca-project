@@ -188,6 +188,9 @@ CREATE TABLE LVendasNotasFiscais (
   CompraStatus INT,
   ValorCompra FLOAT,
   ValorPago FLOAT,
+  Quantidade INT DEFAULT 1;
+  EnderecoEntrega TEXT;
+  FormaPagamento VARCHAR(32);
   DataCompra DATE,
   created_at DATE,
   updated_at DATE,
@@ -197,6 +200,10 @@ CREATE TABLE LVendasNotasFiscais (
   FOREIGN KEY (FuncionarioResponsavel) REFERENCES FuncionariosSistema(idFuncionario),
   FOREIGN KEY (CompraStatus) REFERENCES CompraStatus(id)
 );
+
+-- ALTER TABLE LVendasNotasFiscais ADD COLUMN Quantidade INT DEFAULT 1;
+-- ALTER TABLE LVendasNotasFiscais ADD COLUMN enderecoEntrega TEXT;
+-- ALTER TABLE LVendasNotasFiscais ADD COLUMN formaPagamento VARCHAR(32);
 
 CREATE TABLE LivrosEmprestimos (
   id INT AUTO_INCREMENT PRIMARY KEY,

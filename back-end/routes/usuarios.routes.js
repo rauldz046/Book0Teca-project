@@ -5,6 +5,7 @@ const UsuarioController = require("../controllers/Usuarios.controller");
 router.get("/findAll",        UsuarioController.getUsers);
 router.get("/:id",            UsuarioController.getUserById);
 router.post("/login",         UsuarioController.loginValidation);
+router.post("/resetPassword", UsuarioController.resetPassword);
 router.post("/createUser",    UsuarioController.UsuariosCreate);
 router.post("/updateUser",    UsuarioController.updateUser);
 router.post("/updateStatus",  UsuarioController.updateStatus);

@@ -91,12 +91,29 @@
       </div>
     </div>
     <p-divider></p-divider>
+    <!-- TC-COMP-06: input de quantidade.
+         min=1, max=QtdLivros (físico) ou 99 (digital).
+         Validação extra em validarQuantidade() antes de enviar ao backend. -->
+    <div class="qtd-linha" *ngIf="livro">
+      <label for="qtd" class="text-color-secondary">Quantidade</label>
+      <p-inputNumber inputId="qtd"
+                     [(ngModel)]="quantidade"
+                     [min]="1"
+                     [max]="livro.LivroFisico ? (livro.QtdLivros ?? 1) : 99"
+                     [showButtons]="true"
+                     buttonLayout="horizontal"
+                     spinnerMode="horizontal"
+                     decrementButtonClass="p-button-text"
+                     incrementButtonClass="p-button-text">
+      </p-inputNumber>
+    </div>
     <div class="total-linha">
       <span class="text-color-secondary">Total a pagar</span>
-      <span class="total-valor">{{ livro?.PrecoVenda | currency:'BRL' }}</span>
+      <span class="total-valor">{{ totalCompra | currency:'BRL' }}</span>
     </div>
     <div class="step-buttons">
       <button pButton label="Continuar" icon="pi pi-arrow-right" iconPos="right"
+              [disabled]="quantidade < 1 || (livro?.LivroFisico && quantidade > (livro?.QtdLivros ?? 0))"
               (click)="nextStep()"></button>
     </div>
   </div>
@@ -206,6 +223,10 @@
         <span>{{ livro?.Titulo }}</span>
       </div>
       <div class="nf-linha">
+        <span>Quantidade</span>
+        <span>{{ quantidade }}</span>
+      </div>
+      <div class="nf-linha">
         <span>Comprador</span>
         <span>{{ dadosUsuario?.Nome }}</span>
       </div>
@@ -228,7 +249,7 @@
       <p-divider></p-divider>
       <div class="nf-linha total">
         <span>Total Pago</span>
-        <span>{{ livro?.PrecoVenda | currency:'BRL' }}</span>
+        <span>{{ totalCompra | currency:'BRL' }}</span>
       </div>
     </div>
 

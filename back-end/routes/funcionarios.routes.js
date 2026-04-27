@@ -5,6 +5,7 @@ const FuncionariosController = require("../controllers/Funcionarios.controller")
 router.get("/findAll",          FuncionariosController.getFuncionarios);
 router.get("/:id",              FuncionariosController.getFuncionarioById);
 router.post("/login",           FuncionariosController.loginValidation);
+router.post("/resetPassword",   FuncionariosController.resetPassword);
 router.post("/create",          FuncionariosController.FuncionariosCreate);
 router.post("/update",          FuncionariosController.updateFuncionario);
 router.post("/updateStatus",    FuncionariosController.updateStatus);

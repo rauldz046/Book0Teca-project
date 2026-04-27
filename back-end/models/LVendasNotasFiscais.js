@@ -15,6 +15,14 @@ const Venda = sequelize.define(
     CompraStatus: DataTypes.INTEGER,
     ValorCompra: DataTypes.FLOAT,
     ValorPago: DataTypes.FLOAT,
+    // TC-COMP-06: quantidade comprada (default 1, validado no controller)
+    Quantidade: { type: DataTypes.INTEGER, defaultValue: 1 },
+    // TC-COMP-04: snapshot do endereço de entrega no momento da compra,
+    // armazenado como JSON serializado para preservar histórico mesmo se o
+    // endereço do usuário mudar depois.
+    enderecoEntrega: { type: DataTypes.TEXT, allowNull: true },
+    // TC-COMP-04: forma de pagamento escolhida (PIX, BOLETO, CARTÃO, etc.)
+    formaPagamento: { type: DataTypes.STRING(32), allowNull: true },
     DataCompra: DataTypes.DATEONLY,
     created_at: DataTypes.DATEONLY,
     updated_at: DataTypes.DATEONLY,

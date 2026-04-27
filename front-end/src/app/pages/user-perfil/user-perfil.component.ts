@@ -56,7 +56,8 @@ export class UserPerfilComponent implements OnInit {
   });
 
   enderecoForm = new FormGroup({
-    CEP:           new FormControl(''),
+    // TC-EB-06: aceita "01000-000" ou "01000000". Mensagem inline no template.
+    CEP:           new FormControl('', [Validators.pattern(/^\d{5}-?\d{3}$/)]),
     Logradouro:    new FormControl(''),
     Numero:        new FormControl<number | null>(null),
     Bairro:        new FormControl(''),

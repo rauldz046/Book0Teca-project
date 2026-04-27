@@ -82,7 +82,9 @@ export class SidebarService {
             label: 'Autores',
             icon: PrimeIcons.PENCIL,
             routerLink: '/acervo/autores',
-            visible: this.hasPermission(['BIBLIOTECARIO']),
+            // TODO(rota): rota /acervo/autores ainda não existe em app-routing.module.ts.
+            // Manter oculto até criar AutoresComponent + rota correspondente.
+            visible: false,
           },
         ],
       },
@@ -146,7 +148,11 @@ export class SidebarService {
       {
         label: 'Inventario',
         icon: PrimeIcons.BOX,
-        visible: this.hasPermission(['ESTOQUE', 'FINANCEIRO']),
+        // TODO(rota): rotas /inventario/Estoque, /inventario/licitacoes e
+        // /inventario/tesouraria ainda não existem em app-routing.module.ts.
+        // Grupo inteiro oculto até implementação. Quando criar, restaurar:
+        //   visible: this.hasPermission(['ESTOQUE', 'FINANCEIRO']),
+        visible: false,
         items: [
           {
             label: 'Estoque',
@@ -173,7 +179,13 @@ export class SidebarService {
         icon: PrimeIcons.SERVER,
         visible: this.hasPermission([]), // só ADMIN
         items: [
-          { label: 'Logs', icon: PrimeIcons.FILE, routerLink: '/sistema/logs' },
+          {
+            label: 'Logs',
+            icon: PrimeIcons.FILE,
+            routerLink: '/sistema/logs',
+            // TODO(rota): /sistema/logs ainda não existe em app-routing.module.ts.
+            visible: false,
+          },
           {
             label: 'Permissões',
             icon: PrimeIcons.LOCK,

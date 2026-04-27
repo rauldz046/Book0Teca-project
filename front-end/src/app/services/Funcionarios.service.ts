@@ -26,6 +26,11 @@ export class FuncionariosService {
     return this.api.post<any>(`${this.ROOT}/login`, data);
   }
 
+  /** TC-AUTH-06: solicita senha provisória por e-mail. */
+  ResetPassword(data: { email: string }): Observable<any> {
+    return this.api.post<any>(`${this.ROOT}/resetPassword`, data);
+  }
+
   UpdateFuncionario(
     data:
       | (Partial<FuncionariosLogados> & { idFuncionario: number })

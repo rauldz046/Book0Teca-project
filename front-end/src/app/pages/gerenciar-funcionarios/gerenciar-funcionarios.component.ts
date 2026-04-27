@@ -57,7 +57,8 @@ export class GerenciarFuncionariosComponent implements OnInit {
 
   enderecoForm = new FormGroup({
     idInfoEnd:     new FormControl<number | null>(null),
-    CEP:           new FormControl(''),
+    // TC-EB-06: aceita "01000-000" ou "01000000".
+    CEP:           new FormControl('', [Validators.pattern(/^\d{5}-?\d{3}$/)]),
     Logradouro:    new FormControl(''),
     Numero:        new FormControl<number | null>(null),
     Bairro:        new FormControl(''),

@@ -1,5 +1,16 @@
 export type StatusCompra = 'Pendente' | 'Pago' | 'Cancelado' | 'Aguardando' | 'Reembolsado';
 
+/** Endereço serializado dentro do registro de venda (snapshot histórico). */
+export interface EnderecoEntrega {
+  Logradouro?: string;
+  Numero?: number | string | null;
+  Bairro?: string;
+  Cidade?: string;
+  Estado?: string;
+  CEP?: string;
+  Complemento?: string;
+}
+
 export interface Venda {
   id: number;
   Livro: number;
@@ -8,6 +19,10 @@ export interface Venda {
   CompraStatus: number;
   ValorCompra: number;
   ValorPago: number;
+  // TC-COMP-04 / TC-COMP-06
+  Quantidade?: number;
+  enderecoEntrega?: EnderecoEntrega | null;
+  formaPagamento?: string | null;
   DataCompra: string;
   created_at?: string;
   updated_at?: string;
@@ -23,6 +38,11 @@ export interface RegistrarVendaPayload {
   idUsuario: number;
   FuncionarioResponsavel?: number;
   ValorPago?: number;
+  // TC-COMP-04: passados ao backend para persistência
+  enderecoEntrega?: EnderecoEntrega | null;
+  formaPagamento?: string;
+  // TC-COMP-06: default 1 se omitido
+  Quantidade?: number;
 }
 
 export interface RelatorioVendas {

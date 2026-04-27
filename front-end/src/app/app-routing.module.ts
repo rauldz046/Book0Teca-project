@@ -131,6 +131,13 @@ const routes: Routes = [
     canActivate: [authGuard],
     data: { titulo: 'Preferencias' },
   },
+  // TC-RBAC-06 / Bloco RBAC: catch-all para rotas inexistentes ou negadas
+  // sem destino específico. Redireciona para /home em vez de deixar a app
+  // travada em URL fantasma. Mantém a rota /home ativa (não ciclo).
+  {
+    path: '**',
+    redirectTo: 'home',
+  },
 ];
 
 @NgModule({

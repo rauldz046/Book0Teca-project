@@ -40,7 +40,15 @@ controller.FuncionariosCreate = async (req, res) => {
 controller.loginValidation = async (req, res) => {
   const { email, senha } = req.body;
   try {
-    const infoUser = await Funcionario.findOne({ where: { EmailFunc: email } });
+    // TC-AUTH-07: include endereco/banco/perfil para enriquecer a sessão.
+    const infoUser = await Funcionario.findOne({
+      where: { EmailFunc: email },
+      include: [
+        { model: InfoEndereco, as: "endereco" },
+        { model: InfoBancario, as: "banco" },
+        { model: PerfilFuncionario, as: "perfil", attributes: ["Descricao"] },
+      ],
+    });
 
     if (!infoUser) {
       return res.status(401).json({ message: "Funcionário não encontrado" });
@@ -61,10 +69,42 @@ controller.loginValidation = async (req, res) => {
       CadastradoPor: infoUser.CadastradoPor,
       idPerfilFuncionarios: infoUser.idPerfilFuncionarios,
       StatusAtividadeGeral_idStatus: infoUser.StatusAtividadeGeral_idStatus,
+      // TC-AUTH-07: objetos enriquecidos
+      endereco: infoUser.endereco,
+      banco: infoUser.banco,
+      perfil: infoUser.perfil,
+      // TC-AUTH-04: flag para forçar troca de senha no primeiro login
+      SenhaInicialFunc: !!infoUser.SenhaInicialFunc,
       created_date: infoUser.created_date,
     };
 
     return res.status(200).json({ message: "sucesso", infoSessao });
+  } catch (err) {
+    return res.status(500).json({ error: "Erro interno no servidor" });
+  }
+};
+
+/* RESET PASSWORD — TC-AUTH-06 (simétrico ao Usuarios.controller) */
+controller.resetPassword = async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: "E-mail obrigatório" });
+
+  try {
+    const func = await Funcionario.findOne({ where: { EmailFunc: email } });
+    if (!func) return res.status(404).json({ message: "E-mail não cadastrado" });
+
+    const senhaProvisoria = Math.random().toString(36).slice(-8);
+    const senhaHash = await bcrypt.hash(senhaProvisoria, 10);
+
+    await Funcionario.update(
+      { SenhaFunc: senhaHash, SenhaInicialFunc: 1, update_date: new Date() },
+      { where: { idFuncionario: func.idFuncionario } }
+    );
+
+    return res.status(200).json({
+      message: "Senha provisória gerada. Use-a no próximo login.",
+      senhaProvisoria, // remover em produção (enviar por e-mail)
+    });
   } catch (err) {
     return res.status(500).json({ error: "Erro interno no servidor" });
   }
